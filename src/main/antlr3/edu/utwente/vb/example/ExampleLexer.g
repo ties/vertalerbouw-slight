@@ -1,5 +1,5 @@
-/*
- * Example programming language
+/**
+ * Tokenizer for the Example programming language
  * Authors: Niek Tax & Ties de Kock
  *
  */
