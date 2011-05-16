@@ -1,4 +1,17 @@
-\input{preamble.tex}
+\documentclass[a4paper,twoside]{report}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{fullpage}
+\usepackage{float}
+\usepackage[colorlinks=false]{hyperref}
+% Configuratie van PDF
+\hypersetup{%
+	pdfborder={0 0 0},
+	pdfcreator={Example programmeertaal}
+}
+\usepackage[dutch]{babel}
+
+\begin{document}
 \author{Ties de Kock\\Niek Tax}
 \title{Example
 \small{Example programming language made in ANTLR}}
@@ -11,6 +24,7 @@
 \input{inleiding.tex}
 \newpage
 \input{syntax.tex}
-
+\newpage
+\input{builtin.tex}
 \newpage
 \end{document}

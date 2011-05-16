@@ -1,0 +1,33 @@
+\chapter{Ingebouwde functies en type coersion}
+Om de verplichte operaties te kunnen uitvoeren moet Example een aanstal wiskundige operaties en standaardfuncties hebben. Daarnaast zijn er een paar operatoren die wanneer ze op verschillende typen worden uitgevoerd worden nog gedefinieerd gedrag hebben.
+
+Hieronder werken wij eerst de standaard operaties uit die in de taal ingebouwd zitten. Daarnaast geven we de omzettingen aan tussen typen die onze taal automatisch uitvoerd.
+
+\begin{tabular*}{0.75\textwidth}{ |l | l | l | p|}
+	\hline
+		Operator	&	Left hand side	&	Right hand side	&	Result	\\
+	\hline
+		==			&	primitive	&	primitive	&& boolean \\
+		!=			&	primitive	&	primitive	&& boolean	\\
+		
+		or			&	boolean	&	boolean	&	boolean	\\
+		and			&	boolean	&	boolean	&	boolean	\\
+		
+		+			&		int	&		int		& 	int	\\
+		*			&		int	&		int	&	int \\
+		/			&		int	&		int	&	int \\
+		\% (modulo)	&		int	&		int	&	int	\\
+		
+		+			&		int	&		char&	int	\\
+		-			&		int	&		char&	int	\\
+		
+		<			&		int	&		int	&	boolean	\\
+		>			&		int	&		int	&	boolean	\\
+		
+		+			&		char&		char&	string	\\
+		<			&		char&		char&	boolean	\\
+		>			&		char&		char&	boolean	\\
+		
+		+			&		char&		int	&	char	\\
+		-			&		char&		int	&	char	\\
+\end{tabular*}
