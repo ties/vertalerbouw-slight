@@ -11,3 +11,30 @@ bin/**
 .metadata
 .settings
 .classpath
+.gitignore~ # dit is voor lock-bestanden .gitignore
+
+#Wat hieronder staat is voor LaTeX
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.nlo
+*.out
+*.toc
+*.fdb_latexmk
+*.pdfsync
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+*.pdf

@@ -4,7 +4,7 @@
  *
  */
 
-grammar ExampleScanner;
+grammar ExampleParser;
 
 options {
   k=1;
@@ -16,6 +16,13 @@ options {
  * A program consists of several functions
  */
 program 
-  : (function)*
+  : declarations (function)*
   ;
   
+declarations
+  : declaration*
+  ;
+
+declaration
+  : VAR 
+ 

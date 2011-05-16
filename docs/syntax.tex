@@ -1,0 +1,25 @@
+\chapter{syntax}
+\section{De grote lijnen}
+Syntax
+
+De topnode in de hierarchy is de node Program. Een Program bestaat uit nul of meer declaraties van globale variabelen gevolgd door nul of meer functies die in het programma gebruikt kunnen worden en uiteindelijk een Main functie.
+
+  Program               ::=     Declarations Functions
+  
+  Declarations          ::=     Declaration*
+
+  Declarations          ::=
+ .
+  Functions             ::=     Function Functions                             
+                        |       Main                                         
+                                                                             
+  Main                  ::=     Primitive main ( ) Block                     
+                                                                             
+  Function              ::=     Primitive Identifier ( ParameterDef ) Block  
+                                                                             
+  ParameterDef            ::=                                                  
+                        |       SingleParameterDef                           
+                                                                             
+  SingleParameterDef    ::=     (const) Primitive Identifier                 
+
+
