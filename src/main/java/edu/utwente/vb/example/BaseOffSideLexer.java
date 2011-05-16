@@ -17,14 +17,15 @@ public abstract class BaseOffSideLexer extends Lexer {
 	private int lineIndent;
 	private boolean newLine;
 	
-    public BaseOffSideLexer() {;}
+    public BaseOffSideLexer() {
+    	//default constructor - because alternatives exist we need to explicitly specify this
+    }
     
     public BaseOffSideLexer(CharStream input) {
         this(input, new RecognizerSharedState());
     }
     public BaseOffSideLexer(CharStream input, RecognizerSharedState state) {
         super(input,state);
-
     }
 	
 	/**
