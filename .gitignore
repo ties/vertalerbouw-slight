@@ -9,3 +9,5 @@ bin
 bin/**
 .project
 .metadata
+.settings
+.classpath
