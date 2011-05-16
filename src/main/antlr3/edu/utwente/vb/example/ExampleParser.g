@@ -4,7 +4,7 @@
  *
  */
 
-grammar ExampleScanner;
+grammar ExampleParser;
 
 options {
   k=1;
@@ -17,5 +17,6 @@ options {
  */
 program 
   : (function)*
+  {program}
   ;
-  
+ 
