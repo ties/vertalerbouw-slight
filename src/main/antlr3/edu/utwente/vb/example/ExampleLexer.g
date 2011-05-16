@@ -79,9 +79,6 @@ FUNCTION  : 'def';
 //Variable & Const definition
 CONST   : 'const';
 VAR     : 'var';  
-//True/False
-TRUE    : 'True';
-FALSE   : 'False';
 
 WS  
 	@init{
