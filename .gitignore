@@ -1,0 +1,9 @@
+#
+#
+# Ignores
+#
+#
+target
+target/**
+bin
+bin/**
