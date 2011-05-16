@@ -7,3 +7,5 @@ target
 target/**
 bin
 bin/**
+.project
+.metadata
