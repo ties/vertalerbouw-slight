@@ -16,7 +16,13 @@ options {
  * A program consists of several functions
  */
 program 
-  : (function)*
-  {program}
+  : declarations (function)*
   ;
+  
+declarations
+  : declaration*
+  ;
+
+declaration
+  : VAR 
  
