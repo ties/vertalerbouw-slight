@@ -4,7 +4,7 @@
  *
  */
 
-grammar Example;
+lexer grammar ExampleLexer;
 
 options {
   superClass = BaseOffSideLexer;
@@ -25,7 +25,7 @@ tokens {
 
 @header{
   package edu.utwente.vb.example;
-  import edu.utwente.vb.example.tree.*;
+  import edu.utwente.vb.example.*;
 }
 
 @members{
@@ -107,7 +107,7 @@ LIT_INT     : DIGIT+;
 LIT_CHAR    : SQUOT LETTER SQUOT;
 IDENTIFIER  : LETTER (LETTER | DIGIT)*;
 
-STRING_LITERAL  : '"' (options{greedy=true;}) : (~'"'|'\n'|'\r'))*) '"';
+STRING_LITERAL  : '"' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '"';
 
 fragment DIGIT  : ('0'..'9');
 fragment LOWER  : ('a'..'z');
