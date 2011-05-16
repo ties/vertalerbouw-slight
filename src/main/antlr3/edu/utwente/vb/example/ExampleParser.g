@@ -4,35 +4,20 @@
  *
  */
 
-grammar ExampleParser;
+parser grammar ExampleParser;
 
 options {
   k=1;
   language = Java;
   output = AST;
+  tokenVocab=ExampleLexer;
 }
 
-tokens
-{
-  MAIN = 'main';
-  RETURN = 'return';
-
-  IF = 'if';
-  ELSE = 'else';
-  WHILE = 'while';
-
-  CONST = 'const';
-  
-  // primitives
-  VOID = 'void';
-  BOOLEAN = 'bool';
-  CHAR = 'char';
-  INT = 'int';
-  STRING = 'string';
-
-  TRUE    : 'True';
-  FALSE   : 'False';
+@header{ 
+  package edu.utwente.vb.example;
+  import org.utwente.vb.example.*;
 }
+
 
 /**
  * A program consists of several functions
@@ -57,19 +42,19 @@ function
 parameterDef
   : (CONST)? primitive parameterVar
   ;
-  
-/**parameterVar
-  : I*/
 
-closedCompountExpression
+//TODO: Volgens mij niet goed, naar kijken.
+parameterVar
+  : IDENTIFIER
+  ;
+  
+closedCompoundExpression
   : INDENT compoundExpression DEDENT
   ;
 
 compoundExpression
-  : expression SEMI!
-  | declaration SEMI!
-  | expression compoundExpression SEMI!
-  | declaration compoundExpression SEMI!
+  : expression compoundExpression? SEMI!
+  | declaration compoundExpression? SEMI!
   ;
  
 expression
@@ -108,6 +93,8 @@ simpleExpression
   | paren
   | closedCompoundExpression
   | statements
+  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
+  | (functionCall)=> functionCall
   ;
   
 statements
@@ -134,3 +121,11 @@ paren
   : LPAREN! expression RPAREN!
   ;
   
+//TODO: Werkt wss niet, nog naar kijken.
+variable
+  : IDENTIFIER 
+  ;
+  
+functionCall
+  : IDENTIFIER LPAREN! (IDENTIFIER (COMMA! IDENTIFIER)*)? RPAREN!
+  ;
