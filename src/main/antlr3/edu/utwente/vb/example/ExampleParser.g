@@ -23,20 +23,16 @@ options {
  * A program consists of several functions
  */
 program 
-  : declarations (function)*
+  : (compoundExpression | function)*
   ;
   
-declarations
-  : declaration*
-  ;
-
 declaration
   : VAR IDENTIFIER
   | CONST IDENTIFIER
   ;
   
 function
-  : IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! closedCompoundExpression
+  : FUNCTION IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! closedCompoundExpression
   ;
   
 parameterDef
@@ -45,7 +41,10 @@ parameterDef
 
 //TODO: Volgens mij niet goed, naar kijken.
 parameterVar
-  : IDENTIFIER
+  : variable 
+  | STRING_LITERAL
+  | INT_LITERAL
+  | SQUOT CHAR_LITERAL SQUOT 
   ;
   
 closedCompoundExpression
@@ -100,6 +99,7 @@ simpleExpression
 statements
   : ifStatement
   | whileStatement
+  | functionCall
   ;
 
 ifStatement
@@ -117,6 +117,7 @@ primitive
   | INT
   | STRING
   ;
+
 paren
   : LPAREN! expression RPAREN!
   ;
@@ -127,5 +128,5 @@ variable
   ;
   
 functionCall
-  : IDENTIFIER LPAREN! (IDENTIFIER (COMMA! IDENTIFIER)*)? RPAREN!
+  : IDENTIFIER LPAREN! (parameterVar (COMMA! parameterVar)*)? RPAREN!
   ;
