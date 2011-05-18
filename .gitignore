@@ -13,6 +13,9 @@ bin/**
 .classpath
 .gitignore~ # dit is voor lock-bestanden .gitignore
 
+#output gemaakt door Antlrworks
+src/main/antlr3/edu/utwente/vb/example/output/
+
 #Wat hieronder staat is voor LaTeX
 *.aux
 *.bbl
