@@ -6,3 +6,19 @@ mvn clean - verwijder alle build artifacts
 mvn compile - compileer en test de code
 mvn assembly:assembly - compileer en unit test de code
 \end{verbatim}
+
+Na het assembly commando staat de jar van de compiler in de target map. De dependencies zitten ook in de example-compiler-...-jar-with-dependencies.jar. Omdat de dependencies hier in zitten kan je de compiler starten zonder het classpath in te stellen.
+
+\begin{verbatim}
+java -jar target\example-compiler-0.1-jar-with-dependencies.jar
+\end{verbatim}
+
+Wanneer je de compiler stat probeert hij in principe code te lezen vanaf de stdin. Handige opties zijn:
+\begin{tabular*}{0.75\textwidth}{ |l | l|}
+	\hline
+	Argument		&	Uitleg \\
+	\hline
+	-debug_parser	& Zet de parser in debug mode, voor debug met antlrworks \\
+	-debug_checker	& Zet de checker in debug mode, voor debug met antlrworks \\
+	-file_input [filenaam] & lees invoer vanuit [filenaam] \\
+\end{tabular*}

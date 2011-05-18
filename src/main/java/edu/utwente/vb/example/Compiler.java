@@ -1,6 +1,8 @@
 package edu.utwente.vb.example;
 
 import java.io.FileReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import edu.utwente.vb.*;
 import org.antlr.runtime.*;
@@ -10,8 +12,11 @@ import org.antlr.runtime.debug.BlankDebugEventListener;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
+import org.apache.log4j.Logger;
 
-public class Compiler {
+public class Compiler {	
+	private final static PrintStream out = System.out;
+	
 	private static boolean opt_ast = false, opt_dot = false,
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
@@ -20,24 +25,39 @@ public class Compiler {
 
 	public static void parseOptions(String[] args) {
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-ast"))
+			if (args[i].equals("-ast")){
+				out.println("- AST output");
 				opt_ast = true;
-			else if (args[i].equals("-dot"))
+			}
+			else if (args[i].equals("-dot")){
+				out.println("- DOT output");
 				opt_dot = true;
-			else if (args[i].equals("-no_checker"))
+			}
+			else if (args[i].equals("-no_checker")){
+				out.println("- checker disabled");
 				opt_no_checker = true;
-			else if (args[i].equals("-no_codegen"))
+			}
+			else if (args[i].equals("-no_codegen")){
+				out.println("- codegen disabled");
 				opt_no_codegen = true;
-			else if (args[i].equals("-no_interpreter"))
+			}
+			else if (args[i].equals("-no_interpreter")){
+				out.println("- interpreter disabled");
 				opt_no_interpreter = true;
-			else if (args[i].equals("-debug_checker"))
+			}
+			else if (args[i].equals("-debug_checker")){
+				out.println("+ debugging checker");
 				opt_debug_checker = true;
-			else if (args[i].equals("-debug_parser"))
+			}
+			else if (args[i].equals("-debug_parser")){
+				out.println("+ debugging parser");
 				opt_debug_parser = true;
+			}
 			else if (args[i].equals("-file_input") && (i + 1 < args.length)) {
 				opt_file_input = true;
 				i++;
 				filename = args[i];
+				out.println("using filename: " + filename);
 			} else {
 				System.err.println("error: unknown option '" + args[i] + "'");
 				System.err.println("valid options: -ast -dot "
@@ -49,8 +69,11 @@ public class Compiler {
 	}
 
 	public static void main(String[] args) {
+		out.println("Starting Example compiler");
+		out.println("=============== Options ===============");
 		parseOptions(args);
-
+		out.println("=======================================");
+		
 		try {
 			// Maak String template group aan de hand van file
 //			FileReader groupFileR = new FileReader("SlightCodeGenerator.stg");
@@ -60,8 +83,10 @@ public class Compiler {
 
 			CharStream stream;
 			if (opt_file_input) {
+				out.println("using input from " + filename);
 				stream = new ANTLRFileStream(filename);
 			} else {
+				out.println("using input from System.in");
 				stream = new ANTLRInputStream(System.in);
 			}
 			
