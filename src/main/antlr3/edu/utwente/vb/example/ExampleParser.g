@@ -15,7 +15,7 @@ options {
 
 @header{ 
   package edu.utwente.vb.example;
-  import org.utwente.vb.example.*;
+  import edu.utwente.vb.example.*;
 }
 
 

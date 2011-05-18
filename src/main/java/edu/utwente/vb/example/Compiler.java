@@ -71,14 +71,14 @@ public class Compiler {
 			ExampleParser parser;
 
 			if (!opt_debug_parser) {
-				parser = new SlightParser(tokens, new BlankDebugEventListener());
+				parser = new ExampleParser(tokens, new BlankDebugEventListener());
 //				parser = new SlightParser(tokens);
 			} else {
-				parser = new SlightParser(tokens);
+				parser = new ExampleParser(tokens);
 			}
 //			parser.setTreeAdaptor(new SlightTreeAdaptor());
 
-			SlightParser.program_return result = parser.program();
+			ExampleParser.program_return result = parser.program();
 			CommonTree tree = (CommonTree) result.getTree();
 
 //			if (!opt_no_checker) { // check the AST
