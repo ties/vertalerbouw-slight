@@ -37,16 +37,23 @@ public class TestSymbolTable extends TestCase{
 		//
 		a.closeScope();
 		assertEquals(a.getLevel(), 0);
+	}
+	
+	@Test
+	public void testCloseLevelZero(){
+		SymbolTable a = new SymbolTable();
 		// nu de error bij het closen van een scope op level 0
 		boolean error = false;
 		try{
 			a.closeScope();
-		} catch(IllegalStateException e){
+		} catch(IllegalArgumentException e){
 			error = true;
 		}
 		assertTrue(error);
+
 	}
 	
+	@Test
 	public void testSimpleput() throws Exception {
 		VariableId a = variables1.get(0);
 		//
