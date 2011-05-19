@@ -92,14 +92,15 @@ simpleExpression
   | paren
   | closedCompoundExpression
   | statements
+  
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
+  //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | (functionCall)=> functionCall
   ;
   
 statements
   : ifStatement
   | whileStatement
-  | functionCall
   ;
 
 ifStatement

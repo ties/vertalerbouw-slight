@@ -11,16 +11,8 @@ options {
 }
 
 tokens {
-  DECLARATION;
-  CLOSEDCOMPOUND;
-  COMPOUND;
-  PAREN;
-  
-  PROGRAM;
-  FUNCTION;
-  PARAMETER;
   DEDENT;
-  INDENT;  
+  INDENT;
 }
 
 @header{

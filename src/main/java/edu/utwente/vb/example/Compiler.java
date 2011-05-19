@@ -21,6 +21,7 @@ public class Compiler {
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
 			opt_debug_checker = false, opt_debug_parser = false;
+	
 	private static String filename = null;
 
 	public static void parseOptions(String[] args) {
