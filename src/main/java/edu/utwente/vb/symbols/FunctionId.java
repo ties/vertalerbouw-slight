@@ -39,7 +39,7 @@ public class FunctionId implements Id{
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
 			FunctionId that = (FunctionId)obj;
-			return Objects.equal(this.name, that.name) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.parameters, that.parameters)
+			return Objects.equal(this.name, that.name) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.parameters, that.parameters);
 		}
 		return false;
 	}

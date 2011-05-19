@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Env implements EnvApi{
 	/** The table for this level */
-	private final Map<String, Id> table = Maps.newHashMap();;
+	private final Map<String, Id> table = Maps.newHashMap();
 	/** The previous level */
 	protected final Env prev;
 	

@@ -12,6 +12,7 @@ public class SymbolTable implements EnvApi{
 	}
 	
 	public void openScope(){
+		inner = new Env(inner);		
 		level++;
 	}
 	
