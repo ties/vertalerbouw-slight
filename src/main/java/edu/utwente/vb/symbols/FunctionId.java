@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.antlr.runtime.Token;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -27,5 +28,19 @@ public class FunctionId implements Id{
 	@Override
 	public Type getType() {
 		return returnType;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(name, returnType);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof FunctionId){
+			FunctionId that = (FunctionId)obj;
+			return Objects.equal(this.name, that.name) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.parameters, that.parameters)
+		}
+		return false;
 	}
 }
