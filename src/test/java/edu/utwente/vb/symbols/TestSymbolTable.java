@@ -56,6 +56,6 @@ public class TestSymbolTable extends TestCase{
 		//
 		tab.put(a);
 		//
-		assertEquals(tab.get(a.getName(), a);
+		assertEquals(tab.get(a.getName()), a);
 	}
 }
