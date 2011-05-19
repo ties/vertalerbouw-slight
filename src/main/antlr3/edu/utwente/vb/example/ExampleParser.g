@@ -23,7 +23,7 @@ options {
  * A program consists of several functions
  */
 program 
-  : (compoundExpression | functionDef)*
+  : (compoundExpression | functionDef)* EOF
   ;
   
 declaration
@@ -89,9 +89,7 @@ unaryExpression
   ;
   
 simpleExpression
-  : INT
-  | CHAR
-  | TRUE | FALSE
+  : atom
   | variable
   | paren
   | closedCompoundExpression
@@ -108,11 +106,13 @@ statements
   ;
 
 ifStatement
-  : IF^ LPAREN! expression RPAREN! closedCompoundExpression (ELSE! closedCompoundExpression)?
+  : (IF LPAREN) => IF^ LPAREN! expression RPAREN! COLON closedCompoundExpression (ELSE! COLON closedCompoundExpression)?
+  | IF^ expression COLON closedCompoundExpression (ELSE! COLON closedCompoundExpression)?
   ;  
     
 whileStatement
-  : WHILE^ LPAREN! expression RPAREN! closedCompoundExpression
+  : (WHILE LPAREN) => WHILE^ LPAREN! expression RPAREN! COLON closedCompoundExpression
+  | WHILE^ expression COLON closedCompoundExpression
   ;    
     
 primitive
@@ -122,6 +122,12 @@ primitive
   | INT
   | STRING
   ;
+
+atom
+  : INT_LITERAL
+  | CHAR_LITERAL
+  | STRING_LITERAL
+  | TRUE | FALSE;
 
 paren
   : LPAREN! expression RPAREN!
@@ -133,5 +139,5 @@ variable
   ;
   
 functionCall
-  : IDENTIFIER LPAREN! (parameterVar (COMMA! parameterVar)*)? RPAREN!
+  : IDENTIFIER LPAREN! (expression (COMMA! expression)*)? RPAREN!
   ;

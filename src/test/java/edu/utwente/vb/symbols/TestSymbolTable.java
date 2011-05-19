@@ -20,7 +20,7 @@ public class TestSymbolTable extends TestCase{
 	 */
 	@Override
 	protected void setUp() throws Exception {
-		for(int i = 0; i < 20; i++){
+		for(int i = 0; i < 5; i++){
 			String varNaam = String.valueOf((char)('a' + i));
 			variables1.add(new VariableId(varNaam, Type.values()[(1 + i) % Type.values().length]));
 			variables2.add(new VariableId(varNaam, Type.values()[i % Type.values().length]));
@@ -64,5 +64,40 @@ public class TestSymbolTable extends TestCase{
 		tab.put(a);
 		//
 		assertEquals(tab.get(a.getName()), a);
+	}
+	
+	@Test
+	public void testMasking() throws Exception{
+		SymbolTable tab = new SymbolTable();
+		//We voegen alle variabelen toe, daarna openen we een scope, voegen we alles toe
+		for(VariableId i : variables1){
+			tab.put(i);
+		}
+		tab.openScope();
+		for(VariableId i : variables1){
+			assertEquals(tab.get(i.getName()), i);
+		}
+		//Nu voegen we alles toe dat masked
+		for(VariableId i : variables2){
+			tab.put(i);
+		}
+		for(VariableId i : variables2){
+			assertEquals(tab.get(i.getName()), i);
+		}
+		//Nu gaan we +1 level, zelfde result
+		tab.openScope();
+		for(VariableId i : variables2){
+			assertEquals(tab.get(i.getName()), i);
+		}
+		//close, nog dezelfde
+		tab.closeScope();
+		for(VariableId i : variables2){
+			assertEquals(tab.get(i.getName()), i);
+		}
+		//2e, ze zijn er nu uit en je krijgt de 1e weer
+		tab.closeScope();
+		for(VariableId i : variables1){
+			assertEquals(tab.get(i.getName()), i);
+		}
 	}
 }

@@ -89,12 +89,15 @@ WS
 	}:
 	(' '|'\r'|'\u000C'
 	|{!atLineStart() }? => '\t'
-	| (t='\n' {line();} (('    '| '\t') {indent();})*) /* newline + tabs -> take them all. Omdat ik hier in de regel geen emit doe, worden tokens gewoon doorgegeven. */
 	//Parr, The Definite Antlr Reference, 2007 (pg. 110)
 	//turn on only if at left edge
 	| {atLineStart()}? => (('    '| '\t') {lineIndent();})+ // match whitespace
 	){$channel=HIDDEN;}
 	;
+
+NL:
+  ('\n' {line();}){$channel=HIDDEN;}
+  ; 
 	
 MULTILINE_COMMENT   : '/#' .* '#/' {$channel=HIDDEN;};
 

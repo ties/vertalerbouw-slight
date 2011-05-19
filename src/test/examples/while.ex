@@ -1,4 +1,4 @@
-//Simple while loop
+#Simple while loop
 c = 3
 while c > 0:
 	print(c)
