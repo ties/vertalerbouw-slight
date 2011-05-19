@@ -28,17 +28,31 @@ public class TestSymbolTable extends TestCase{
 	public void testOpenClose() throws Exception {
 		SymbolTable a = new SymbolTable();
 		assertEquals(a.getLevel(), 0);
-		
-		for(int i = 0; i < 10; i++){
-			a.openScope();
-			assertEquals(i, a.getLevel());
-		}
-		
-		for(int i = 0; i < 10; i++){
-			a.closeScope();
-			assertEquals(10 - i, a.getLevel());
-		}
-		
+		//
+		a.openScope();
+		assertEquals(a.getLevel(), 1);
+		//
+		a.closeScope();
 		assertEquals(a.getLevel(), 0);
+		// nu de error bij het closen van een scope op level 0
+		boolean error = false;
+		try{
+			a.closeScope();
+		} catch(IllegalStateException e){
+			error = true;
+		}
+		assertTrue(error);
+	}
+	
+	public void testSimpleput() throws Exception {
+		VariableId a = variables1.get(0);
+		//
+		SymbolTable tab = new SymbolTable();
+		//
+		assertNull(tab.get(a.getName()));
+		//
+		tab.put(a);
+		//
+		assertEquals(tab.get(a.getName(), a);
 	}
 }
