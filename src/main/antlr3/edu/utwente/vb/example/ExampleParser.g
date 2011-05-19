@@ -23,7 +23,7 @@ options {
  * A program consists of several functions
  */
 program 
-  : (compoundExpression | function)*
+  : (compoundExpression | functionDef)*
   ;
   
 declaration
@@ -31,8 +31,8 @@ declaration
   | CONST IDENTIFIER
   ;
   
-function
-  : FUNCTION IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! closedCompoundExpression
+functionDef
+  : FUNCTION IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! COLON! closedCompoundExpression
   ;
   
 parameterDef
@@ -73,7 +73,11 @@ equationExpression
   ;
 
 plusExpression
-  : multiplyExpression ((PLUS^ | MINUS^) multiplyExpression)
+  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
+  : multiplyExpression (
+                          ( PLUS^ multiplyExpression)=>(PLUS^ multiplyExpression)
+                          ( MINUS^ multiplyExpression)=>(MINUS^ multiplyExpression)
+                        )*
   ;
 
 multiplyExpression
