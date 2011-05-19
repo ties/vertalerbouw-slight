@@ -73,7 +73,6 @@ IF      : 'if';
 ELSE    : 'else';
 WHILE   : 'while';
 //Function declaration
-//YIELDS    : '->';
 FUNCTION  : 'def';
 
 //Variable & Const definition
@@ -109,11 +108,14 @@ MULTILINE_COMMENT   : '/#' .* '#/' {$channel=HIDDEN;};
 
 SINGLELINE_COMMENT  : '#' ~('\n'|'\r')* '\r'? {$channel=HIDDEN;};
 
-LIT_INT     : DIGIT+;
-LIT_CHAR    : SQUOT LETTER SQUOT;
-IDENTIFIER  : LETTER (LETTER | DIGIT)*;
+INT_LITERAL     : DIGIT+;
+CHAR_LITERAL    : SQUOT LETTER SQUOT;
+IDENTIFIER      : LETTER (LETTER | DIGIT)*;
 
-STRING_LITERAL  : '"' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '"';
+fragment STRING_SQUOT    : ('"' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '"');
+fragment STRING_DQUOT    : ('\'' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '\'');
+
+STRING_LITERAL  : STRING_SQUOT | STRING_DQUOT;
 
 fragment DIGIT  : ('0'..'9');
 fragment LOWER  : ('a'..'z');
