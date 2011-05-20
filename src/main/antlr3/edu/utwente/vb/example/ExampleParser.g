@@ -18,6 +18,13 @@ options {
   import edu.utwente.vb.example.*;
 }
 
+// Alter code generation so catch-clauses get replaced with this action. 
+// This disables ANTLR error handling;
+@rulecatch { 
+    catch (RecognitionException e) { 
+        throw e; 
+    } 
+}
 
 /**
  * A program consists of several functions
