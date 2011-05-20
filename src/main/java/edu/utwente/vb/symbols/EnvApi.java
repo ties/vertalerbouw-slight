@@ -1,6 +1,8 @@
 package edu.utwente.vb.symbols;
 
-public interface EnvApi {
-	public void put(final Id i);
-	public Id get(final String w);
+import org.antlr.runtime.Token;
+
+public interface EnvApi<T extends Token> {
+	public void put(final Id<T> i);
+	public Id<T> get(final String w);
 }

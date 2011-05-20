@@ -2,6 +2,8 @@ package edu.utwente.vb.symbols;
 
 import java.util.List;
 
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.Token;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -22,14 +24,17 @@ public class TestSymbolTable extends TestCase{
 	protected void setUp() throws Exception {
 		for(int i = 0; i < 5; i++){
 			String varNaam = String.valueOf((char)('a' + i));
-			variables1.add(new VariableId(varNaam, Type.values()[(1 + i) % Type.values().length]));
-			variables2.add(new VariableId(varNaam, Type.values()[i % Type.values().length]));
+			
+			Token token1 = new CommonToken(0, varNaam);
+			
+			variables1.add(new VariableId<Token>(token1, Type.values()[(1 + i) % Type.values().length]));
+			variables2.add(new VariableId<Token>(token1, Type.values()[i % Type.values().length]));
 		}
 	}
 	
 	@Test
 	public void testOpenClose() throws Exception {
-		SymbolTable a = new SymbolTable();
+		SymbolTable<Token> a = new SymbolTable<Token>();
 		assertEquals(a.getLevel(), 0);
 		//
 		a.openScope();
@@ -41,7 +46,7 @@ public class TestSymbolTable extends TestCase{
 	
 	@Test
 	public void testCloseLevelZero(){
-		SymbolTable a = new SymbolTable();
+		SymbolTable<Token> a = new SymbolTable<Token>();
 		// nu de error bij het closen van een scope op level 0
 		boolean error = false;
 		try{
@@ -55,49 +60,49 @@ public class TestSymbolTable extends TestCase{
 	
 	@Test
 	public void testSimpleput() throws Exception {
-		VariableId a = variables1.get(0);
+		VariableId<Token> a = variables1.get(0);
 		//
 		SymbolTable tab = new SymbolTable();
 		//
-		assertNull(tab.get(a.getName()));
+		assertNull(tab.get(a.getText()));
 		//
 		tab.put(a);
 		//
-		assertEquals(tab.get(a.getName()), a);
+		assertEquals(tab.get(a.getText()), a);
 	}
 	
 	@Test
 	public void testMasking() throws Exception{
-		SymbolTable tab = new SymbolTable();
+		SymbolTable<Token> tab = new SymbolTable<Token>();
 		//We voegen alle variabelen toe, daarna openen we een scope, voegen we alles toe
-		for(VariableId i : variables1){
+		for(VariableId<Token> i : variables1){
 			tab.put(i);
 		}
 		tab.openScope();
-		for(VariableId i : variables1){
-			assertEquals(tab.get(i.getName()), i);
+		for(VariableId<Token> i : variables1){
+			assertEquals(tab.get(i.getText()), i);
 		}
 		//Nu voegen we alles toe dat masked
-		for(VariableId i : variables2){
+		for(VariableId<Token> i : variables2){
 			tab.put(i);
 		}
-		for(VariableId i : variables2){
-			assertEquals(tab.get(i.getName()), i);
+		for(VariableId<Token> i : variables2){
+			assertEquals(tab.get(i.getText()), i);
 		}
 		//Nu gaan we +1 level, zelfde result
 		tab.openScope();
-		for(VariableId i : variables2){
-			assertEquals(tab.get(i.getName()), i);
+		for(VariableId<Token> i : variables2){
+			assertEquals(tab.get(i.getText()), i);
 		}
 		//close, nog dezelfde
 		tab.closeScope();
-		for(VariableId i : variables2){
-			assertEquals(tab.get(i.getName()), i);
+		for(VariableId<Token> i : variables2){
+			assertEquals(tab.get(i.getText()), i);
 		}
 		//2e, ze zijn er nu uit en je krijgt de 1e weer
 		tab.closeScope();
-		for(VariableId i : variables1){
-			assertEquals(tab.get(i.getName()), i);
+		for(VariableId<Token> i : variables1){
+			assertEquals(tab.get(i.getText()), i);
 		}
 	}
 }

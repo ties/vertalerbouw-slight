@@ -6,17 +6,23 @@ import org.antlr.runtime.Token;
 
 import com.google.common.base.Objects;
 
-public class VariableId implements Id{
+public class VariableId<T extends Token> implements Id<T>{
 	private final Type type;
-	private final String name;
+	private final T token;
 	
-	public VariableId(String n, Type t){
+	public VariableId(T n, Type t){
 		this.type =	checkNotNull(t);
-		this.name = checkNotNull(n);
+		this.token = checkNotNull(n);
 	}
 	
-	public String getName(){
-		return this.name;
+	@Override
+	public String getText() {
+		return token.getText();
+	}
+	
+	@Override
+	public T getToken() {
+		return token;
 	}
 	
 	public Type getType() {
@@ -25,14 +31,14 @@ public class VariableId implements Id{
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(name, type);
+		return Objects.hashCode(token, type);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof VariableId){
 			VariableId that = (VariableId)obj;
-			return Objects.equal(this.name, that.name) && Objects.equal(this.type, that.type);
+			return Objects.equal(this.token, that.token) && Objects.equal(this.type, that.type);
 		}
 		return false;
 	}

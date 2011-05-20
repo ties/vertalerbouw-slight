@@ -10,19 +10,15 @@ import com.google.common.collect.Lists;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class FunctionId implements Id{
+public class FunctionId<T extends Token> implements Id<T>{
 	private Type returnType;
-	private String name;
+	private T token;
 	private List<VariableId> parameters;
 	
-	public FunctionId(String t, Type r, List<VariableId> p){
-		this.name = checkNotNull(t);
+	public FunctionId(T t, Type r, List<VariableId> p){
+		this.token = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		this.parameters = ImmutableList.copyOf(checkNotNull(p));
-	}
-	
-	public String getName() {
-		return name;
 	}
 	
 	@Override
@@ -31,15 +27,25 @@ public class FunctionId implements Id{
 	}
 	
 	@Override
+	public T getToken() {
+		return token;
+	}
+	
+	@Override
+	public String getText() {
+		return token.getText();
+	}
+	
+	@Override
 	public int hashCode() {
-		return Objects.hashCode(name, returnType);
+		return Objects.hashCode(token, returnType);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
 			FunctionId that = (FunctionId)obj;
-			return Objects.equal(this.name, that.name) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.parameters, that.parameters);
+			return Objects.equal(this.token, that.token) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.parameters, that.parameters);
 		}
 		return false;
 	}

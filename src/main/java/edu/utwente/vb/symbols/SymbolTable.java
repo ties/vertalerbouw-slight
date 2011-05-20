@@ -2,7 +2,9 @@ package edu.utwente.vb.symbols;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class SymbolTable implements EnvApi{
+import org.antlr.runtime.Token;
+
+public class SymbolTable<T extends Token> implements EnvApi<T>{
 	private Env inner;
 	private int level;
 	
@@ -23,12 +25,12 @@ public class SymbolTable implements EnvApi{
 	}
 	
 	@Override
-	public void put(Id i) {
+	public void put(Id<T> i) {
 		inner.put(i);
 	}
 	
 	@Override
-	public Id get(String w) {
+	public Id<T> get(String w) {
 		return inner.get(w);
 	}
 	

@@ -12,9 +12,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Ties
  * @param T the custom Token type
  */
-public class Env implements EnvApi{
+public class Env<T extends Token> implements EnvApi<T>{
 	/** The table for this level */
-	private final Map<String, Id> table = Maps.newHashMap();
+	private final Map<String, Id<T>> table = Maps.newHashMap();
 	/** The previous level */
 	protected final Env prev;
 	
@@ -31,15 +31,15 @@ public class Env implements EnvApi{
 		this.prev = null;
 	}
 	
-	public void put(final Id i){
-		checkNotNull(i); checkNotNull(i.getName());
-		table.put(i.getName(), i);
+	public void put(final Id<T> i){
+		checkNotNull(i); checkNotNull(i.getText());
+		table.put(i.getText(), i);
 	}
 	
-	public Id get(final String w){
+	public Id<T> get(final String w){
 		checkNotNull(w);
 		for(Env e = this; e != null; e = e.prev){
-			Id found = (Id)e.table.get(w);
+			Id<T> found = (Id<T>)e.table.get(w);
 			if(found != null)
 				return found;
 		}

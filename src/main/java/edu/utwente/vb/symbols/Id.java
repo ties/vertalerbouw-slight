@@ -2,10 +2,12 @@ package edu.utwente.vb.symbols;
 
 import org.antlr.runtime.Token;
 
-public interface Id {
+public interface Id<T extends Token> {
 	public Type getType();
 	
-	public String getName();
+	public T getToken();
+	
+	public String getText();
 	
 	@Override
 	public int hashCode();
