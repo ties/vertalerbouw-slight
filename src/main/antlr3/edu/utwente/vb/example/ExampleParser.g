@@ -44,7 +44,8 @@ parameterVar
   : variable 
   | STRING_LITERAL
   | INT_LITERAL
-  | SQUOT CHAR_LITERAL SQUOT 
+  | SQUOT CHAR_LITERAL SQUOT
+  | (functionCall)=> functionCall 
   ;
   
 closedCompoundExpression
