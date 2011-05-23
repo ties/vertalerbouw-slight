@@ -1,5 +1,6 @@
 package edu.utwente.vb;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.antlr.runtime.ANTLRStringStream;
@@ -41,5 +42,11 @@ public class TestParser extends AbstractGrammarTest{
 			caught = true;
 		}
 		assertTrue(caught);
+	}
+	
+	@Test
+	public void testDir() throws IOException{
+		System.out.println(new File("").toString());
+		assert false;
 	}
 }

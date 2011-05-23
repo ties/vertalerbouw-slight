@@ -1,4 +1,11 @@
-5 - 5
+#
+#
+# Some simple math
+#
+#
+if(1 + 1 == 2):
+	print("correct!")
 
-a = -5 - -5
+print(1 - -1)
 
+100 % 25

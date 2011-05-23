@@ -101,7 +101,7 @@ unaryExpression
   ;
   
 simpleExpression
-  : (PLUS^ | MINUS^)? atom
+  : atom
     //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | (IDENTIFIER LPAREN)=> functionCall
@@ -136,7 +136,7 @@ primitive
   ;
 
 atom
-  : INT_LITERAL
+  : (PLUS^ | MINUS^)? INT_LITERAL
   | CHAR_LITERAL
   | STRING_LITERAL
   | TRUE 
