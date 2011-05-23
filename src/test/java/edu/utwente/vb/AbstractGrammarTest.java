@@ -12,6 +12,12 @@ import edu.utwente.vb.example.ExampleParser;
 import junit.framework.TestCase;
 
 public abstract class AbstractGrammarTest extends TestCase{
+	/**
+	 * Maak een Parser instantie met de gegeven string als input.
+	 * @param testString
+	 * @return
+	 * @throws IOException
+	 */
 	protected ExampleParser createParser(String testString) throws IOException {
     	CharStream stream = new ANTLRStringStream(testString);
     	ExampleLexer lexer = new ExampleLexer(stream);
