@@ -15,6 +15,8 @@ tokens {
   INDENT;
   PROGRAM;
   SCOPE;
+  CALL;
+  FORMAL;
 }
 
 @header{
@@ -106,10 +108,7 @@ INT_LITERAL     : DIGIT+;
 CHAR_LITERAL    : SQUOT LETTER SQUOT;
 IDENTIFIER      : LETTER (LETTER | DIGIT)*;
 
-fragment STRING_SQUOT    : ('"' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '"');
-fragment STRING_DQUOT    : ('\'' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '\'');
-
-STRING_LITERAL  : STRING_SQUOT | STRING_DQUOT;
+fragment STRING_LITERAL    : ('\'' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '\'');
 
 fragment DIGIT  : ('0'..'9');
 fragment LOWER  : ('a'..'z');

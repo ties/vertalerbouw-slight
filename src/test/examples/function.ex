@@ -8,3 +8,11 @@ def hoger(int a, int b):
 print(hoger(1, 2))
 #print = functie! Haakjes zijn mooi. Niet print 'statement'
 #zie ook http://stackoverflow.com/questions/4413912/why-is-print-not-a-function-in-python
+
+#functie zonder parameter aanmaken
+def verlagen():
+	c = c - 1
+
+#functie zonder parameter aanroepen
+c = 2
+verlagen()

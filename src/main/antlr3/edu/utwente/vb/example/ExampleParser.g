@@ -33,7 +33,9 @@ program
   : content EOF -> ^(PROGRAM content)
   ;
 
-content	:	(compoundExpression | functionDef)* ;
+content	
+  : (compoundExpression | functionDef)* 
+  ;
   
 declaration
   : VAR IDENTIFIER
@@ -41,11 +43,11 @@ declaration
   ;
   
 functionDef
-  : fp=FUNCTION^ IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! COLON! closedCompoundExpression
+  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN COLON closedCompoundExpression -> ^(FUNCTION IDENTIFIER (parameterDef (parameterDef)*)? closedCompoundExpression)
   ;
   
 parameterDef
-  : (CONST)? primitive parameterVar
+  : primitive parameterVar -> ^(FORMAL primitive parameterVar)
   ; 
 
 //TODO: Volgens mij niet goed, naar kijken.
@@ -150,5 +152,5 @@ variable
   ;
   
 functionCall
-  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(IDENTIFIER expression (expression)*)
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER expression+)
   ;
