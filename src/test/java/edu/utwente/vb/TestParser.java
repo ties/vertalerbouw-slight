@@ -1,6 +1,8 @@
 package edu.utwente.vb;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -48,8 +50,10 @@ public class TestParser extends AbstractGrammarTest{
 	}
 	
 	@Test
-	public void testDir() throws IOException{
-		System.out.println(ClassLoader.getSystemResource("TestParser.class"));
-		
+	public void testParseExamplePrograms() throws Exception{
+			for(CharStream s : getTestFiles()){
+				ExampleParser ep = createParser(s);
+				//ep.program();
+			}
 	}
 }
