@@ -52,7 +52,7 @@ parameterVar
   | STRING_LITERAL
   | INT_LITERAL
   | SQUOT CHAR_LITERAL SQUOT
-  | (functionCall)=> functionCall 
+  | (IDENTIFIER LPAREN)=> functionCall 
   ;
   
 closedCompoundExpression
@@ -83,8 +83,8 @@ equationExpression
 plusExpression
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   : multiplyExpression (
-                          ( PLUS^ multiplyExpression)=>(PLUS^ multiplyExpression)
-                          ( MINUS^ multiplyExpression)=>(MINUS^ multiplyExpression)
+                          (PLUS)=>(PLUS^ multiplyExpression)
+                          (MINUS)=>(MINUS^ multiplyExpression)
                         )*
   ;
 
