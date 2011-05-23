@@ -1,0 +1,2 @@
+#!/bin/bash
+mvn clean assembly:assembly  -D maven.test.error.ignore=true -D maven.test.failure.ignore=true

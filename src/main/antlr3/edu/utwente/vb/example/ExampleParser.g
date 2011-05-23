@@ -38,9 +38,19 @@ content
   ;
   
 declaration
-  : VAR IDENTIFIER
-  | CONST IDENTIFIER
+  : primitive IDENTIFIER runtimeValueDeclaration?
+  //Constanten kunnen alleen een simpele waarde krijgen
+  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration
+  | VAR IDENTIFIER runtimeValueDeclaration?
+  | CONST IDENTIFIER constantValueDeclaration
   ;
+  
+runtimeValueDeclaration
+  : BECOMES compoundExpression
+  ;
+ 
+ constantValueDeclaration
+  : BECOMES atom;
   
 functionDef
   : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN COLON closedCompoundExpression -> ^(FUNCTION IDENTIFIER (parameterDef (parameterDef)*)? closedCompoundExpression)
@@ -152,5 +162,5 @@ variable
   ;
   
 functionCall
-  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER expression+)
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER expression*)
   ;

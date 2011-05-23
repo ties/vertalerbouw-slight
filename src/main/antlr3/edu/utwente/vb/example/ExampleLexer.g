@@ -108,7 +108,7 @@ INT_LITERAL     : DIGIT+;
 CHAR_LITERAL    : SQUOT LETTER SQUOT;
 IDENTIFIER      : LETTER (LETTER | DIGIT)*;
 
-fragment STRING_LITERAL    : ('\'' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '\'');
+STRING_LITERAL    : ('\"' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '\"');
 
 fragment DIGIT  : ('0'..'9');
 fragment LOWER  : ('a'..'z');

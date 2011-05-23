@@ -52,8 +52,9 @@ public class TestParser extends AbstractGrammarTest{
 	@Test
 	public void testParseExamplePrograms() throws Exception{
 			for(CharStream s : getTestFiles()){
+				System.out.println("Testing " + s.getSourceName());
 				ExampleParser ep = createParser(s);
-				//ep.program();
+				ep.program();
 			}
 	}
 }
