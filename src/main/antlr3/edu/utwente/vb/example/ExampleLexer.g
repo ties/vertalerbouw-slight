@@ -13,6 +13,8 @@ options {
 tokens {
   DEDENT;
   INDENT;
+  PROGRAM;
+  SCOPE;
 }
 
 @header{

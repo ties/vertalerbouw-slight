@@ -30,8 +30,10 @@ options {
  * A program consists of several functions
  */
 program 
-  : (compoundExpression | functionDef)* EOF
+  : content EOF -> ^(PROGRAM content)
   ;
+
+content	:	(compoundExpression | functionDef)* ;
   
 declaration
   : VAR IDENTIFIER
@@ -39,12 +41,12 @@ declaration
   ;
   
 functionDef
-  : FUNCTION IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! COLON! closedCompoundExpression
+  : fp=FUNCTION^ IDENTIFIER LPAREN! (parameterDef (COMMA! parameterDef)*)? RPAREN! COLON! closedCompoundExpression
   ;
   
 parameterDef
   : (CONST)? primitive parameterVar
-  ;
+  ; 
 
 //TODO: Volgens mij niet goed, naar kijken.
 parameterVar
@@ -56,7 +58,7 @@ parameterVar
   ;
   
 closedCompoundExpression
-  : INDENT compoundExpression* DEDENT
+  : INDENT compoundExpression* DEDENT -> ^(SCOPE compoundExpression*)
   ;
 
 compoundExpression
@@ -113,13 +115,14 @@ statements
   ;
 
 ifStatement
-  : (IF LPAREN) => IF^ LPAREN! expression RPAREN! COLON closedCompoundExpression (ELSE! COLON closedCompoundExpression)?
-  | IF^ expression COLON closedCompoundExpression (ELSE! COLON closedCompoundExpression)?
+  /* Geen COLON? omdat je colons wel moet matchen */
+  : (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
+  | IF expression COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
   ;  
     
 whileStatement
-  : (WHILE LPAREN) => WHILE^ LPAREN! expression RPAREN! COLON closedCompoundExpression
-  | WHILE^ expression COLON closedCompoundExpression
+  : (WHILE LPAREN) => WHILE LPAREN expression RPAREN COLON closedCompoundExpression -> ^(WHILE expression closedCompoundExpression)
+  | WHILE expression COLON closedCompoundExpression -> ^(WHILE expression closedCompoundExpression)
   ;    
     
 primitive
@@ -147,5 +150,5 @@ variable
   ;
   
 functionCall
-  : IDENTIFIER LPAREN! (expression (COMMA! expression)*)? RPAREN!
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(IDENTIFIER expression (expression)*)
   ;
