@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import edu.utwente.vb.example.ExampleLexer;
 import edu.utwente.vb.example.ExampleParser;
+import edu.utwente.vb.example.ExampleParser.program_return;
 
 public class TestParser extends AbstractGrammarTest{
 	@Test
@@ -30,5 +31,15 @@ public class TestParser extends AbstractGrammarTest{
 	public void testMath() throws IOException, RecognitionException{
 		ExampleParser parser = createParser("5 - 5 \n"
 											+ "a = -5 - -5\n");
+		parser.plusExpression();
+		
+		boolean caught = false;
+		try{
+			parser = createParser("5 --- 3");
+			parser.plusExpression();
+		}catch(RecognitionException e){
+			caught = true;
+		}
+		assertTrue(caught);
 	}
 }

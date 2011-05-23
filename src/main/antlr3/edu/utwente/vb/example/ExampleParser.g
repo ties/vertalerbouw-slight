@@ -56,7 +56,7 @@ parameterVar
   ;
   
 closedCompoundExpression
-  : INDENT compoundExpression DEDENT
+  : INDENT compoundExpression* DEDENT
   ;
 
 compoundExpression
@@ -98,14 +98,13 @@ unaryExpression
   
 simpleExpression
   : (PLUS^ | MINUS^)? atom
+    //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
+  //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
+  | (IDENTIFIER LPAREN)=> functionCall
   | variable
   | paren
   | closedCompoundExpression
   | statements
-  
-  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
-  //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | (IDENTIFIER LPAREN)=> functionCall
   ;
   
 statements
@@ -142,7 +141,7 @@ paren
   : LPAREN! expression RPAREN!
   ;
   
-//TODO: Werkt wss niet, nog naar kijken.
+//TODO: Werkt wel! niet, nog naar kijken.
 variable
   : IDENTIFIER 
   ;
