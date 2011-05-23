@@ -2,6 +2,8 @@ package edu.utwente.vb;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
@@ -35,9 +37,10 @@ public class TestParser extends AbstractGrammarTest{
 		parser.plusExpression();
 		
 		boolean caught = false;
+		parser = createParser("5 -- 3");
+		parser.plusExpression();
 		try{
-			parser = createParser("5 --- 3");
-			parser.plusExpression();
+			parser.multiplyExpression();
 		}catch(RecognitionException e){
 			caught = true;
 		}
@@ -46,7 +49,7 @@ public class TestParser extends AbstractGrammarTest{
 	
 	@Test
 	public void testDir() throws IOException{
-		System.out.println(new File("").toString());
-		assert false;
+		System.out.println(ClassLoader.getSystemResource("TestParser.class"));
+		
 	}
 }
