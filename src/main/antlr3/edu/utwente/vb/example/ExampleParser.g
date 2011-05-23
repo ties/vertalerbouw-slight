@@ -60,8 +60,8 @@ closedCompoundExpression
   ;
 
 compoundExpression
-  : expression compoundExpression? SEMI!
-  | declaration compoundExpression? SEMI!
+  : expression
+  | declaration
   ;
  
 expression
@@ -84,7 +84,7 @@ plusExpression
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   : multiplyExpression (
                           (PLUS)=>(PLUS^ multiplyExpression)
-                          (MINUS)=>(MINUS^ multiplyExpression)
+                          |(MINUS)=>(MINUS^ multiplyExpression)
                         )*
   ;
 
@@ -93,11 +93,11 @@ multiplyExpression
   ;
 
 unaryExpression
-  : (NOT^ | PLUS^ | MINUS^)? simpleExpression
+  : (NOT^)? simpleExpression
   ;
   
 simpleExpression
-  : atom
+  : (PLUS^ | MINUS^)? atom
   | variable
   | paren
   | closedCompoundExpression
@@ -135,7 +135,8 @@ atom
   : INT_LITERAL
   | CHAR_LITERAL
   | STRING_LITERAL
-  | TRUE | FALSE;
+  | TRUE 
+  | FALSE;
 
 paren
   : LPAREN! expression RPAREN!

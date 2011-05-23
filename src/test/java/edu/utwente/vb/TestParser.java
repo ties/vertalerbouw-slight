@@ -25,4 +25,10 @@ public class TestParser extends AbstractGrammarTest{
 											"regels heen wrapped #/");
 		assert parser.getTokenStream().get(0).getType() == ExampleParser.MULTILINE_COMMENT;
 	}
+	
+	@Test
+	public void testMath() throws IOException, RecognitionException{
+		ExampleParser parser = createParser("5 - 5 \n"
+											+ "a = -5 - -5\n");
+	}
 }
