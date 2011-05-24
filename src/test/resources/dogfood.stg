@@ -1,0 +1,44 @@
+group dogfood;
+
+testclass(classname, functions) ::= <<
+package edu.utwente.vb;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.antlr.runtime.RecognitionException;
+import org.junit.Test;
+
+import edu.utwente.vb.example.ExampleParser;
+
+public class <classname> extends AbstractGrammarTest {
+<functions>
+}
+
+>>
+
+testFunction(filename, testname, rule, uitleg) ::= <<
+  /**
+  <uitleg>
+  */
+	@Test
+	public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+		File f = new File(getClass().getResource("/<filename>").toURI());
+		ExampleParser parser = createParser(asCharStream(f));
+		parser.<rule>();
+	}
+	
+>>
+/**
+  <uitleg>
+  */
+testWithExpected(filename, testname, rule, expected, uitleg) ::= <<
+  @Test(expected=<expected>.class)
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    ExampleParser parser = createParser(asCharStream(f));
+    parser.<rule>();
+  }
+  
+>>

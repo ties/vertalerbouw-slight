@@ -1,0 +1,4 @@
+#!/bin/bash
+rm src/test/java/edu/utwente/vb/TestParserWithExamples.java
+mvn clean test-compile
+mvn exec:java -Dexec.mainClass=edu.utwente.vb.ParserTestGenerator -Dexec.classpathScope=test -e
