@@ -1,4 +1,7 @@
+#
 # Test correcte werking van booleans
+#
+#
 
 bool a = True
 bool b = True

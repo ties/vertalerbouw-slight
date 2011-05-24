@@ -40,24 +40,8 @@ public abstract class AbstractGrammarTest extends TestCase {
 				new BlankDebugEventListener());
 		return parser;
 	}
-
-	protected List<CharStream> getTestFiles() {
-		URL testLoc = ClassLoader.getSystemResource("const.ex");
-		File testDir = new File(testLoc.getFile()).getParentFile();
-		assert testDir.isDirectory();
-		return Lists.transform(Lists.newArrayList(testDir.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.toString().endsWith(".ex");
-			}
-		})),new Function<File, CharStream>() {
-			public CharStream apply(File f) {
-				try {
-					return new ANTLRFileStream(f.toString());
-				} catch (IOException e) {
-					return null;
-				}
-			};
-		});  
+	
+	protected CharStream asCharStream(File f) throws IOException{
+		return new ANTLRFileStream(f.toString());
 	}
 }

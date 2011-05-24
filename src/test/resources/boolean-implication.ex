@@ -2,8 +2,6 @@
 #
 # Boolean logic
 #
-#
-
 #Implication;
 # a -> b
 def implication(bool a, bool b):

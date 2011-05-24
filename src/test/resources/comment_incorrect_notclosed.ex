@@ -1,4 +1,5 @@
 # Test incorrect gebruik van een comment: commentaarregel wordt niet afgesloten
+# expected: RecognitionException
 
 /# This is a single line comment
 /# This

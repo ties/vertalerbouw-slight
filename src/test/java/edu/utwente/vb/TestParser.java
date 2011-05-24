@@ -48,13 +48,4 @@ public class TestParser extends AbstractGrammarTest{
 		}
 		assertTrue(caught);
 	}
-	
-	@Test
-	public void testParseExamplePrograms() throws Exception{
-			for(CharStream s : getTestFiles()){
-				System.out.println("Testing " + s.getSourceName());
-				ExampleParser ep = createParser(s);
-				ep.program();
-			}
-	}
 }

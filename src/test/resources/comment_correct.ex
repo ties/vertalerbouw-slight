@@ -1,4 +1,8 @@
+#
+#
 # Test de correcte invoer van zowel single- als multiline comments op verschillende plaatsen in een programma
+#
+#
 
 # This is a single line comment
 /# This

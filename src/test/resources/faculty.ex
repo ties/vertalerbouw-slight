@@ -3,6 +3,7 @@
 # n!
 #
 #
+#
 def faculty(int a):
 	if(a > 0):
 		return faculty(a - 1)

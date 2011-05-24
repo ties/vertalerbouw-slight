@@ -3,8 +3,6 @@
 # DeMorgan
 #
 #
-
-#
 # DeMorgan: !(A ^ B) <=> !A v !B
 #
 def deMorgan(bool a, bool b):
