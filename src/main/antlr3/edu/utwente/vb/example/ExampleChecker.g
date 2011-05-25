@@ -10,6 +10,7 @@ options {
   k=1;
   language = Java;
   output = AST;
+  ASTLabelType=TypeTree;
   tokenVocab = ExampleLexer;
 }
 

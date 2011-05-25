@@ -5,6 +5,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import edu.utwente.vb.*;
+import edu.utwente.vb.symbols.SymbolTable;
+import edu.utwente.vb.tree.TypeTree;
+import edu.utwente.vb.tree.TypeTreeAdaptor;
+
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 
@@ -98,34 +102,32 @@ public class Compiler {
 
 			if (!opt_debug_parser) {
 				parser = new ExampleParser(tokens, new BlankDebugEventListener());
-//				parser = new SlightParser(tokens);
 			} else {
 				parser = new ExampleParser(tokens);
 			}
-//			parser.setTreeAdaptor(new SlightTreeAdaptor());
+			parser.setTreeAdaptor(new TypeTreeAdaptor());
 
 			ExampleParser.program_return result = parser.program();
-			CommonTree tree = (CommonTree) result.getTree();
+			TypeTree tree = (TypeTree) result.getTree();
 
-//			if (!opt_no_checker) { // check the AST
-//				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
-//				SlightChecker checker;
-//
-//				if (!opt_debug_checker) {
-//					checker = new SlightChecker(nodes,
-//							new BlankDebugEventListener());
-////					checker = new SlightChecker(nodes);
-//				} else {
+			if (!opt_no_checker) { // check the AST
+				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
+				ExampleChecker checker;
+
+				if (!opt_debug_checker) {
+					checker = new ExampleChecker(nodes, new BlankDebugEventListener());
 //					checker = new SlightChecker(nodes);
-//				}
-//				/* Patch de symbol table met default functies */
-//				OverloadingSymbolTable<VarNode> symtab = checker.getSymbolTable();
-//				symtab.openScope();
-//				/* raar */
-//				checker.setTreeAdaptor(new SlightTreeAdaptor());
-//				checker.program();
-//				symtab.closeScope();
-//			}
+				} else {
+					checker = new ExampleChecker(nodes);
+				}
+				/* Patch de symbol table met default functies */
+				SymbolTable<TypeTree> symtab = new SymbolTable<TypeTree>();
+				symtab.openScope();
+				/* raar */
+				checker.setTreeAdaptor(new TypeTreeAdaptor());
+				checker.program();
+				symtab.closeScope();
+			}
 //
 //			if (!opt_no_interpreter) { // interpret the AST
 //				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
