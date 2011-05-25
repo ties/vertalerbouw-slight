@@ -19,6 +19,8 @@ tokens {
   FORMAL;
   EMPTY;
   INFER;
+  INFERVAR;
+  INFERCONST;
 }
 
 @header{

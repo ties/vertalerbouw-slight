@@ -15,9 +15,10 @@ options {
 
 @header{ 
   package edu.utwente.vb.example;
+  
   import edu.utwente.vb.example.*;
-  import edu.utwente.vb.symbols.SymbolTable;
-  import edu.utwente.vb.tree.TypeTree;
+  import edu.utwente.vb.symbols.*;
+  import edu.utwente.vb.tree.*;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -34,7 +35,18 @@ options {
   public void setSymbolTable(SymbolTable t){
     st = t;
   }
-
+  
+  private void tbn(Token node, String type){
+    ((TypeTree)node).setType(Type.byName(type));
+  }
+  
+  private void tbn(Token token){
+  }
+  
+  private void st(Token token, Type type){
+    ((TypeTree)token).setType(type);
+  }
+  
 }
 
 /**
@@ -53,13 +65,11 @@ declaration
     TypeTree decl = null;
   }
 
-  : primitive ident=IDENTIFIER runtimeValueDeclaration? { // Identify the type of ident
-                                                          st.put(ident)}
-                                                          }
+  : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { tbn($VAR, $type.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST type=primitive IDENTIFIER constantValueDeclaration
-  | VAR IDENTIFIER runtimeValueDeclaration?
-  | CONST IDENTIFIER constantValueDeclaration
+  | ^(CONST type=primitive IDENTIFIER constantValueDeclaration) { tbn($CONST, $type.text); }
+  | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { tbn($INFERVAR); }
+  | ^(INFERCONST IDENTIFIER constantValueDeclaration) { tbn($INFERCONST); }
   ;
   
 runtimeValueDeclaration
@@ -74,17 +84,9 @@ functionDef
   ;
   
 parameterDef
-  : ^(FORMAL primitive parameterVar)
+  : ^(FORMAL primitive variable)
   ; 
 
-parameterVar
-  : variable 
-  | STRING_LITERAL
-  | INT_LITERAL
-  | SQUOT CHAR_LITERAL SQUOT
-  | (IDENTIFIER LPAREN)=> functionCall 
-  ;
-  
 closedCompoundExpression
   : {st.openScope();} ^(SCOPE compoundExpression*) {st.closeScope();}
   ;
@@ -159,12 +161,13 @@ primitive
   ;
 
 atom
-  : (PLUS^ | MINUS^)? INT_LITERAL
-  | CHAR_LITERAL
-  | STRING_LITERAL
-  | TRUE 
-  | FALSE;
-
+  : (PLUS^ | MINUS^)? INT_LITERAL { st($INT_LITERAL,Type.STRING); }
+  | CHAR_LITERAL    { st($CHAR_LITERAL,Type.STRING); }
+  | STRING_LITERAL  { st($STRING_LITERAL,Type.STRING); }
+  | TRUE            { st($TRUE,Type.BOOL); }
+  | FALSE          { st($FALSE,Type.BOOL); }
+  ;
+  
 paren
   : LPAREN! expression RPAREN!
   ;

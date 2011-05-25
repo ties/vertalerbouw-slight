@@ -41,11 +41,11 @@ content
   
 declaration
   // Regels herschrijven naar consistente vorm
-  : primitive IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration)
+  : primitive IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration?)
   // Constanten kunnen alleen van primitive typen zijn
   | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration)
-  | VAR IDENTIFIER runtimeValueDeclaration? -> ^(VAR INFER IDENTIFIER runtimeValueDeclaration)
-  | CONST IDENTIFIER constantValueDeclaration -> ^(CONST INFER IDENTIFIER constantValueDeclaration)
+  | VAR IDENTIFIER runtimeValueDeclaration? -> ^(INFERVAR IDENTIFIER runtimeValueDeclaration?)
+  | CONST IDENTIFIER constantValueDeclaration -> ^(INFERCONST IDENTIFIER constantValueDeclaration)
   ;
   
 runtimeValueDeclaration
@@ -122,10 +122,8 @@ statements
 
 ifStatement
   /* Geen COLON? omdat je colons wel moet matchen */
-  : (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression closedCompoundExpression)
-  | (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression ELSE COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression EMPTY)
-  | IF expression COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression EMPTY)
-  | IF expression COLON ELSE COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression closedCompoundExpression)
+  : (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)? )
+  | IF expression COLON (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)? )
   ;  
     
 whileStatement

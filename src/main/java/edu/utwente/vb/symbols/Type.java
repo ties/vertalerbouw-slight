@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public enum Type{
-	VOID, INT, CHAR, STRING;
+	VOID, INT, CHAR, STRING, BOOL;
 	
 	public static boolean isNumeric(Type t){
 		return Type.INT.equals(t);
@@ -20,7 +20,7 @@ public enum Type{
 	 * @return [type] wat bij n[aam] hoort
 	 * @throws IllegalArgumentException when n is not a valid type name.
 	 */
-	public Type byName(String n){
+	public static Type byName(String n){
 		checkNotNull(n);
 		for(Type t : Type.values())
 			if(t.name().equals(n))
