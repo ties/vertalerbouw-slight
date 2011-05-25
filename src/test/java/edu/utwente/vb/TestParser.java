@@ -1,6 +1,9 @@
 package edu.utwente.vb;
 
 import java.io.BufferedReader;
+import junit.framework.TestCase;
+import static junit.framework.Assert.*;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;

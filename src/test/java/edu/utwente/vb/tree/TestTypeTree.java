@@ -1,7 +1,10 @@
 package edu.utwente.vb.tree;
 
 import org.antlr.runtime.CommonToken;
+import junit.framework.TestCase;
+import static junit.framework.Assert.*;
 import org.antlr.runtime.Token;
+import org.junit.Before;
 import org.junit.Test;
 
 import edu.utwente.vb.symbols.Type;
@@ -9,12 +12,12 @@ import edu.utwente.vb.symbols.Type;
 
 import junit.framework.TestCase;
 
-public class TestTypeTree extends TestCase{
+public class TestTypeTree{
 	private Token testToken;
 	private TypeTree testNode;
 	
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		testToken = new CommonToken(0,"TestToken");
 		testNode = new TypeTree(testToken);
 	}
@@ -29,7 +32,7 @@ public class TestTypeTree extends TestCase{
 		assertTrue(t2 instanceof TypeTree);
 	}
 	
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=NullPointerException.class)
 	public void testTypeNotNull(){
 		testNode.setType(null);
 	}
