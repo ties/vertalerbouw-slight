@@ -19,7 +19,8 @@ public class SymbolTable<T extends Token> implements EnvApi<T>{
 	}
 	
 	public void closeScope(){
-		checkArgument(level > 0, "Can not close level 0 - unbalanced indents");
+		if(level <= 0)
+			throw new SymbolTableException("Can not close level 0 - unbalanced indents");
 		inner = inner.prev;
 		level--;
 	}

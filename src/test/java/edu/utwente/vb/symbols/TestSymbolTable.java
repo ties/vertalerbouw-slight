@@ -1,9 +1,11 @@
 package edu.utwente.vb.symbols;
 
 import java.util.List;
+import static junit.framework.Assert.*;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -12,16 +14,18 @@ import edu.utwente.vb.symbols.SymbolTable;
 
 import junit.framework.TestCase;
 
-public class TestSymbolTable extends TestCase{
+public class TestSymbolTable{
 	private List<VariableId> variables1 = Lists.newArrayList();
 	private List<VariableId> variables2 = Lists.newArrayList();
+	SymbolTable<Token> tab;
 	private static final int SCOPES = 10;
 	
 	/**
 	 * Maak twee lijsten met VariableId's aan (variables1, variables2). De namen overlappen, maar de typen zijn anders.
 	 */
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
+		tab = new SymbolTable<Token>();
 		for(int i = 0; i < 5; i++){
 			String varNaam = String.valueOf((char)('a' + i));
 			
@@ -44,25 +48,15 @@ public class TestSymbolTable extends TestCase{
 		assertEquals(a.getLevel(), 0);
 	}
 	
-	@Test
+	@Test(expected=SymbolTableException.class)
 	public void testCloseLevelZero(){
-		SymbolTable<Token> a = new SymbolTable<Token>();
 		// nu de error bij het closen van een scope op level 0
-		boolean error = false;
-		try{
-			a.closeScope();
-		} catch(IllegalArgumentException e){
-			error = true;
-		}
-		assertTrue(error);
-
+		tab.closeScope();
 	}
 	
 	@Test
 	public void testSimpleput() throws Exception {
 		VariableId<Token> a = variables1.get(0);
-		//
-		SymbolTable tab = new SymbolTable();
 		//
 		assertNull(tab.get(a.getText()));
 		//
@@ -73,7 +67,6 @@ public class TestSymbolTable extends TestCase{
 	
 	@Test
 	public void testMasking() throws Exception{
-		SymbolTable<Token> tab = new SymbolTable<Token>();
 		//We voegen alle variabelen toe, daarna openen we een scope, voegen we alles toe
 		for(VariableId<Token> i : variables1){
 			tab.put(i);
@@ -104,5 +97,14 @@ public class TestSymbolTable extends TestCase{
 		for(VariableId<Token> i : variables1){
 			assertEquals(tab.get(i.getText()), i);
 		}
+	}
+	
+	@Test(expected=SymbolTableException.class)
+	public void testRedefineOnSameLevel(){
+		tab.put(variables1.get(0));
+		//
+		assertEquals(tab.get(variables1.get(0).getText()), variables1.get(0));
+		//Duplicate put
+		tab.put(variables1.get(0));
 	}
 }
