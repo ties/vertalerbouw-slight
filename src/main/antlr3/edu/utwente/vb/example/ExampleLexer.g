@@ -18,6 +18,7 @@ tokens {
   CALL;
   FORMAL;
   EMPTY;
+  INFER;
 }
 
 @header{

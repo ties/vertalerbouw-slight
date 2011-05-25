@@ -53,9 +53,11 @@ declaration
     TypeTree decl = null;
   }
 
-  : primitive ident=IDENTIFIER runtimeValueDeclaration? //{st.put(ident)}
+  : primitive ident=IDENTIFIER runtimeValueDeclaration? { // Identify the type of ident
+                                                          st.put(ident)}
+                                                          }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration
+  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST type=primitive IDENTIFIER constantValueDeclaration
   | VAR IDENTIFIER runtimeValueDeclaration?
   | CONST IDENTIFIER constantValueDeclaration
   ;

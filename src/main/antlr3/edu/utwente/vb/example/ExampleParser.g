@@ -40,11 +40,12 @@ content
   ;
   
 declaration
-  : primitive IDENTIFIER runtimeValueDeclaration?
-  //Constanten kunnen alleen een simpele waarde krijgen
-  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration
-  | VAR IDENTIFIER runtimeValueDeclaration?
-  | CONST IDENTIFIER constantValueDeclaration
+  // Regels herschrijven naar consistente vorm
+  : primitive IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration)
+  // Constanten kunnen alleen van primitive typen zijn
+  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration)
+  | VAR IDENTIFIER runtimeValueDeclaration? -> ^(VAR INFER IDENTIFIER runtimeValueDeclaration)
+  | CONST IDENTIFIER constantValueDeclaration -> ^(CONST INFER IDENTIFIER constantValueDeclaration)
   ;
   
 runtimeValueDeclaration
@@ -59,18 +60,9 @@ functionDef
   ;
   
 parameterDef
-  : primitive parameterVar -> ^(FORMAL primitive parameterVar)
+  : primitive variable -> ^(FORMAL primitive variable)
   ; 
 
-//TODO: Volgens mij niet goed, naar kijken.
-parameterVar
-  : variable 
-  | STRING_LITERAL
-  | INT_LITERAL
-  | SQUOT CHAR_LITERAL SQUOT
-  | (IDENTIFIER LPAREN)=> functionCall 
-  ;
-  
 closedCompoundExpression
   : INDENT compoundExpression* DEDENT -> ^(SCOPE compoundExpression*)
   ;
