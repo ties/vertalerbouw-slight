@@ -1,6 +1,8 @@
 package edu.utwente.vb;
 
 import java.io.File;
+
+import static junit.framework.Assert.*;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
@@ -20,7 +22,7 @@ import edu.utwente.vb.example.ExampleLexer;
 import edu.utwente.vb.example.ExampleParser;
 import junit.framework.TestCase;
 
-public abstract class AbstractGrammarTest extends TestCase {
+public abstract class AbstractGrammarTest{
 	/**
 	 * Maak een Parser instantie met de gegeven string als input.
 	 * 
