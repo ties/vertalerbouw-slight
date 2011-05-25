@@ -4,7 +4,7 @@
  *
  */
 
-parser grammar ExampleParser;
+parser grammar ExampleChecker;
 
 options {
   k=1;
@@ -17,6 +17,7 @@ options {
   package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
   import edu.utwente.vb.symbols.SymbolTable;
+  import edu.utwente.vb.tree.TypeTree;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -30,7 +31,7 @@ options {
 @members{
   private SymbolTable st;
   
-  public setSymbolTable(SymbolTable t){
+  public void setSymbolTable(SymbolTable t){
     st = t;
   }
 
@@ -48,7 +49,11 @@ content
   ;
   
 declaration
-  : primitive IDENTIFIER runtimeValueDeclaration?
+  @init{
+    TypeTree decl = null;
+  }
+
+  : primitive ident=IDENTIFIER runtimeValueDeclaration? //{st.put(ident)}
   //Constanten kunnen alleen een simpele waarde krijgen
   | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration
   | VAR IDENTIFIER runtimeValueDeclaration?

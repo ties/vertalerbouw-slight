@@ -10,12 +10,14 @@ options {
   k=1;
   language = Java;
   output = AST;
-  tokenVocab=ExampleLexer;
+  tokenVocab = ExampleLexer;
+  ASTLabelType = TypeTree;
 }
 
 @header{ 
   package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
+  import edu.utwente.vb.tree.TypeTree;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -49,7 +51,7 @@ runtimeValueDeclaration
   : BECOMES compoundExpression
   ;
  
- constantValueDeclaration
+constantValueDeclaration
   : BECOMES atom;
   
 functionDef
@@ -128,8 +130,10 @@ statements
 
 ifStatement
   /* Geen COLON? omdat je colons wel moet matchen */
-  : (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
-  | IF expression COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
+  : (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression closedCompoundExpression)
+  | (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression ELSE COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression EMPTY)
+  | IF expression COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression EMPTY)
+  | IF expression COLON ELSE COLON closedCompoundExpression -> ^(IF expression closedCompoundExpression closedCompoundExpression)
   ;  
     
 whileStatement

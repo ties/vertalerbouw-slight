@@ -17,6 +17,7 @@ tokens {
   SCOPE;
   CALL;
   FORMAL;
+  EMPTY;
 }
 
 @header{
