@@ -162,8 +162,8 @@ primitive
   ;
 
 atom
-  : (PLUS^ | MINUS^)? INT_LITERAL { st($INT_LITERAL,Type.STRING); }
-  | CHAR_LITERAL    { st($CHAR_LITERAL,Type.STRING); }
+  : (PLUS^ | MINUS^)? INT_LITERAL { st($INT_LITERAL,Type.INT); }
+  | CHAR_LITERAL    { st($CHAR_LITERAL,Type.CHAR); }
   | STRING_LITERAL  { st($STRING_LITERAL,Type.STRING); }
   | TRUE            { st($TRUE,Type.BOOL); }
   | FALSE          { st($FALSE,Type.BOOL); }
