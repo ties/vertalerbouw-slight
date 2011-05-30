@@ -1,5 +1,6 @@
 package edu.utwente.vb.symbols;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.runtime.Token;
@@ -14,12 +15,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FunctionId<T extends BaseTree> implements Id<T>{
 	private Type returnType;
 	private T token;
-	private List<VariableId> parameters;
+	private List<VariableId<T>> formalParameters;
 	
-	public FunctionId(T t, Type r, List<VariableId> p){
+	/**
+	 * A function identifier
+	 * 
+	 * Function identifiers can return Type.VOID
+	 * If a function identifier has no formal parameters, it's parameters will be the empty list
+	 * The formal parameters can NOT contain Type.VOID
+	 * 
+	 * @param t Node
+	 * @param r return type
+	 * @param p formal parameters.
+	 */
+	public FunctionId(T t, Type r, VariableId<T>... p){
 		this.token = checkNotNull(t);
 		this.returnType = checkNotNull(r);
-		this.parameters = ImmutableList.copyOf(checkNotNull(p));
+		//
+		formalParameters = ImmutableList.copyOf(checkNotNull(p));
+		if(formalParameters.contains(Type.VOID))
+			throw new IllegalArgumentException("A function argument can not have the VOID type");
 	}
 	
 	@Override
@@ -28,7 +43,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	}
 	
 	@Override
-	public T getToken() {
+	public T getNode() {
 		return token;
 	}
 	
@@ -46,7 +61,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
 			FunctionId that = (FunctionId)obj;
-			return Objects.equal(this.token, that.token) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.parameters, that.parameters);
+			return Objects.equal(this.token, that.token) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.formalParameters, that.formalParameters);
 		}
 		return false;
 	}

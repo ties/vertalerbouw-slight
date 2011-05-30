@@ -6,7 +6,7 @@ import org.antlr.runtime.tree.BaseTree;
 public interface Id<T extends BaseTree> {
 	public Type getType();
 	
-	public T getToken();
+	public T getNode();
 	
 	public String getText();
 	
