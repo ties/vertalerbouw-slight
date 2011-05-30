@@ -169,7 +169,6 @@ paren
   : LPAREN! expression RPAREN!
   ;
   
-//TODO: Werkt wel! niet, nog naar kijken.
 variable
   : IDENTIFIER 
   ;
