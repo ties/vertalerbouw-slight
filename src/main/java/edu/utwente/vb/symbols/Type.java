@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public enum Type{
-	VOID, INT, CHAR, STRING, BOOL, UNKNOWN;
+	VOID, INT, CHAR, STRING, BOOL, UNKNOWN, FUNCTION;
 	
 	public static boolean isNumeric(Type t){
 		return Type.INT.equals(t);

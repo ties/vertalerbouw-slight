@@ -62,11 +62,11 @@ declaration
     TypedNode decl = null;
   }
 
-  : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { ch.tbn($VAR, $type.text); }
+  : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($VAR, $type.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST type=primitive IDENTIFIER constantValueDeclaration) { ch.tbn($CONST, $type.text); }
-  | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { ch.st($INFERVAR, Type.UNKNOWN); }
-  | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.st($INFERCONST, Type.UNKNOWN); }
+  | ^(CONST type=primitive IDENTIFIER constantValueDeclaration) { ch.declareConst($IDENTIFIER, $type.text); ch.tbn($CONST, $type.text); }
+  | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERVAR, Type.UNKNOWN); }
+  | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
   ;
   
 runtimeValueDeclaration
@@ -77,11 +77,14 @@ constantValueDeclaration
   : BECOMES atom;
   
 functionDef
-  : ^(FUNCTION IDENTIFIER (parameterDef (parameterDef)*)? closedCompoundExpression)
+  @init{
+    List<TypedNode> pl = new ArrayList<TypedNode>();
+  }
+  : { ch.openScope(); }^(FUNCTION IDENTIFIER (p=parameterDef { pl.add((TypedNode) p.getTree()); }(p=parameterDef { pl.add((TypedNode) p.getTree()); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.getTree(), pl); ch.closeScope(); }
   ;
   
-parameterDef
-  : ^(FORMAL primitive variable)
+parameterDef returns[TypedNode node]
+  : ^(FORMAL type=primitive name=variable) { ch.declareVar((TypedNode) name.getTree(), $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
   ; 
 
 closedCompoundExpression

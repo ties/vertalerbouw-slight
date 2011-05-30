@@ -39,6 +39,16 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 			throw new IllegalArgumentException("A function argument can not have the VOID type");
 	}
 	
+	public FunctionId(T t, Type r, List<VariableId<T>> p){
+		this.token = checkNotNull(t);
+		this.returnType = checkNotNull(r);
+		//
+		formalParameters = ImmutableList.copyOf(checkNotNull(p));
+		if(formalParameters.contains(Type.VOID))
+			throw new IllegalArgumentException("A function argument can not have the VOID type");
+	}
+	
+	
 	@Override
 	public Type getType() {
 		return returnType;
