@@ -84,7 +84,7 @@ functionDef
   ;
   
 parameterDef returns[TypedNode node]
-  : ^(FORMAL type=primitive name=variable) { ch.declareVar((TypedNode) name.getTree(), $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
+  : ^(FORMAL type=primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
   ; 
 
 closedCompoundExpression
@@ -173,7 +173,7 @@ paren
   ;
   
 variable
-  : IDENTIFIER 
+  : IDENTIFIER
   ;
   
 functionCall
