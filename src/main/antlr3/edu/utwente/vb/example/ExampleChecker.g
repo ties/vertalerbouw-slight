@@ -46,6 +46,23 @@ options {
     checkNotNull(h);
     this.ch = h;
   }
+  
+  /**
+  * In de sectie hieronder word de afhandeling van excepties geregeld.
+  *
+  */
+  
+  protected int nrErr = 0;
+  public    int nrErrors() { return nrErr; }
+  
+  public void displayRecognitionError(
+              String[] tokenNames, RecognitionException e){
+    nrErr += 1;
+    if (e instanceof IncompatibleTypesException)
+      emitErrorMessage("[Example] error: " + e.getMessage());
+    else
+      super.displayRecognitionError(tokenNames, e);
+  }  
 }
 
 /**
