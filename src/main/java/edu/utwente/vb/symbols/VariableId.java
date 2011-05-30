@@ -2,6 +2,8 @@ package edu.utwente.vb.symbols;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
@@ -42,5 +44,10 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 			return Objects.equal(this.node, that.node) && Objects.equal(this.type, that.type);
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean equalsSignature(String name, List<Type> params) {
+		return Objects.equal(this.node.getText(), name) && params == null;
 	}
 }
