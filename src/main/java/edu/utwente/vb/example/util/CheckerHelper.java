@@ -1,5 +1,6 @@
 package edu.utwente.vb.example.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
@@ -87,12 +88,16 @@ public class CheckerHelper {
 		symbolTable.put(varId);
 	}
 	
-	public void declareFunction(TypedNode node, Object returnTypeNode, List<Type> paramTypes){
-		assert returnTypeNode instanceof TypedNode;
-		returnTypeNode = (TypedNode) returnTypeNode;
+	public void declareFunction(TypedNode node, Object returnTypeObj, List<TypedNode> params){
+		assert returnTypeObj instanceof TypedNode;
+		TypedNode returnTypeNode = (TypedNode) returnTypeObj;
 		Type returnType = returnTypeNode.getNodeType();
 		
-		FunctionId funcId = new FunctionId(node, returnType, paramTypes);
+		List<VariableId> ids = new ArrayList<VariableId>();
+		for(TypedNode param : params)
+			ids.add(new VariableId(param, param.getNodeType()));
+		
+		FunctionId funcId = new FunctionId(node, returnType, ids);
 		symbolTable.put(funcId);
 	}
 	

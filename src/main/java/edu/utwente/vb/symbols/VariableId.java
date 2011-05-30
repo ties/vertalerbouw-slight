@@ -9,21 +9,21 @@ import com.google.common.base.Objects;
 
 public class VariableId<T extends BaseTree> implements Id<T>{
 	private final Type type;
-	private final T token;
+	private final T node;
 	
 	public VariableId(T n, Type t){
 		this.type =	checkNotNull(t);
-		this.token = checkNotNull(n);
+		this.node = checkNotNull(n);
 	}
 	
 	@Override
 	public String getText() {
-		return token.getText();
+		return node.getText();
 	}
 	
 	@Override
 	public T getNode() {
-		return token;
+		return node;
 	}
 	
 	public Type getType() {
@@ -32,14 +32,14 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(token, type);
+		return Objects.hashCode(node, type);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof VariableId){
 			VariableId that = (VariableId)obj;
-			return Objects.equal(this.token, that.token) && Objects.equal(this.type, that.type);
+			return Objects.equal(this.node, that.node) && Objects.equal(this.type, that.type);
 		}
 		return false;
 	}

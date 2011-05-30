@@ -20,6 +20,7 @@ public class TypedNode extends CommonTree {
 	
 	public TypedNode(TypedNode node) {
 		super(node);
+		this.type = node.getNodeType();
 	}
 
 	public TypedNode(Token t) {

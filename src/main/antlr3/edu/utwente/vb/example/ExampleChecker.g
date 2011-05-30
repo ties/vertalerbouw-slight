@@ -80,11 +80,11 @@ functionDef
   @init{
     List<TypedNode> pl = new ArrayList<TypedNode>();
   }
-  : { ch.openScope(); }^(FUNCTION IDENTIFIER (p=parameterDef { pl.add(p.getTree()); }(p=parameterDef { pl.add(p.getTree()); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.getTree(), pl); ch.closeScope(); }
+  : { ch.openScope(); }^(FUNCTION IDENTIFIER (p=parameterDef { pl.add((TypedNode) p.getTree()); }(p=parameterDef { pl.add((TypedNode) p.getTree()); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.getTree(), pl); ch.closeScope(); }
   ;
   
-parameterDef
-  : ^(FORMAL primitive variable)
+parameterDef returns[TypedNode node]
+  : ^(FORMAL type=primitive name=variable) { ch.declareVar((TypedNode) name.getTree(), $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
   ; 
 
 closedCompoundExpression
