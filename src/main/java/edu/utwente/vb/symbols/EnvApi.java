@@ -1,5 +1,6 @@
 package edu.utwente.vb.symbols;
 
+import java.util.List;
 import java.util.Set;
 
 import org.antlr.runtime.Token;
@@ -30,5 +31,5 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param applied applied parameter types
 	 * @return the id
 	 */
-	public Id<T> apply(String n, Type... applied);
+	public Id<T> apply(String n, List<Type> applied);
 }

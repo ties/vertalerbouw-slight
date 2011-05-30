@@ -69,6 +69,10 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 		return Objects.hashCode(token, returnType);
 	}
 	
+	public List<Type> getTypeParameters() {
+		return extractTypes(formalParameters);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
@@ -80,15 +84,8 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	
 	@Override
-	public boolean equalsSignature(String name, Type... applied) {
-		if(Objects.equal(this.token.getText(), name) && applied.length == formalParameters.size()){
-			for(int i = 0; i < applied.length; i++){
-				if(!Objects.equal(applied[i], formalParameters.get(i)))
-						return false;
-			}
-			return true;
-		}
-		return false;
+	public boolean equalsSignature(String name, List<Type> applied) {
+		return Objects.equal(this.token.getText(), name) && Objects.equal(applied, extractTypes(formalParameters));
 	}
 	
 	/**

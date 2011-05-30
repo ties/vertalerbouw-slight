@@ -1,6 +1,8 @@
 package edu.utwente.vb.symbols;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,12 +51,35 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 		checkNotNull(i); checkNotNull(i.getText());
 		if(table.containsKey(i.getText())){//duplicate definition in this scope level
 			for(Id<T> potential : table.get(i.getText())){
-				if(potential.matches(i))
-					throw new SymbolTableException("duplicate definition for token \"" + i.getText() + "\" in the current scope");		
+				if(i instanceof FunctionId){
+					FunctionId f = (FunctionId)i;
+					if(potential.equalsSignature(f.getText(), f.getTypeParameters()))
+						throw new SymbolTableException("duplicate definition for function \"" + f.getText() + "\" with signature " + f.getTypeParameters().toString() + "in the current scope");		
+
+				} else{
+					if(potential.equalsSignature(i.getText(), null))
+						throw new SymbolTableException("duplicate definition for token \"" + i.getText() + "\" in the current scope");
+				}
 			}
 		}
 		table.put(i.getText(), i);
 	}
+	
+	/**
+	 * Put a function into the symbol table, checking if it's name is unique at the current level w/ the same type of opperands
+	 */
+	public void put(final FunctionId<T> i){
+		checkNotNull(i); checkNotNull(i.getText());
+		if(table.containsKey(i.getText())){//duplicate definition in this scope level
+			for(Id<T> potential : table.get(i.getText())){
+				if(potential.equalsSignature(i.getText(), i.getTypeParameters()))
+					throw new SymbolTableException("duplicate definition for function \"" + i.getText() + "\" with signature " + i.getTypeParameters().toString() + "in the current scope");		
+			}
+		}
+		table.put(i.getText(), i);
+	}
+	
+	
 	
 	/**
 	 * Get all the occurrences of a Id matching the given identifier
@@ -77,7 +102,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 * daarnaast is dit efficienter, hij springt er eerder uit
 	 */
 	@Override
-	public Id<T> apply(String n, Type... applied) {
+	public Id<T> apply(String n, List<Type> applied) {
 		Set<Id<T>> matches = get(n);
 		//zie (*)
 		for(Env e = this; e != null; e = e.prev){
@@ -86,6 +111,6 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 					return id;
 			}
 		}
-		throw new SymbolTableException("No matching entry for token text " + n + " and types "  + Arrays.toString(applied) + " in the current symbol table.");
+		throw new SymbolTableException("No matching entry for token text " + n + " and types "  + applied.toString() + " in the current symbol table.");
 	}
 }

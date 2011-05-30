@@ -2,6 +2,7 @@ package edu.utwente.vb.symbols;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.List;
 import java.util.Set;
 
 import org.antlr.runtime.Token;
@@ -38,7 +39,7 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		return inner.get(w);
 	}
 	
-	public Id<T> apply(String w, Type... applied){
+	public Id<T> apply(String w, List<Type> applied){
 		return inner.apply(w, applied);
 	}
 	
