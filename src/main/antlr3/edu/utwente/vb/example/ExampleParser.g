@@ -61,7 +61,7 @@ functionDef
   ;
   
 parameterDef
-  : primitive variable -> ^(FORMAL primitive variable)
+  : primitive IDENTIFIER -> ^(FORMAL primitive IDENTIFIER)
   ; 
 
 closedCompoundExpression

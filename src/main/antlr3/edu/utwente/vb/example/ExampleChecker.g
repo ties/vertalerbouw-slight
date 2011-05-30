@@ -69,12 +69,13 @@ declaration
   | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
   ;
   
-runtimeValueDeclaration
-  : BECOMES compoundExpression
+runtimeValueDeclaration returns[Type type]
+  : BECOMES compoundExpression { //$type = $compountExpression.getNodeType(); }
   ;
  
-constantValueDeclaration
-  : BECOMES atom;
+constantValueDeclaration returns[Type type]
+  : BECOMES atom
+  ;
   
 functionDef
   @init{
@@ -84,7 +85,7 @@ functionDef
   ;
   
 parameterDef returns[TypedNode node]
-  : ^(FORMAL type=primitive name=variable) { ch.declareVar((TypedNode) name.getTree(), $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
+  : ^(FORMAL type=primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
   ; 
 
 closedCompoundExpression
@@ -173,7 +174,7 @@ paren
   ;
   
 variable
-  : IDENTIFIER 
+  : IDENTIFIER
   ;
   
 functionCall
