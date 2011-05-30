@@ -5,6 +5,8 @@ import static junit.framework.Assert.*;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+import org.antlr.runtime.tree.CommonTree;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +19,7 @@ import junit.framework.TestCase;
 public class TestSymbolTable{
 	private List<VariableId> variables1 = Lists.newArrayList();
 	private List<VariableId> variables2 = Lists.newArrayList();
-	SymbolTable<Token> tab;
+	SymbolTable<BaseTree> tab;
 	private static final int SCOPES = 10;
 	
 	/**
@@ -25,20 +27,22 @@ public class TestSymbolTable{
 	 */
 	@Before
 	public void setUp() throws Exception {
-		tab = new SymbolTable<Token>();
+		tab = new SymbolTable<BaseTree>();
 		for(int i = 0; i < 5; i++){
 			String varNaam = String.valueOf((char)('a' + i));
 			
-			Token token1 = new CommonToken(0, varNaam);
 			
-			variables1.add(new VariableId<Token>(token1, Type.values()[(1 + i) % Type.values().length]));
-			variables2.add(new VariableId<Token>(token1, Type.values()[i % Type.values().length]));
+			Token token1 = new CommonToken(0, varNaam);
+			BaseTree tree = new CommonTree(token1);
+			
+			variables1.add(new VariableId<BaseTree>(tree, Type.values()[(1 + i) % Type.values().length]));
+			variables2.add(new VariableId<BaseTree>(tree, Type.values()[i % Type.values().length]));
 		}
 	}
 	
 	@Test
 	public void testOpenClose() throws Exception {
-		SymbolTable<Token> a = new SymbolTable<Token>();
+		SymbolTable<BaseTree> a = new SymbolTable<BaseTree>();
 		assertEquals(a.getLevel(), 0);
 		//
 		a.openScope();
@@ -56,7 +60,7 @@ public class TestSymbolTable{
 	
 	@Test
 	public void testSimpleput() throws Exception {
-		VariableId<Token> a = variables1.get(0);
+		VariableId<BaseTree> a = variables1.get(0);
 		//
 		assertNull(tab.get(a.getText()));
 		//
@@ -68,33 +72,33 @@ public class TestSymbolTable{
 	@Test
 	public void testMasking() throws Exception{
 		//We voegen alle variabelen toe, daarna openen we een scope, voegen we alles toe
-		for(VariableId<Token> i : variables1){
+		for(VariableId<BaseTree> i : variables1){
 			tab.put(i);
 		}
 		tab.openScope();
-		for(VariableId<Token> i : variables1){
+		for(VariableId<BaseTree> i : variables1){
 			assertEquals(tab.get(i.getText()), i);
 		}
 		//Nu voegen we alles toe dat masked
-		for(VariableId<Token> i : variables2){
+		for(VariableId<BaseTree> i : variables2){
 			tab.put(i);
 		}
-		for(VariableId<Token> i : variables2){
+		for(VariableId<BaseTree> i : variables2){
 			assertEquals(tab.get(i.getText()), i);
 		}
 		//Nu gaan we +1 level, zelfde result
 		tab.openScope();
-		for(VariableId<Token> i : variables2){
+		for(VariableId<BaseTree> i : variables2){
 			assertEquals(tab.get(i.getText()), i);
 		}
 		//close, nog dezelfde
 		tab.closeScope();
-		for(VariableId<Token> i : variables2){
+		for(VariableId<BaseTree> i : variables2){
 			assertEquals(tab.get(i.getText()), i);
 		}
 		//2e, ze zijn er nu uit en je krijgt de 1e weer
 		tab.closeScope();
-		for(VariableId<Token> i : variables1){
+		for(VariableId<BaseTree> i : variables1){
 			assertEquals(tab.get(i.getText()), i);
 		}
 	}
