@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import edu.utwente.vb.*;
+import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
@@ -109,7 +110,7 @@ public class Compiler {
 			//Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
 				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-
+				
 				if (!opt_debug_checker) {
 					checker = new ExampleChecker(nodes, new BlankDebugEventListener());
 //					checker = new SlightChecker(nodes);
@@ -121,6 +122,10 @@ public class Compiler {
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 				symtab.openScope();
 				/* raar */
+				
+				CheckerHelper ch = new CheckerHelper();
+				checker.setCheckerHelper(ch);
+				
 				checker.setTreeAdaptor(new TypedNodeAdaptor());
 				checker.program();
 				symtab.closeScope();

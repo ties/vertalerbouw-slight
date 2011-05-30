@@ -18,6 +18,7 @@ options {
   package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
   import edu.utwente.vb.tree.TypedNode;
+  import edu.utwente.vb.tree.AppliedOccurrenceNode;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
