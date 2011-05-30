@@ -15,4 +15,6 @@ public interface Id<T extends BaseTree> {
 	
 	@Override
 	public boolean equals(Object obj);
+	
+	public boolean equalsSignature(String name, Type... params);
 }

@@ -6,7 +6,9 @@ import java.util.List;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
+import com.google.common.base.Function;
 import com.google.common.base.Objects;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -64,5 +66,32 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 			return Objects.equal(this.token, that.token) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.formalParameters, that.formalParameters);
 		}
 		return false;
+	}
+	
+	
+	@Override
+	public boolean equalsSignature(String name, Type... applied) {
+		if(Objects.equal(this.token.getText(), name) && applied.length == formalParameters.size()){
+			for(int i = 0; i < applied.length; i++){
+				if(!Objects.equal(applied[i], formalParameters.get(i)))
+						return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Transformeer een Lijst van VariableId's in een lijst van de Type's die in de VariableId's zitten
+	 * @param params 
+	 * @return
+	 */
+	private static <Q extends BaseTree> List<Type> extractTypes(List<VariableId<Q>> params){
+		return Lists.transform(params, new Function<VariableId<Q>, Type>() {
+			@Override
+			public Type apply(VariableId<Q> input) {
+				return input.getType();
+			}
+		});
 	}
 }
