@@ -22,7 +22,7 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	}
 	
 	@Override
-	public T getToken() {
+	public T getNode() {
 		return token;
 	}
 	
