@@ -4,14 +4,13 @@
  *
  */
 
-parser grammar ExampleChecker;
+tree grammar ExampleChecker;
 
 options {
   k=1;
   language = Java;
   output = AST;
   ASTLabelType = TypedNode;
-  tokenVocab = ExampleLexer;
   rewrite = true;
 }
 

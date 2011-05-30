@@ -110,15 +110,16 @@ public class Compiler {
 			ExampleParser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
 
+			ExampleChecker checker;
+			//Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
-				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
-				ExampleChecker checker;
+				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
 
 				if (!opt_debug_checker) {
-					checker = new ExampleChecker(tokens, new BlankDebugEventListener());
+					checker = new ExampleChecker(nodes, new BlankDebugEventListener());
 //					checker = new SlightChecker(nodes);
 				} else {
-					checker = new ExampleChecker(tokens);
+					checker = new ExampleChecker(nodes);
 				}
 				/* Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
