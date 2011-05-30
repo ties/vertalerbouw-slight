@@ -69,12 +69,13 @@ declaration
   | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
   ;
   
-runtimeValueDeclaration
-  : BECOMES compoundExpression
+runtimeValueDeclaration returns[Type type]
+  : BECOMES compoundExpression { //$type = $compountExpression.getNodeType(); }
   ;
  
-constantValueDeclaration
-  : BECOMES atom;
+constantValueDeclaration returns[Type type]
+  : BECOMES atom
+  ;
   
 functionDef
   @init{
