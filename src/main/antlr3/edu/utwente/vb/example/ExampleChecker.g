@@ -12,6 +12,7 @@ options {
   output = AST;
   ASTLabelType = TypedNode;
   tokenVocab = ExampleLexer;
+  rewrite = true;
 }
 
 @header{ 

@@ -115,10 +115,10 @@ public class Compiler {
 				ExampleChecker checker;
 
 				if (!opt_debug_checker) {
-					checker = new ExampleChecker(nodes, new BlankDebugEventListener());
+					checker = new ExampleChecker(tokens, new BlankDebugEventListener());
 //					checker = new SlightChecker(nodes);
 				} else {
-					checker = new ExampleChecker(nodes);
+					checker = new ExampleChecker(tokens);
 				}
 				/* Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
