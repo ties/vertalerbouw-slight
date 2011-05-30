@@ -3,10 +3,11 @@ package edu.utwente.vb.symbols;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
 
 import com.google.common.base.Objects;
 
-public class VariableId<T extends Token> implements Id<T>{
+public class VariableId<T extends BaseTree> implements Id<T>{
 	private final Type type;
 	private final T token;
 	

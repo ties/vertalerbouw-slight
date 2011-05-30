@@ -1,8 +1,9 @@
 package edu.utwente.vb.symbols;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
 
-public interface Id<T extends Token> {
+public interface Id<T extends BaseTree> {
 	public Type getType();
 	
 	public T getToken();

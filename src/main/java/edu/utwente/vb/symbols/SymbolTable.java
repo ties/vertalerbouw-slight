@@ -3,8 +3,9 @@ package edu.utwente.vb.symbols;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
 
-public class SymbolTable<T extends Token> implements EnvApi<T>{
+public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	private Env inner;
 	private int level;
 	

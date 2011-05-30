@@ -3,6 +3,7 @@ package edu.utwente.vb.symbols;
 import java.util.Map;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
 
 import com.google.common.collect.Maps;
 
@@ -13,7 +14,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @author Ties
  * @param T the custom Token type
  */
-public class Env<T extends Token> implements EnvApi<T>{
+public class Env<T extends BaseTree> implements EnvApi<T>{
 	/** The table for this level */
 	private final Map<String, Id<T>> table = Maps.newHashMap();
 	/** The previous level */

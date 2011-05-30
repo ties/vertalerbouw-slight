@@ -3,6 +3,7 @@ package edu.utwente.vb.symbols;
 import java.util.List;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -10,7 +11,7 @@ import com.google.common.collect.Lists;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class FunctionId<T extends Token> implements Id<T>{
+public class FunctionId<T extends BaseTree> implements Id<T>{
 	private Type returnType;
 	private T token;
 	private List<VariableId> parameters;
