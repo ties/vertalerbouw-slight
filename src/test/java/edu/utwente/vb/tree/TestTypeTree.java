@@ -14,12 +14,12 @@ import junit.framework.TestCase;
 
 public class TestTypeTree{
 	private Token testToken;
-	private TypeTree testNode;
+	private TypedNode testNode;
 	
 	@Before
 	public void setUp() throws Exception {
 		testToken = new CommonToken(0,"TestToken");
-		testNode = new TypeTree(testToken);
+		testNode = new TypedNode(testToken);
 	}
 	
 	
@@ -27,9 +27,9 @@ public class TestTypeTree{
 	public void testDuplicatedTestTypeTree(){	
 		assertNotNull(testNode);
 		
-		TypeTree t2 = testNode.dupNode();
+		TypedNode t2 = testNode.dupNode();
 		
-		assertTrue(t2 instanceof TypeTree);
+		assertTrue(t2 instanceof TypedNode);
 	}
 	
 	@Test(expected=NullPointerException.class)

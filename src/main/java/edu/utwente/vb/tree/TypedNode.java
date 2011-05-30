@@ -13,22 +13,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author ties
  *
  */
-public class TypeTree extends CommonTree {
+public class TypedNode extends CommonTree {
 	private Type type;
 	
-	public TypeTree() { }
+	public TypedNode() { }
 	
-	public TypeTree(TypeTree node) {
+	public TypedNode(TypedNode node) {
 		super(node);
 	}
 
-	public TypeTree(Token t) {
+	public TypedNode(Token t) {
 		super(t);
 	}
 	
 	@Override
-	public TypeTree dupNode() {
-		return new TypeTree(this);
+	public TypedNode dupNode() {
+		return new TypedNode(this);
 	}
 	
 	/**

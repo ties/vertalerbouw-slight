@@ -14,15 +14,15 @@ public class TypeTreeAdaptor extends CommonTreeAdaptor {
 	 *  I could use reflection to prevent having to override this
 	 *  but reflection is slow.
 	 */
-	public TypeTree dupNode(Object t) {
-		checkArgument(t instanceof TypeTree);
+	public TypedNode dupNode(Object t) {
+		checkArgument(t instanceof TypedNode);
 		//
 		if ( t==null ) return null;
 		
-		return ((TypeTree)t).dupNode();
+		return ((TypedNode)t).dupNode();
 	}
 
 	public Object create(Token payload) {
-		return new TypeTree(payload);
+		return new TypedNode(payload);
 	}
 }

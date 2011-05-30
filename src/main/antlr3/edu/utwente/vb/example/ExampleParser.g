@@ -11,13 +11,13 @@ options {
   language = Java;
   output = AST;
   tokenVocab = ExampleLexer;
-  ASTLabelType = TypeTree;
+  ASTLabelType = TypedNode;
 }
 
 @header{ 
   package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
-  import edu.utwente.vb.tree.TypeTree;
+  import edu.utwente.vb.tree.TypedNode;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 

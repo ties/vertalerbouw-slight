@@ -6,7 +6,7 @@ import java.io.PrintStream;
 
 import edu.utwente.vb.*;
 import edu.utwente.vb.symbols.SymbolTable;
-import edu.utwente.vb.tree.TypeTree;
+import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypeTreeAdaptor;
 
 import org.antlr.runtime.*;
@@ -108,7 +108,7 @@ public class Compiler {
 			parser.setTreeAdaptor(new TypeTreeAdaptor());
 
 			ExampleParser.program_return result = parser.program();
-			TypeTree tree = (TypeTree) result.getTree();
+			TypedNode tree = (TypedNode) result.getTree();
 
 			if (!opt_no_checker) { // check the AST
 				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
@@ -121,7 +121,7 @@ public class Compiler {
 					checker = new ExampleChecker(nodes);
 				}
 				/* Patch de symbol table met default functies */
-				SymbolTable<TypeTree> symtab = new SymbolTable<TypeTree>();
+				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 				symtab.openScope();
 				/* raar */
 				checker.setTreeAdaptor(new TypeTreeAdaptor());

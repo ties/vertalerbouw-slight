@@ -10,7 +10,7 @@ options {
   k=1;
   language = Java;
   output = AST;
-  ASTLabelType=TypeTree;
+  ASTLabelType = TypedNode;
   tokenVocab = ExampleLexer;
 }
 
@@ -38,14 +38,14 @@ options {
   }
   
   private void tbn(Token node, String type){
-    ((TypeTree)node).setType(Type.byName(type));
+    ((TypedNode)node).setType(Type.byName(type));
   }
   
   private void tbn(Token token){
   }
   
   private void st(Token token, Type type){
-    ((TypeTree)token).setType(type);
+    ((TypedNode)token).setType(type);
   }
   
 }
@@ -63,7 +63,7 @@ content
   
 declaration
   @init{
-    TypeTree decl = null;
+    TypedNode decl = null;
   }
 
   : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { tbn($VAR, $type.text); }

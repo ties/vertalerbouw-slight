@@ -11,13 +11,13 @@ import static junit.framework.Assert.*;
 
 public class TestTypeTreeAdaptor{
 	private Token testToken;
-	private TypeTree testNode;
+	private TypedNode testNode;
 	private TypeTreeAdaptor testAdaptor;
 
 	@Before
 	public void setUp() throws Exception {
 		testToken = new CommonToken(0,"TestToken");
-		testNode = new TypeTree(testToken);
+		testNode = new TypedNode(testToken);
 		testAdaptor = new TypeTreeAdaptor();
 	}
 	
@@ -29,6 +29,6 @@ public class TestTypeTreeAdaptor{
 	
 	@Test
 	public void testCorrectNodeType(){
-		assertTrue(testAdaptor.create(testToken) instanceof TypeTree);
+		assertTrue(testAdaptor.create(testToken) instanceof TypedNode);
 	}
 }
