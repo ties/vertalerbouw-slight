@@ -106,7 +106,7 @@ unaryExpression
   
 simpleExpression
   : atom
-    //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
+  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | (IDENTIFIER LPAREN)=> functionCall
   | variable
@@ -152,9 +152,9 @@ paren
   
 //TODO: Werkt wel! niet, nog naar kijken.
 variable
-  : IDENTIFIER 
+  : IDENTIFIER<AppliedOccurrenceNode>
   ;
   
 functionCall
-  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER expression*)
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER<AppliedOccurrenceNode> expression*)
   ;
