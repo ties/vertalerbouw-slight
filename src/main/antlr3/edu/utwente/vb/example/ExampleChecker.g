@@ -70,7 +70,7 @@ declaration
   ;
   
 runtimeValueDeclaration returns[Type type]
-  : BECOMES compoundExpression { //$type = $compountExpression.getNodeType(); }
+  : BECOMES compoundExpression// { //$type = $compountExpression.getNodeType(); }
   ;
  
 constantValueDeclaration returns[Type type]
