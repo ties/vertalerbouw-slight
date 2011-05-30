@@ -6,7 +6,7 @@ import java.util.List;
 import org.antlr.runtime.tree.CommonTree;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import edu.utwente.vb.exceptions.IncompatibleTypesExeption;
+import edu.utwente.vb.exceptions.IncompatibleTypesException;
 import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.Type;
@@ -106,11 +106,17 @@ public class CheckerHelper {
 		
 	}
 	
-	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) throws IncompatibleTypesExeption{
+	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) {
 		if(!lhs.getNodeType().equals(rhs.getNodeType())){
-			throw new IncompatibleTypesExeption("LHS " + lhs.getNodeType() + " ander type dan RHS " + rhs.getNodeType());
+			//throw new IncompatibleTypesException("LHS " + lhs.getNodeType() + " ander type dan RHS " + rhs.getNodeType());
 		}
 		root.setNodeType(lhs.getNodeType());
+	}
+	
+	public void testTypes(Type type1, Type type2) {
+		if(!type1.equals(type2)){
+			//throw new IncompatibleTypesException("LHS " + type1 + " ander type dan RHS " + type2);
+		}
 	}
 	
 }
