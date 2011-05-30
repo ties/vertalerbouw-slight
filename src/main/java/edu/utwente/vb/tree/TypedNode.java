@@ -48,5 +48,4 @@ public class TypedNode extends CommonTree {
 		checkNotNull(type);
 		this.type = type;
 	}
-
 }

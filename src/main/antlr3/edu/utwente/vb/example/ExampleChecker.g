@@ -18,8 +18,11 @@ options {
   package edu.utwente.vb.example;
   
   import edu.utwente.vb.example.*;
+  import edu.utwente.vb.example.util.*;
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
+  
+  import static com.google.common.base.Preconditions.checkNotNull;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -31,30 +34,23 @@ options {
 }
 
 @members{
-  private SymbolTable st;
-  
-  public void setSymbolTable(SymbolTable t){
-    st = t;
+  private CheckerHelper ch;
+
+  /** 
+  * Compositie met hulp van een CheckerHelper. In members stoppen is onhandig;
+  * inheritance kan niet omdat hij wisselt tussen DebugTreeParser en TreeParser als super type
+  */ 
+  public void setCheckerHelper(CheckerHelper h){
+    checkNotNull(h);
+    this.ch = h;
   }
-  
-  private void tbn(CommonTree node, String type){
-    ((TypedNode)node).setType(Type.byName(type));
-  }
-  
-  private void tbn(CommonTree node){
-  }
-  
-  private void st(CommonTree node, Type type){
-    ((TypedNode)node).setType(type);
-  }
-  
 }
 
 /**
  * A program consists of several functions
  */
 program 
-  :  ^(PROGRAM content)
+  : { checkNotNull(this.ch); } ^(PROGRAM content)
   ;
 
 content	
@@ -66,11 +62,11 @@ declaration
     TypedNode decl = null;
   }
 
-  : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { tbn($VAR, $type.text); }
+  : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { ch.tbn($VAR, $type.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST type=primitive IDENTIFIER constantValueDeclaration) { tbn($CONST, $type.text); }
-  | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { tbn($INFERVAR); }
-  | ^(INFERCONST IDENTIFIER constantValueDeclaration) { tbn($INFERCONST); }
+  | ^(CONST type=primitive IDENTIFIER constantValueDeclaration) { ch.tbn($CONST, $type.text); }
+  | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { ch.st($INFERVAR, Type.UNKNOWN); }
+  | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.st($INFERCONST, Type.UNKNOWN); }
   ;
   
 runtimeValueDeclaration
@@ -89,7 +85,7 @@ parameterDef
   ; 
 
 closedCompoundExpression
-  : {st.openScope();} ^(SCOPE compoundExpression*) {st.closeScope();}
+  : {ch.openScope();} ^(SCOPE compoundExpression*) {ch.closeScope();}
   ;
 
 compoundExpression
@@ -162,11 +158,11 @@ primitive
   ;
 
 atom
-  : (PLUS^ | MINUS^)? INT_LITERAL { st($INT_LITERAL,Type.INT); }
-  | CHAR_LITERAL    { st($CHAR_LITERAL,Type.CHAR); }
-  | STRING_LITERAL  { st($STRING_LITERAL,Type.STRING); }
-  | TRUE            { st($TRUE,Type.BOOL); }
-  | FALSE          { st($FALSE,Type.BOOL); }
+  : (PLUS^ | MINUS^)? INT_LITERAL { ch.st($INT_LITERAL,Type.INT); }
+  | CHAR_LITERAL    { ch.st($CHAR_LITERAL,Type.CHAR); }
+  | STRING_LITERAL  { ch.st($STRING_LITERAL,Type.STRING); }
+  | TRUE            { ch.st($TRUE,Type.BOOL); }
+  | FALSE          { ch.st($FALSE,Type.BOOL); }
   ;
   
 paren
