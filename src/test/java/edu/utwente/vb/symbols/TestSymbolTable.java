@@ -62,11 +62,11 @@ public class TestSymbolTable{
 	public void testSimpleput() throws Exception {
 		VariableId<BaseTree> a = variables1.get(0);
 		//
-		assertNull(tab.get(a.getText()));
+		assertNull(tab.apply(a.getText()));
 		//
 		tab.put(a);
 		//
-		assertEquals(tab.get(a.getText()), a);
+		assertEquals(tab.apply(a.getText()), a);
 	}
 	
 	@Test
@@ -77,29 +77,29 @@ public class TestSymbolTable{
 		}
 		tab.openScope();
 		for(VariableId<BaseTree> i : variables1){
-			assertEquals(tab.get(i.getText()), i);
+			assertEquals(tab.apply(i.getText()), i);
 		}
 		//Nu voegen we alles toe dat masked
 		for(VariableId<BaseTree> i : variables2){
 			tab.put(i);
 		}
 		for(VariableId<BaseTree> i : variables2){
-			assertEquals(tab.get(i.getText()), i);
+			assertEquals(tab.apply(i.getText()), i);
 		}
 		//Nu gaan we +1 level, zelfde result
 		tab.openScope();
 		for(VariableId<BaseTree> i : variables2){
-			assertEquals(tab.get(i.getText()), i);
+			assertEquals(tab.apply(i.getText()), i);
 		}
 		//close, nog dezelfde
 		tab.closeScope();
 		for(VariableId<BaseTree> i : variables2){
-			assertEquals(tab.get(i.getText()), i);
+			assertEquals(tab.apply(i.getText()), i);
 		}
 		//2e, ze zijn er nu uit en je krijgt de 1e weer
 		tab.closeScope();
 		for(VariableId<BaseTree> i : variables1){
-			assertEquals(tab.get(i.getText()), i);
+			assertEquals(tab.apply(i.getText()), i);
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class TestSymbolTable{
 	public void testRedefineOnSameLevel(){
 		tab.put(variables1.get(0));
 		//
-		assertEquals(tab.get(variables1.get(0).getText()), variables1.get(0));
+		assertEquals(tab.apply(variables1.get(0).getText()), variables1.get(0));
 		//Duplicate put
 		tab.put(variables1.get(0));
 	}

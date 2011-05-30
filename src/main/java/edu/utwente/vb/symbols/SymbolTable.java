@@ -8,6 +8,8 @@ import java.util.Set;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
+import com.google.common.collect.ImmutableList;
+
 public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	private Env inner;
 	private int level;
@@ -41,6 +43,10 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	
 	public Id<T> apply(String w, List<Type> applied){
 		return inner.apply(w, applied);
+	}
+	
+	public Id<T> apply(String n, Type... applied){
+		return this.apply(n, ImmutableList.copyOf(applied));
 	}
 	
 	public int getLevel() {
