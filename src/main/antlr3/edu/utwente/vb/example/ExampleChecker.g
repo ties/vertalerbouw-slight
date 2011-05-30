@@ -37,15 +37,15 @@ options {
     st = t;
   }
   
-  private void tbn(Token node, String type){
+  private void tbn(CommonTree node, String type){
     ((TypedNode)node).setType(Type.byName(type));
   }
   
-  private void tbn(Token token){
+  private void tbn(CommonTree node){
   }
   
-  private void st(Token token, Type type){
-    ((TypedNode)token).setType(type);
+  private void st(CommonTree node, Type type){
+    ((TypedNode)node).setType(type);
   }
   
 }
