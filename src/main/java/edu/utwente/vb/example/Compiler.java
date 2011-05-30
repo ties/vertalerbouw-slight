@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import edu.utwente.vb.*;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
-import edu.utwente.vb.tree.TypeTreeAdaptor;
+import edu.utwente.vb.tree.TypedNodeAdaptor;
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
@@ -18,47 +18,40 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.apache.log4j.Logger;
 
-public class Compiler {	
+public class Compiler {
 	private final static PrintStream out = System.out;
-	
+
 	private static boolean opt_ast = false, opt_dot = false,
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
 			opt_debug_checker = false, opt_debug_parser = false;
-	
+
 	private static String filename = null;
 
 	public static void parseOptions(String[] args) {
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-ast")){
+			if (args[i].equals("-ast")) {
 				out.println("- AST output");
 				opt_ast = true;
-			}
-			else if (args[i].equals("-dot")){
+			} else if (args[i].equals("-dot")) {
 				out.println("- DOT output");
 				opt_dot = true;
-			}
-			else if (args[i].equals("-no_checker")){
+			} else if (args[i].equals("-no_checker")) {
 				out.println("- checker disabled");
 				opt_no_checker = true;
-			}
-			else if (args[i].equals("-no_codegen")){
+			} else if (args[i].equals("-no_codegen")) {
 				out.println("- codegen disabled");
 				opt_no_codegen = true;
-			}
-			else if (args[i].equals("-no_interpreter")){
+			} else if (args[i].equals("-no_interpreter")) {
 				out.println("- interpreter disabled");
 				opt_no_interpreter = true;
-			}
-			else if (args[i].equals("-debug_checker")){
+			} else if (args[i].equals("-debug_checker")) {
 				out.println("+ debugging checker");
 				opt_debug_checker = true;
-			}
-			else if (args[i].equals("-debug_parser")){
+			} else if (args[i].equals("-debug_parser")) {
 				out.println("+ debugging parser");
 				opt_debug_parser = true;
-			}
-			else if (args[i].equals("-file_input") && (i + 1 < args.length)) {
+			} else if (args[i].equals("-file_input") && (i + 1 < args.length)) {
 				opt_file_input = true;
 				i++;
 				filename = args[i];
@@ -78,13 +71,14 @@ public class Compiler {
 		out.println("=============== Options ===============");
 		parseOptions(args);
 		out.println("=======================================");
-		
+
 		try {
 			// Maak String template group aan de hand van file
-//			FileReader groupFileR = new FileReader("SlightCodeGenerator.stg");
-//			StringTemplateGroup templates = new
-//			StringTemplateGroup(groupFileR);
-//			groupFileR.close();
+			// FileReader groupFileR = new
+			// FileReader("SlightCodeGenerator.stg");
+			// StringTemplateGroup templates = new
+			// StringTemplateGroup(groupFileR);
+			// groupFileR.close();
 
 			CharStream stream;
 			if (opt_file_input) {
@@ -94,18 +88,19 @@ public class Compiler {
 				out.println("using input from System.in");
 				stream = new ANTLRInputStream(System.in);
 			}
-			
+
 			ExampleLexer lexer = new ExampleLexer(stream);
-			
+
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			ExampleParser parser;
 
 			if (!opt_debug_parser) {
-				parser = new ExampleParser(tokens, new BlankDebugEventListener());
+				parser = new ExampleParser(tokens,
+						new BlankDebugEventListener());
 			} else {
 				parser = new ExampleParser(tokens);
 			}
-			parser.setTreeAdaptor(new TypeTreeAdaptor());
+			parser.setTreeAdaptor(new TypedNodeAdaptor());
 
 			ExampleParser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
@@ -118,6 +113,7 @@ public class Compiler {
 				if (!opt_debug_checker) {
 					checker = new ExampleChecker(nodes, new BlankDebugEventListener());
 //					checker = new SlightChecker(nodes);
+
 				} else {
 					checker = new ExampleChecker(nodes);
 				}
@@ -125,27 +121,27 @@ public class Compiler {
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 				symtab.openScope();
 				/* raar */
-				checker.setTreeAdaptor(new TypeTreeAdaptor());
+				checker.setTreeAdaptor(new TypedNodeAdaptor());
 				checker.program();
 				symtab.closeScope();
 			}
-//
-//			if (!opt_no_interpreter) { // interpret the AST
-//				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
-//				// CalcInterpreter interpreter = new CalcInterpreter(nodes);
-//				// interpreter.program();
-//			}
-//
-//			if (!opt_no_codegen) { // run codegenerator
-//				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-//				nodes.setTokenStream(tokens);
-//				SlightCodeGenerator codg = new SlightCodeGenerator(nodes);
-//				codg.setTemplateLib(templates);
-//
-//				SlightCodeGenerator.program_return r2 = codg.program();
-//				StringTemplate output = (StringTemplate) r2.getTemplate();
-//				System.out.println(output.toString());
-//			}
+			//
+			// if (!opt_no_interpreter) { // interpret the AST
+			// BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
+			// // CalcInterpreter interpreter = new CalcInterpreter(nodes);
+			// // interpreter.program();
+			// }
+			//
+			// if (!opt_no_codegen) { // run codegenerator
+			// CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+			// nodes.setTokenStream(tokens);
+			// SlightCodeGenerator codg = new SlightCodeGenerator(nodes);
+			// codg.setTemplateLib(templates);
+			//
+			// SlightCodeGenerator.program_return r2 = codg.program();
+			// StringTemplate output = (StringTemplate) r2.getTemplate();
+			// System.out.println(output.toString());
+			// }
 
 			if (opt_ast) { // print the AST as string
 				System.out.println(tree.toStringTree());

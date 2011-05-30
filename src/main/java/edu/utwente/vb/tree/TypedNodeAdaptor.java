@@ -7,7 +7,7 @@ import org.antlr.runtime.tree.Tree;
 
 import static com.google.common.base.Preconditions.checkArgument;;
 
-public class TypeTreeAdaptor extends CommonTreeAdaptor {
+public class TypedNodeAdaptor extends CommonTreeAdaptor {
 	/** Duplicate a node.  This is part of the factory;
 	 *	override if you want another kind of node to be built.
 	 *

@@ -9,16 +9,16 @@ import org.junit.Test;
 import junit.framework.TestCase;
 import static junit.framework.Assert.*;
 
-public class TestTypeTreeAdaptor{
+public class TestTypedNodeAdaptor{
 	private Token testToken;
 	private TypedNode testNode;
-	private TypeTreeAdaptor testAdaptor;
+	private TypedNodeAdaptor testAdaptor;
 
 	@Before
 	public void setUp() throws Exception {
 		testToken = new CommonToken(0,"TestToken");
 		testNode = new TypedNode(testToken);
-		testAdaptor = new TypeTreeAdaptor();
+		testAdaptor = new TypedNodeAdaptor();
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
