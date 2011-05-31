@@ -147,7 +147,24 @@ public class Compiler {
 			// StringTemplate output = (StringTemplate) r2.getTemplate();
 			// System.out.println(output.toString());
 			// }
+            if (!opt_no_codegen) {
+                // generate JVM assembler code using string template
 
+                // read templates (src of code: [Parr 2007, p. 216])
+                FileReader groupFiler = new FileReader("jvm.stg");
+                StringTemplateGroup templates = new StringTemplateGroup(groupFiler);
+                groupFiler.close();
+                
+                CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+                ExampleGenerator codegenerator = new ExampleGenerator(nodes);
+                codegenerator.setTemplateLib(templates);
+                ExampleGenerator.program_return r = codegenerator.program();
+                StringTemplate output = (StringTemplate) r.getTemplate();
+                System.out.println(output.toString());
+            }
+
+			
+			
 			if (opt_ast) { // print the AST as string
 				System.out.println(tree.toStringTree());
 			} else if (opt_dot) { // print the AST as DOT specification
