@@ -28,8 +28,10 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @param T the custom Token type
  */
 public class Env<T extends BaseTree> implements EnvApi<T>{
-	/** The table for this level */
-	private final SetMultimap<String, Id<T>> table = HashMultimap.create(); 
+	/** The table of functions for this level */
+	private final SetMultimap<String, FunctionId<T>> functions = HashMultimap.create();
+	/** The table of variables for this level */
+	private final Map<String, VariableId<T>> variables = Maps.newHashMap();
 	/** The previous level */
 	protected final Env prev;
 	
@@ -47,24 +49,14 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	/**
-	 * Put a token into the symbol table, checking if it's name is unique at the current level
+	 * Put a variable into the symbol table, checking if it's name is unique at the current level
 	 */
-	public void put(final Id<T> i){
+	public void put(final VariableId<T> i){
 		checkNotNull(i); checkNotNull(i.getText());
-		if(table.containsKey(i.getText())){//duplicate definition in this scope level
-			for(Id<T> potential : table.get(i.getText())){
-				if(i instanceof FunctionId){
-					FunctionId f = (FunctionId)i;
-					if(potential.equalsSignature(f.getText(), f.getTypeParameters()))
-						throw new SymbolTableException("duplicate definition for function \"" + f.getText() + "\" with signature " + f.getTypeParameters().toString() + "in the current scope");		
-
-				} else{
-					if(potential.equalsSignature(i.getText(), null))
-						throw new SymbolTableException("duplicate definition for token \"" + i.getText() + "\" in the current scope");
-				}
-			}
+		if(variables.containsKey(i.getText())){//duplicate definition in this scope level
+			throw new SymbolTableException("duplicate definition of variable \"" + i.getText() + "\" in the current scope");
 		}
-		table.put(i.getText(), i);
+		variables.put(i.getText(), i);
 	}
 	
 	/**
@@ -72,13 +64,13 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 */
 	public void put(final FunctionId<T> i){
 		checkNotNull(i); checkNotNull(i.getText());
-		if(table.containsKey(i.getText())){//duplicate definition in this scope level
-			for(Id<T> potential : table.get(i.getText())){
-				if(potential.equalsSignature(i.getText(), i.getTypeParameters()))
-					throw new SymbolTableException("duplicate definition for function \"" + i.getText() + "\" with signature " + i.getTypeParameters().toString() + "in the current scope");		
+		if(functions.containsKey(i.getText())){//duplicate definition in this scope level
+			for(FunctionId<T> potential : functions.get(i.getText())){
+				if(potential.equalsSignature(i.getText(), Type.asArray(i.getTypeParameters())))
+					throw new SymbolTableException("Function " + i.getText() + " with signature " + i.getTypeParameters().toString() + " is already defined in the current scope");		
 			}
 		}
-		table.put(i.getText(), i);
+		functions.put(i.getText(), i);
 	}
 	
 	
@@ -90,7 +82,8 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 		checkNotNull(w);
 		ImmutableSet.Builder<Id<T>> mappings = ImmutableSet.builder();
 		for(Env e = this; e != null; e = e.prev){
-			mappings.addAll(e.table.get(w));
+			mappings.addAll(e.functions.get(w));
+			mappings.add((VariableId<T>)e.variables.get(w));
 		}
 		return mappings.build();
 	}
@@ -104,15 +97,23 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 * daarnaast is dit efficienter, hij springt er eerder uit
 	 */
 	@Override
-	public Id<T> apply(String n, List<Type> applied) {
-		Set<Id<T>> matches = get(n);
+	public FunctionId<T> apply(final String n, final Type... applied) {
 		//zie (*)
 		for(Env e = this; e != null; e = e.prev){
-			for(Id<T> id : (Set<Id<T>>)e.table.get(n)){
+			for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
 				if(id.equalsSignature(n, applied))
 					return id;
 			}
 		}
-		throw new SymbolTableException("No matching entry for token text " + n + " and types "  + applied.toString() + " in the current symbol table.");
+		throw new SymbolTableException("No matching entry for function " + n + " and types "  + applied.toString());
+	}
+	
+	@Override
+	public VariableId<T> apply(final String n) {
+		for(Env e = this; e != null; e = e.prev){
+			if(e.variables.containsKey(n))
+				return (VariableId<T>) e.variables.get(n);
+		}
+		throw new SymbolTableException("No matching entry for variable name " + n);
 	}
 }

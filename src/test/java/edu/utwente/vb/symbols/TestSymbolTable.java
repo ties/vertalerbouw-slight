@@ -62,11 +62,16 @@ public class TestSymbolTable{
 	public void testSimpleput() throws Exception {
 		VariableId<BaseTree> a = variables1.get(0);
 		//
-		assertNull(tab.apply(a.getText()));
-		//
 		tab.put(a);
 		//
 		assertEquals(tab.apply(a.getText()), a);
+	}
+	
+	@Test(expected=SymbolTableException.class)
+	public void testNotInThereYet() throws Exception{
+		VariableId<BaseTree> a = variables1.get(0);
+		//
+		assertNull(tab.apply(a.getText()));
 	}
 	
 	@Test

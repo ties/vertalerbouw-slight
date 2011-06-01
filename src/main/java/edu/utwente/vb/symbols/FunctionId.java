@@ -84,8 +84,8 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	
 	@Override
-	public boolean equalsSignature(String name, List<Type> applied) {
-		return Objects.equal(this.token.getText(), name) && Objects.equal(applied, extractTypes(formalParameters));
+	public boolean equalsSignature(String name, Type... applied) {
+		return Objects.equal(this.token.getText(), name) && Objects.equal(applied, Type.asArray(extractTypes(formalParameters)));
 	}
 	
 	/**

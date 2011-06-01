@@ -32,7 +32,12 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	@Override
-	public void put(Id<T> i) {
+	public void put(VariableId<T> i) {
+		inner.put(i);
+	}
+	
+	@Override
+	public void put(FunctionId<T> i) {
 		inner.put(i);
 	}
 	
@@ -41,12 +46,16 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		return inner.get(w);
 	}
 	
-	public Id<T> apply(String w, List<Type> applied){
+	public FunctionId<T> apply(String w, List<Type> applied){
+		return apply(w, Type.asArray(applied));
+	}
+	
+	public FunctionId<T> apply(String w, Type... applied){
 		return inner.apply(w, applied);
 	}
 	
-	public Id<T> apply(String n, Type... applied){
-		return this.apply(n, ImmutableList.copyOf(applied));
+	public VariableId<T> apply(String n){
+		return inner.apply(n);
 	}
 	
 	public int getLevel() {

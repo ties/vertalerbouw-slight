@@ -3,7 +3,11 @@ package edu.utwente.vb.example.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
+
+import com.google.common.collect.Lists;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import edu.utwente.vb.exceptions.IncompatibleTypesExeption;
@@ -113,4 +117,30 @@ public class CheckerHelper {
 		root.setNodeType(lhs.getNodeType());
 	}
 	
+	//
+	// Utities rondom Id typen
+	//
+	
+	/**
+	 * Create a builtin functipon's functionId
+	 * @param token token text
+	 * @param lhs left hand side type
+	 * @param rhs right hand side type
+	 * @return new functionId
+	 */
+	public static FunctionId<TypedNode> createBuiltin(String token, Type ret, Type lhs, Type rhs){
+		return createFunctionId(token, ret, createVariableId("lhs", lhs), createVariableId("rhs", rhs));
+	}
+	
+	public static FunctionId<TypedNode> createFunctionId(String token, Type type, VariableId<TypedNode>... p){
+		return new FunctionId<TypedNode>(byToken(token), type, Lists.newArrayList(p));
+	}
+	
+	public static VariableId<TypedNode> createVariableId(String token, Type type){
+		return new VariableId<TypedNode>(byToken(token), type);
+	}
+	
+	public static TypedNode byToken(String token){
+		return new TypedNode(new CommonToken(-1, token));
+	}
 }

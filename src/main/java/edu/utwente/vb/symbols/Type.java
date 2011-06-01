@@ -2,6 +2,8 @@ package edu.utwente.vb.symbols;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
 /**
  * Type names. Enum for iterateability/they are not dynamically created anyway.
  * @author Ties
@@ -26,5 +28,13 @@ public enum Type{
 			if(t.name().equals(n))
 				return t;
 		throw new IllegalArgumentException("Type " + n +" is unknown");
+	}
+	
+	public static Type[] asArray(Type... types){
+		return types;
+	}
+	
+	public static Type[] asArray(List<Type> types){
+		return types.toArray(new Type[0]);
 	}
 }
