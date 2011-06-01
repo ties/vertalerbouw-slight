@@ -29,7 +29,7 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param w string van het label
 	 * @return Set van de Id's
 	 */
-	public Set<Id<T>> get(final String w);
+	public List<Id<T>> get(final String w);
 	
 	/**
 	 * Apply a variable

@@ -20,6 +20,9 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkArgument;
 /**
@@ -54,7 +57,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	public void put(final VariableId<T> i){
 		checkNotNull(i); checkNotNull(i.getText());
 		if(variables.containsKey(i.getText())){//duplicate definition in this scope level
-			throw new SymbolTableException("duplicate definition of variable \"" + i.getText() + "\" in the current scope");
+			throw new IllegalVariableDefinitionException("duplicate definition of variable \"" + i.getText() + "\" in the current scope");
 		}
 		variables.put(i.getText(), i);
 	}
@@ -67,7 +70,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 		if(functions.containsKey(i.getText())){//duplicate definition in this scope level
 			for(FunctionId<T> potential : functions.get(i.getText())){
 				if(potential.equalsSignature(i.getText(), Type.asArray(i.getTypeParameters())))
-					throw new SymbolTableException("Function " + i.getText() + " with signature " + i.getTypeParameters().toString() + " is already defined in the current scope");		
+					throw new IllegalFunctionDefinitionException("Function " + i.getText() + " with signature " + i.getTypeParameters().toString() + " is already defined in the current scope");		
 			}
 		}
 		functions.put(i.getText(), i);
@@ -78,12 +81,13 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	/**
 	 * Get all the occurrences of a Id matching the given identifier
 	 */
-	public Set<Id<T>> get(final String w){
+	public List<Id<T>> get(final String w){
 		checkNotNull(w);
-		ImmutableSet.Builder<Id<T>> mappings = ImmutableSet.builder();
+		ImmutableList.Builder<Id<T>> mappings = ImmutableList.builder();
 		for(Env e = this; e != null; e = e.prev){
 			mappings.addAll(e.functions.get(w));
-			mappings.add((VariableId<T>)e.variables.get(w));
+			if(e.variables.containsKey(w))
+				mappings.add((VariableId<T>)e.variables.get(w));
 		}
 		return mappings.build();
 	}

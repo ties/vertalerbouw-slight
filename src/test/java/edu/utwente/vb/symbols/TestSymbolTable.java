@@ -1,6 +1,8 @@
 package edu.utwente.vb.symbols;
 
 import java.util.List;
+import java.util.Set;
+
 import static edu.utwente.vb.example.util.CheckerHelper.*;
 import static junit.framework.Assert.*;
 
@@ -13,6 +15,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.symbols.SymbolTable;
 
 import junit.framework.TestCase;
@@ -42,8 +45,16 @@ public class TestSymbolTable{
 			variables1.add(new VariableId<BaseTree>(tree, Type.values()[(1 + i) % Type.values().length]));
 			variables2.add(new VariableId<BaseTree>(tree, Type.values()[i % Type.values().length]));
 			
-			functions1.add(createBuiltin(varNaam, Type.values()[i % Type.values().length], Type.values()[(i) % Type.values().length], Type.values()[(i) % Type.values().length]));
-			functions2.add(createBuiltin(varNaam, Type.values()[i+1 % Type.values().length], Type.values()[(i+1) % Type.values().length], Type.values()[(i+1) % Type.values().length]));
+			try{
+				functions1.add(createBuiltin(varNaam, Type.values()[i % Type.values().length], Type.values()[(i) % Type.values().length], Type.values()[(i) % Type.values().length]));
+			} catch(IllegalFunctionDefinitionException e){
+				//Een van de argumenten van de functie was void
+			}
+			try{
+				functions2.add(createBuiltin(varNaam, Type.values()[i+1 % Type.values().length], Type.values()[(i+1) % Type.values().length], Type.values()[(i+1) % Type.values().length]));
+			} catch(IllegalFunctionDefinitionException e){
+				//Een van de argumenten van de functie was void
+			}
 		}
 	}
 	
@@ -61,7 +72,8 @@ public class TestSymbolTable{
 			tab.put(f);
 		}
 		for(FunctionId f : functions1){
-			assertTrue(tab.get(f.getText()).size() == 2);
+			List<Id<BaseTree>> res = tab.get(f.getText());
+			assertTrue(res.size() == 2);
 		}
 		tab.closeScope();
 		for(FunctionId f : functions1){

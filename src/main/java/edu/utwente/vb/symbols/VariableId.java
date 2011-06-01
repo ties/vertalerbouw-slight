@@ -53,6 +53,6 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public boolean equalsSignature(String name, Type... params) {
-		return Objects.equal(this.node.getText(), name) && (params.length == 0 || params == null);
+		return Objects.equal(this.node.getText(), name) && (params == null || params.length == 0);
 	}
 }

@@ -38,7 +38,7 @@ public class TestIds {
 	public void testFunctionEqualsSig(){
 		FunctionId f1 = createBuiltin("+", Type.INT, Type.CHAR, Type.CHAR);
 		
-		assertFalse(f1.equalsSignature("+", Type.asArray(Type.CHAR, Type.CHAR)));
+		assertTrue(f1.equalsSignature("+", Type.asArray(Type.CHAR, Type.CHAR)));
 	}
 	
 	@Test

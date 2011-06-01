@@ -42,7 +42,7 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	@Override
-	public Set<Id<T>> get(String w) {
+	public List<Id<T>> get(String w) {
 		return inner.get(w);
 	}
 	

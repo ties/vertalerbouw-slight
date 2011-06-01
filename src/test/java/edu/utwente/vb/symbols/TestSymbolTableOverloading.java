@@ -3,6 +3,7 @@ package edu.utwente.vb.symbols;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.tree.TypedNode;
 import static edu.utwente.vb.example.util.CheckerHelper.*;
 
@@ -32,7 +33,7 @@ public class TestSymbolTableOverloading {
 		symtab.put(f2);
 	} 
 	
-	@Test
+	@Test(expected=IllegalVariableDefinitionException.class)
 	public void testOverlappingVariables(){
 		VariableId<TypedNode> v1 = createVariableId("a", Type.INT);
 		VariableId<TypedNode> v2 = createVariableId("a", Type.CHAR);

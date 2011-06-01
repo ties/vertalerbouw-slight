@@ -12,6 +12,8 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FunctionId<T extends BaseTree> implements Id<T>{
@@ -36,7 +38,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 		//
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
 		if(formalParameters.contains(Type.VOID))
-			throw new IllegalArgumentException("A function argument can not have the VOID type");
+			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
 	public FunctionId(T t, Type r, List<VariableId<T>> p){
@@ -44,8 +46,8 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 		this.returnType = checkNotNull(r);
 		//
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
-		if(formalParameters.contains(Type.VOID))
-			throw new IllegalArgumentException("A function argument can not have the VOID type");
+		if(extractTypes(formalParameters).contains(Type.VOID))
+			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
 	
@@ -74,6 +76,11 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	}
 	
 	@Override
+	public String toString() {
+		return token.getText() + " (" + Objects.toStringHelper(formalParameters) + ") -> " + returnType;
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
 			FunctionId that = (FunctionId)obj;
@@ -85,7 +92,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public boolean equalsSignature(String name, Type... applied) {
-		return Objects.equal(this.token.getText(), name) && Objects.equal(applied, Type.asArray(extractTypes(formalParameters)));
+		return Objects.equal(this.token.getText(), name) && Arrays.deepEquals(applied, Type.asArray(extractTypes(formalParameters)));
 	}
 	
 	/**
