@@ -1,0 +1,18 @@
+\chapter{Structuur}
+\section{De grote lijnen}
+De Example-compiler bestaat uit een aantal lagen die tezamen zorg dragen voor de executie van de programmacode. Deze lagen zijn hieronder overzichtelijk gemaakt. 
+[Hier dat visio plaatje van Ties]
+
+Per compiler-laag zullen we nu kort indiepen op de werking en de verantwoordelijkheden van deze compiler-laag. De volgorde waarin de compiler-lagen aan het bod komen komt overeen met de volgorde van de lagen in de Example compiler. 
+
+\section{Lexer}
+De lexer specificeerd alle soorten tokens die bestaan binnen de Example programmeertaal.
+\section{Parser}
+\section{Checker}
+De verantwoordelijkheden van de lexer zijn drieledig:
+• Controleren of alle applied occurrences van variabelen een binding occurence hebben op dezelfde of een lagere scope waarbij type overeenkomt.
+• Controleren of alle aanroepen van functies een functiedefinitie op dezelfde of een lagere scope hebben waarbij zowel return type als alle argument-typen overeen komen.
+• Het toekennen van een type aan alle noden in de AST.
+\section{Code Generator}
+\section{Interpreter}
+Example maakt gebruik van de Java Virtual Machine. Dit is een interpreter die de JVM-code die de Code Generator heeft geproduceert kan uitvoeren en zorgt dat het systeem uiteindelijk dat doet wat de programmeur heeft gespecificeerd in zijn Example-code. 
