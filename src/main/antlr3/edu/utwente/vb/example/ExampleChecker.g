@@ -76,24 +76,25 @@ content
   : (compoundExpression | functionDef)* 
   ;
   
-declaration
+declaration returns [Type type]
   @init{
     TypedNode decl = null;
   }
 
-  : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($VAR, $type.text); }
+  : ^(VAR prim=primitive IDENTIFIER runtimeValueDeclaration) { ch.declareVar($IDENTIFIER, $prim.text); ch.tbn($VAR, $prim.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST type=primitive IDENTIFIER rhs=constantValueDeclaration) { ch.testTypes(Type.byName($type.text), $rhs.type); ch.declareConst($IDENTIFIER, $type.text); ch.tbn($CONST, $type.text); }
-  | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERVAR, Type.UNKNOWN); }
-  | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
+  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) { ch.testTypes(Type.byName($prim.text), $cvd.type); ch.declareConst($IDENTIFIER, $prim.text); ch.tbn($CONST, $prim.text); }
+  | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERVAR, Type.UNKNOWN); }
+  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
   ;
   
-runtimeValueDeclaration returns[Type type]
-  : BECOMES compoundExpression// { //$type = $compountExpression.getNodeType(); }
+runtimeValueDeclaration returns [Type type]
+  : BECOMES ce=compoundExpression
+      {ch.st($ce.tree, $ce.type); }
   ;
  
 constantValueDeclaration returns [Type type]
-  : BECOMES rhs=atom { $type = $rhs.type; }
+  : BECOMES atom { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   ;
   
 functionDef
@@ -107,32 +108,63 @@ parameterDef returns[TypedNode node]
   : ^(FORMAL type=primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
   ; 
 
-closedCompoundExpression
+closedCompoundExpression returns[Type type]
   : {ch.openScope();} ^(SCOPE compoundExpression*) {ch.closeScope();}
   ;
 
-compoundExpression
-  : expression
-  | declaration
+compoundExpression returns [Type type]
+  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; }
+  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; }
   ;
  
-expression
-  : orExpression (BECOMES^ expression)?
-  ;
-  
-orExpression 
-  : andExpression (OR^ andExpression)*
-  ;
-  
-andExpression
-  : equationExpression (AND^ equationExpression)*
+//TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is 
+expression returns [Type type]
+  : base=orExpression (BECOMES^ opt=expression)?
+    { ch.testTypes($base.type, $opt.type);
+      ch.st($opt.tree, $opt.type);
+      $type = $opt.type;
+    }
   ;
 
-equationExpression
+orExpression returns [Type type]
+  : base=andExpression (OR^ andExpression)*
+    { /**if(opt!=null && opt.size()>0){
+        ch.testTypes($base.type, Type.BOOL);
+        for(Token o : opt){
+          ch.testType($o.type, Type.Bool);
+          ch.st($o.tree, $o.type);
+        }
+        ch.st($base.tree, $base.type);
+        $type = Type.Bool;
+      }else{
+        ch.st($base.tree, $base.type);
+        $type = $base.type;
+      }
+    **/}
+  ;
+  
+andExpression returns [Type type]
+  : base=equationExpression (AND^ equationExpression)*
+    { /**if(opt!=null && opt.size()>0){
+        ch.testTypes($base.type, Type.BOOL);
+        for(Token o : opt){
+          ch.testType($o.type, Type.Bool);
+          ch.st($o.tree, $o.type);
+        }
+        ch.st($base.tree, $base.type);
+        $type = Type.Bool;
+      }else{
+        ch.st($base.tree, $base.type);
+        $type = $base.type;
+      }**/
+    }
+  ;
+
+equationExpression returns [Type type]
   : plusExpression ((LTEQ^ | GTEQ^ | GT^ | LT^ | EQ^ | NOTEQ^) plusExpression)*
   ;
 
-plusExpression
+plusExpression returns [Type type]
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   : multiplyExpression (
                           (PLUS)=>(PLUS^ multiplyExpression)
@@ -140,16 +172,16 @@ plusExpression
                         )*
   ;
 
-multiplyExpression
+multiplyExpression returns [Type type]
   : unaryExpression ((MULT^ | DIV^ | MOD^) unaryExpression)*
   ;
 
-unaryExpression
+unaryExpression returns [Type type]
   : (NOT^)? simpleExpression
   ;
   
-simpleExpression
-  : atom
+simpleExpression returns [Type type]
+  : atom { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | (IDENTIFIER LPAREN)=> functionCall

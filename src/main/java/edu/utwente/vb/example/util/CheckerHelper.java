@@ -106,10 +106,6 @@ public class CheckerHelper {
 		symbolTable.put(funcId);
 	}
 	
-	public void setVar(AppliedOccurrenceNode node){
-		
-	}
-	
 	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) {
 		if(!lhs.getNodeType().equals(rhs.getNodeType())){
 			//throw new IncompatibleTypesException("LHS " + lhs.getNodeType() + " ander type dan RHS " + rhs.getNodeType());
@@ -119,6 +115,8 @@ public class CheckerHelper {
 	
 	public void testTypes(Type type1, Type type2) {
 		if(!type1.equals(type2)){
+			//TODO: Een exceptie gooien 
+			
 			//throw new IncompatibleTypesException("LHS " + type1 + " ander type dan RHS " + type2);
 		}
 	}
