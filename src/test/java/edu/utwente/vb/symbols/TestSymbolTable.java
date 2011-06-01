@@ -1,6 +1,7 @@
 package edu.utwente.vb.symbols;
 
 import java.util.List;
+import static edu.utwente.vb.example.util.CheckerHelper.*;
 import static junit.framework.Assert.*;
 
 import org.antlr.runtime.CommonToken;
@@ -19,6 +20,9 @@ import junit.framework.TestCase;
 public class TestSymbolTable{
 	private List<VariableId> variables1 = Lists.newArrayList();
 	private List<VariableId> variables2 = Lists.newArrayList();
+	private List<FunctionId> functions1 = Lists.newArrayList();
+	private List<FunctionId> functions2 = Lists.newArrayList();
+	
 	SymbolTable<BaseTree> tab;
 	private static final int SCOPES = 10;
 	
@@ -37,7 +41,49 @@ public class TestSymbolTable{
 			
 			variables1.add(new VariableId<BaseTree>(tree, Type.values()[(1 + i) % Type.values().length]));
 			variables2.add(new VariableId<BaseTree>(tree, Type.values()[i % Type.values().length]));
+			
+			functions1.add(createBuiltin(varNaam, Type.values()[i % Type.values().length], Type.values()[(i) % Type.values().length], Type.values()[(i) % Type.values().length]));
+			functions2.add(createBuiltin(varNaam, Type.values()[i+1 % Type.values().length], Type.values()[(i+1) % Type.values().length], Type.values()[(i+1) % Type.values().length]));
 		}
+	}
+	
+	/**
+	 * Add a function on two levels and make sure it's in there.
+	 * @throws Exception
+	 */
+	@Test
+	public void addFunctionTwoLevels() throws Exception{
+		for(FunctionId f : functions1){
+			tab.put(f);
+		}
+		tab.openScope();
+		for(FunctionId f : functions1){
+			tab.put(f);
+		}
+		for(FunctionId f : functions1){
+			assertTrue(tab.get(f.getText()).size() == 2);
+		}
+		tab.closeScope();
+		for(FunctionId f : functions1){
+			assertTrue(tab.get(f.getText()).size() == 1);
+		}
+	}
+	
+	@Test
+	public void addFunctionMultipleArguments() throws Exception{
+		for(FunctionId f : functions1){
+			tab.put(f);
+		}
+		for(FunctionId f : functions2){
+			tab.put(f);
+		}
+		//Alles goed, hoop ik
+	}
+	
+	@Test(expected=SymbolTableException.class)
+	public void errorRepeatedFunctionadd() throws Exception{
+		tab.put(functions1.get(0));
+		tab.put(functions1.get(0));
 	}
 	
 	@Test
