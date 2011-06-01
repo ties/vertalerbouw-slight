@@ -32,34 +32,34 @@ public class Compiler {
 	public static void parseOptions(String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-ast")) {
-				out.println("- AST output");
+				out.println("// - AST output");
 				opt_ast = true;
 			} else if (args[i].equals("-dot")) {
-				out.println("- DOT output");
+				out.println("// - DOT output");
 				opt_dot = true;
 			} else if (args[i].equals("-no_checker")) {
-				out.println("- checker disabled");
+				out.println("// - checker disabled");
 				opt_no_checker = true;
 			} else if (args[i].equals("-no_codegen")) {
-				out.println("- codegen disabled");
+				out.println("// - codegen disabled");
 				opt_no_codegen = true;
 			} else if (args[i].equals("-no_interpreter")) {
-				out.println("- interpreter disabled");
+				out.println("// - interpreter disabled");
 				opt_no_interpreter = true;
 			} else if (args[i].equals("-debug_checker")) {
-				out.println("+ debugging checker");
+				out.println("// + debugging checker");
 				opt_debug_checker = true;
 			} else if (args[i].equals("-debug_parser")) {
-				out.println("+ debugging parser");
+				out.println("// + debugging parser");
 				opt_debug_parser = true;
 			} else if (args[i].equals("-file_input") && (i + 1 < args.length)) {
 				opt_file_input = true;
 				i++;
 				filename = args[i];
-				out.println("using filename: " + filename);
+				out.println("// using filename: " + filename);
 			} else {
-				System.err.println("error: unknown option '" + args[i] + "'");
-				System.err.println("valid options: -ast -dot "
+				System.err.println("// error: unknown option '" + args[i] + "'");
+				System.err.println("// valid options: -ast -dot "
 						+ "-no_checker -no_codegen -no_interpreter"
 						+ "-file_input <name> -debug_checker -debug_parser");
 				throw new RuntimeException("Unknown options -- see readme");
@@ -68,10 +68,10 @@ public class Compiler {
 	}
 
 	public static void main(String[] args) {
-		out.println("Starting Example compiler");
-		out.println("=============== Options ===============");
+		out.println("// Starting Example compiler");
+		out.println("// =============== Options ===============");
 		parseOptions(args);
-		out.println("=======================================");
+		out.println("// =======================================");
 
 		try {
 			// Maak String template group aan de hand van file
@@ -83,10 +83,10 @@ public class Compiler {
 
 			CharStream stream;
 			if (opt_file_input) {
-				out.println("using input from " + filename);
+				out.println("// using input from " + filename);
 				stream = new ANTLRFileStream(filename);
 			} else {
-				out.println("using input from System.in");
+				out.println("// using input from System.in");
 				stream = new ANTLRInputStream(System.in);
 			}
 
