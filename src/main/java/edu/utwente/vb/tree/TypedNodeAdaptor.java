@@ -1,11 +1,11 @@
 package edu.utwente.vb.tree;
 
-import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeAdaptor;
-import org.antlr.runtime.tree.Tree;
+import static com.google.common.base.Preconditions.checkArgument;
 
-import static com.google.common.base.Preconditions.checkArgument;;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.tree.CommonTreeAdaptor;
 
 public class TypedNodeAdaptor extends CommonTreeAdaptor {
 	/** Duplicate a node.  This is part of the factory;
@@ -24,5 +24,16 @@ public class TypedNodeAdaptor extends CommonTreeAdaptor {
 
 	public Object create(Token payload) {
 		return new TypedNode(payload);
+	}
+	
+	
+	/**
+	 * errorNode moet overschreven worden om subtiele, rare fouten te voorkomen.
+	 * De oplossing staat op http://www.antlr.org/wiki/display/ANTLR3/Tree+construction
+	 */
+	@Override
+	public TypedErrorNode errorNode(TokenStream input, Token start, Token stop,
+			RecognitionException e) {
+		return new TypedErrorNode(input, start, stop, e);
 	}
 }

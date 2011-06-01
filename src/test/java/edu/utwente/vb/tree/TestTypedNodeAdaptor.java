@@ -1,6 +1,7 @@
 package edu.utwente.vb.tree;
 
 import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.junit.Before;
@@ -30,5 +31,13 @@ public class TestTypedNodeAdaptor{
 	@Test
 	public void testCorrectNodeType(){
 		assertTrue(testAdaptor.create(testToken) instanceof TypedNode);
+	}
+	
+	/**
+	 * Controleer of de Adaptor echt het goede node type aanmaakt.
+	 */
+	@Test
+	public void testErrorNodeType(){
+		assertTrue(testAdaptor.errorNode(null, null, null, new RecognitionException()) instanceof TypedNode);
 	}
 }

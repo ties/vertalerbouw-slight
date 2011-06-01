@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 
 import edu.utwente.vb.example.ExampleLexer;
 import edu.utwente.vb.example.ExampleParser;
+import edu.utwente.vb.tree.TypedNodeAdaptor;
 import junit.framework.TestCase;
 
 public abstract class AbstractGrammarTest{
@@ -40,6 +41,8 @@ public abstract class AbstractGrammarTest{
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ExampleParser parser = new ExampleParser(tokens,
 				new BlankDebugEventListener());
+		//*needed* :)
+		parser.setTreeAdaptor(new TypedNodeAdaptor());
 		return parser;
 	}
 	
