@@ -124,7 +124,7 @@ statements
 ifStatement
   /* Geen COLON? omdat je colons wel moet matchen */
   : (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)? )
-  | IF expression COLON (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)? )
+  | IF expression COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? -> ^(IF expression closedCompoundExpression (closedCompoundExpression)? )
   ;  
     
 whileStatement
