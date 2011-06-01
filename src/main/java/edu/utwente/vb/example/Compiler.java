@@ -147,7 +147,9 @@ public class Compiler {
 			// StringTemplate output = (StringTemplate) r2.getTemplate();
 			// System.out.println(output.toString());
 			// }
-            if (!opt_no_codegen) {
+            
+			/* HIERONDER CODE VOOR CODEGENERATOR, LATER WEER AANZETTEN
+			if (!opt_no_codegen) {
                 // generate JVM assembler code using string template
 
                 // read templates (src of code: [Parr 2007, p. 216])
@@ -161,7 +163,7 @@ public class Compiler {
                 ExampleGenerator.program_return r = codegenerator.program();
                 StringTemplate output = (StringTemplate) r.getTemplate();
                 System.out.println(output.toString());
-            }
+            }*/
 
 			
 			
