@@ -21,6 +21,7 @@ options {
   import edu.utwente.vb.example.util.*;
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
+  import edu.utwente.vb.exceptions.*;
   
   import static com.google.common.base.Preconditions.checkNotNull;
 }
@@ -29,8 +30,9 @@ options {
 // This disables ANTLR error handling;
 @rulecatch { 
     catch (RecognitionException e) { 
-        throw e; 
+       throw e; 
     } 
+    
 }
 
 @members{
@@ -44,6 +46,23 @@ options {
     checkNotNull(h);
     this.ch = h;
   }
+  
+  /**
+  * In de sectie hieronder word de afhandeling van excepties geregeld.
+  *
+  */
+  
+  protected int nrErr = 0;
+  public    int nrErrors() { return nrErr; }
+  
+  public void displayRecognitionError(
+              String[] tokenNames, RecognitionException e){
+    nrErr += 1;
+    if (e instanceof IncompatibleTypesException)
+      emitErrorMessage("[Example] error: " + e.getMessage());
+    else
+      super.displayRecognitionError(tokenNames, e);
+  }  
 }
 
 /**
@@ -64,7 +83,7 @@ declaration
 
   : ^(VAR type=primitive IDENTIFIER runtimeValueDeclaration) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($VAR, $type.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST type=primitive IDENTIFIER constantValueDeclaration) { ch.declareConst($IDENTIFIER, $type.text); ch.tbn($CONST, $type.text); }
+  | ^(CONST type=primitive IDENTIFIER rhs=constantValueDeclaration) { ch.testTypes(Type.byName($type.text), $rhs.type); ch.declareConst($IDENTIFIER, $type.text); ch.tbn($CONST, $type.text); }
   | ^(INFERVAR IDENTIFIER runtimeValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERVAR, Type.UNKNOWN); }
   | ^(INFERCONST IDENTIFIER constantValueDeclaration) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
   ;
@@ -73,15 +92,15 @@ runtimeValueDeclaration returns[Type type]
   : BECOMES compoundExpression// { //$type = $compountExpression.getNodeType(); }
   ;
  
-constantValueDeclaration returns[Type type]
-  : BECOMES atom
+constantValueDeclaration returns [Type type]
+  : BECOMES rhs=atom { $type = $rhs.type; }
   ;
   
 functionDef
   @init{
     List<TypedNode> pl = new ArrayList<TypedNode>();
   }
-  : { ch.openScope(); }^(FUNCTION IDENTIFIER (p=parameterDef { pl.add((TypedNode) p.getTree()); }(p=parameterDef { pl.add((TypedNode) p.getTree()); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.getTree(), pl); ch.closeScope(); }
+  : { ch.openScope(); }^(FUNCTION IDENTIFIER (p=parameterDef { pl.add($p.node); }(p=parameterDef { pl.add($p.node); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.getTree(), pl); ch.closeScope(); }
   ;
   
 parameterDef returns[TypedNode node]
@@ -161,12 +180,12 @@ primitive
   | STRING
   ;
 
-atom
-  : (PLUS^ | MINUS^)? INT_LITERAL { ch.st($INT_LITERAL,Type.INT); }
-  | CHAR_LITERAL    { ch.st($CHAR_LITERAL,Type.CHAR); }
-  | STRING_LITERAL  { ch.st($STRING_LITERAL,Type.STRING); }
-  | TRUE            { ch.st($TRUE,Type.BOOL); }
-  | FALSE          { ch.st($FALSE,Type.BOOL); }
+atom returns [Type type]
+  : (PLUS^ | MINUS^)? INT_LITERAL { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
+  | CHAR_LITERAL                  { ch.st($CHAR_LITERAL,Type.CHAR);     $type = Type.CHAR;   }
+  | STRING_LITERAL                { ch.st($STRING_LITERAL,Type.STRING); $type = Type.STRING; }
+  | TRUE                          { ch.st($TRUE,Type.BOOL);             $type = Type.BOOL;   }
+  | FALSE                         { ch.st($FALSE,Type.BOOL);            $type = Type.BOOL;   }
   ;
   
 paren

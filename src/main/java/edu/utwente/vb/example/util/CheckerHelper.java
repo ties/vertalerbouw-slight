@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import edu.utwente.vb.exceptions.IncompatibleTypesExeption;
+import edu.utwente.vb.exceptions.IncompatibleTypesException;
 import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.Type;
@@ -110,37 +110,16 @@ public class CheckerHelper {
 		
 	}
 	
-	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) throws IncompatibleTypesExeption{
+	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) {
 		if(!lhs.getNodeType().equals(rhs.getNodeType())){
-			throw new IncompatibleTypesExeption("LHS " + lhs.getNodeType() + " ander type dan RHS " + rhs.getNodeType());
+			//throw new IncompatibleTypesException("LHS " + lhs.getNodeType() + " ander type dan RHS " + rhs.getNodeType());
 		}
 		root.setNodeType(lhs.getNodeType());
 	}
 	
-	//
-	// Utities rondom Id typen
-	//
-	
-	/**
-	 * Create a builtin functipon's functionId
-	 * @param token token text
-	 * @param lhs left hand side type
-	 * @param rhs right hand side type
-	 * @return new functionId
-	 */
-	public static FunctionId<TypedNode> createBuiltin(String token, Type ret, Type lhs, Type rhs){
-		return createFunctionId(token, ret, createVariableId("lhs", lhs), createVariableId("rhs", rhs));
-	}
-	
-	public static FunctionId<TypedNode> createFunctionId(String token, Type type, VariableId<TypedNode>... p){
-		return new FunctionId<TypedNode>(byToken(token), type, Lists.newArrayList(p));
-	}
-	
-	public static VariableId<TypedNode> createVariableId(String token, Type type){
-		return new VariableId<TypedNode>(byToken(token), type);
-	}
-	
-	public static TypedNode byToken(String token){
-		return new TypedNode(new CommonToken(-1, token));
+	public void testTypes(Type type1, Type type2) {
+		if(!type1.equals(type2)){
+			//throw new IncompatibleTypesException("LHS " + type1 + " ander type dan RHS " + type2);
+		}
 	}
 }
