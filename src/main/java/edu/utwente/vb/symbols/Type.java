@@ -25,7 +25,7 @@ public enum Type{
 	public static Type byName(String n){
 		checkNotNull(n);
 		for(Type t : Type.values())
-			if(t.name().equals(n.toUpperCase()))
+			if(t.name().equals(n))
 				return t;
 		throw new IllegalArgumentException("Type " + n +" is unknown");
 	}
