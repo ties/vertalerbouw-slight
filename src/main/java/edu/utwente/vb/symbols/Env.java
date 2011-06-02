@@ -36,13 +36,13 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	/** The table of variables for this level */
 	private final Map<String, VariableId<T>> variables = Maps.newHashMap();
 	/** The previous level */
-	protected final Env prev;
+	protected final Env<T> prev;
 	
 	/**
 	 * Construct a new Environment
 	 * @param p previous level
 	 */
-	public Env(final Env p) {
+	public Env(final Env<T> p) {
 		checkNotNull(p);
 		this.prev = p; 
 	}

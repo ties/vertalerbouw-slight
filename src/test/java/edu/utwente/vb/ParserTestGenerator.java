@@ -36,7 +36,7 @@ public class ParserTestGenerator{
 		StringBuffer testFunctions = new StringBuffer();
 		
 		//Setup is klaar, itereer nu over de files heen
-		for(File f : TestUtilities.getTestFiles()){
+		for(File f : FileUtilities.getTestFiles()){
 			StringTemplate functionTemplate;
 			
 			Map<String, String> values = getParameters(f);
