@@ -2,6 +2,8 @@ package edu.utwente.vb.exceptions;
 
 import org.antlr.runtime.RecognitionException;
 
+import edu.utwente.vb.symbols.SymbolTableException;
+
 public class IncompatibleTypesException extends RecognitionException {
 
 	/**

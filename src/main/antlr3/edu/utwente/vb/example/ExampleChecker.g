@@ -115,9 +115,11 @@ closedCompoundExpression returns[Type type]
 compoundExpression returns [Type type]
   : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; }
   | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; }
+  | ^(ret=RETURN expr=expression) {ch.st($ret.tree, $expr.type); $type = $expr.type; }
   ;
  
-//TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is 
+//TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
+// => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression returns [Type type]
   : base=orExpression (BECOMES^ opt=expression)?
     { ch.testTypes($base.type, $opt.type);
@@ -230,4 +232,4 @@ variable
   
 functionCall
   : ^(CALL IDENTIFIER expression*)
-  ;
+  ; 

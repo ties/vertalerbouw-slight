@@ -70,6 +70,7 @@ closedCompoundExpression
 
 compoundExpression
   : expression
+  | RETURN expression -> ^(RETURN expression)
   | declaration
   ;
  

@@ -74,6 +74,8 @@ ELSE    : 'else';
 WHILE   : 'while';
 //Function declaration
 FUNCTION  : 'def';
+//Return statement
+RETURN    : 'return';
 
 //Variable & Const definition
 CONST   : 'const';
