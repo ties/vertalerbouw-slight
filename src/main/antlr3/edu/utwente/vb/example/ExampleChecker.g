@@ -162,12 +162,12 @@ andExpression returns [Type type]
   : base=equationExpression (AND^ eq=equationExpression { eqex.add(eq); } )*
     { if(eqex!=null && eqex.size()>0){
         ch.testTypes($base.type, Type.BOOL);
+        ch.st($base.tree, $base.type);
+        $type = Type.BOOL;
         for(equationExpression_return o : eqex){
           ch.testTypes(o.type, Type.BOOL);
           ch.st(o.tree, o.type);
         }
-        ch.st($base.tree, $base.type);
-        $type = Type.BOOL;
       }else{
         ch.st($base.tree, $base.type);
         $type = $base.type;
@@ -186,6 +186,7 @@ equationExpression returns [Type type]
         if(ops.contains(LTEQ) || ops.contains(GTEQ) || ops.contains(GT) || ops.contains(LT)){
           ch.testTypes($base.type, Type.INT);
           ch.st($base.tree, $base.type);
+          $type = $base.type;
           for(plusExpression_return o : plex){
             ch.testTypes(o.type, Type.INT);
             ch.st(o.tree, o.type);
@@ -207,26 +208,65 @@ equationExpression returns [Type type]
   ;
 
 plusExpression returns [Type type]
-  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
-  : multiplyExpression (
-                          (PLUS)=>(PLUS^ multiplyExpression)
-                          |(MINUS)=>(MINUS^ multiplyExpression)
+  @init{
+    List<multiplyExpression_return> muex = new ArrayList<multiplyExpression_return>();
+  }
+  : base=multiplyExpression (
+                          (PLUS)=>(PLUS^ me=multiplyExpression {muex.add(me);})
+                          |(MINUS)=>(MINUS^ me=multiplyExpression {muex.add(me);})
                         )*
+    { if(muex!=null && muex.size()>0){
+        // Alles moet int zijn voor optellen/aftrekken.
+        ch.testTypes($base.type, Type.INT);
+        ch.st($base.tree, $base.type);
+        $type = $base.type;
+          for(multiplyExpression_return o : muex){
+            ch.testTypes(o.type, Type.INT);
+            ch.st(o.tree, o.type);
+          }
+      }else{
+        ch.st($base.tree, $base.type);
+        $type = $base.type; 
+      }
+    }        
   ;
 
 multiplyExpression returns [Type type]
-  : unaryExpression ((MULT^ | DIV^ | MOD^) unaryExpression)*
+  @init{
+    List<unaryExpression_return> unex = new ArrayList<unaryExpression_return>();
+  }
+  : base=unaryExpression ((MULT^ | DIV^ | MOD^) ue=unaryExpression {unex.add(ue);})*
+    { if(unex!=null && unex.size()>0){
+        // Alles moet int zijn voor vermenigvuldigen/delen/modulo
+        ch.testTypes($base.type, Type.INT);
+        ch.st($base.tree, $base.type);
+          for(unaryExpression_return o : unex){
+            ch.testTypes(o.type, Type.INT);
+            ch.st(o.tree, o.type);
+          }
+      }else{
+        ch.st($base.tree, $base.type);
+        $type = $base.type; 
+      }
+    }        
   ;
 
 unaryExpression returns [Type type]
-  : (NOT^)? simpleExpression
+  : (op=NOT^)? base=simpleExpression
+    //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
+    { if(op.getText()=="!"){
+        ch.testTypes($base.type, Type.BOOL);
+      }
+      ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }
   ;
   
 simpleExpression returns [Type type]
-  : atom { ch.st($atom.tree, $atom.type); $type = $atom.type; }
+  : atom                                     { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | (IDENTIFIER LPAREN)=> functionCall
+  | (IDENTIFIER LPAREN)=> fc=functionCall    { ch.st($fc.tree, $fc.type); $type = fc.type; }
   | variable
   | paren
   | closedCompoundExpression
@@ -266,10 +306,12 @@ paren
   : LPAREN! expression RPAREN!
   ;
   
-variable
-  : IDENTIFIER
+variable returns [Type type]
+  : id=IDENTIFIER
+    { 
+    }
   ;
   
-functionCall
+functionCall returns [Type type]
   : ^(CALL IDENTIFIER expression*)
   ; 

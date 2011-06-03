@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import edu.utwente.vb.exceptions.IncompatibleTypesException;
 import edu.utwente.vb.symbols.FunctionId;
+import edu.utwente.vb.symbols.Id;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.Type;
 import edu.utwente.vb.symbols.VariableId;
@@ -70,12 +71,22 @@ public class CheckerHelper {
 		((TypedNode) node).setType(type);
 	}
 	
+	/**
+	 * Puts node node of type type in the currently opened scope of the symbol table
+	 * @param node
+	 * @param type
+	 */
 	public void declareVar(TypedNode node, Type type){
 		checkNotNull(node); checkNotNull(type);
 		VariableId varId = new VariableId(node, type);
 		symbolTable.put(varId);
 	}
 	
+	/**
+	 * Puts node node of type type in the currently opened scope of the symbol table, this time type is entered by it's String representation
+	 * @param node
+	 * @param type
+	 */
 	public void declareVar(TypedNode node, String type){
 		checkNotNull(node); checkNotNull(type);
 		VariableId varId = new VariableId(node, Type.byName(type));
@@ -100,6 +111,17 @@ public class CheckerHelper {
 		
 		FunctionId funcId = new FunctionId(node, returnType, ids);
 		symbolTable.put(funcId);
+	}
+	
+	/**
+	 * Method to identify the type of a variable. Throws exception if variable is not found within reachable scopes.
+	 * @param identifier
+	 * @return the type of the variable which name matches identifier
+	 */
+	public Type getVarType(String identifier){
+		List<Id<TypedNode>> matches = symbolTable.get(identifier);
+		//TODO: Herkennen welke matchende variabele gereturned moet worden. Hiervoor moet de get van symbolTable waarschijnlijk informatie over de scope van elk ID gaan bevatten.
+		return matches.get(0).getType();
 	}
 	
 	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) {
@@ -136,7 +158,7 @@ public class CheckerHelper {
 	}
 	
 	/**
-	 * Create a builtin functipon's functionId
+	 * Create a builtin function's functionId
 	 * @param token token text
 	 * @param lhs left hand side type
 	 * @param rhs right hand side type

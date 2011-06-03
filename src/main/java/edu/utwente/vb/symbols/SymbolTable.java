@@ -58,7 +58,7 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		return inner.apply(n);
 	}
 	
-	public int getLevel() {
+	public int getCurrentScope() {
 		return level;
 	}
 }

@@ -101,13 +101,13 @@ public class TestSymbolTable{
 	@Test
 	public void testOpenClose() throws Exception {
 		SymbolTable<BaseTree> a = new SymbolTable<BaseTree>();
-		assertEquals(a.getLevel(), 0);
+		assertEquals(a.getCurrentScope(), 0);
 		//
 		a.openScope();
-		assertEquals(a.getLevel(), 1);
+		assertEquals(a.getCurrentScope(), 1);
 		//
 		a.closeScope();
-		assertEquals(a.getLevel(), 0);
+		assertEquals(a.getCurrentScope(), 0);
 	}
 	
 	@Test(expected=SymbolTableException.class)
