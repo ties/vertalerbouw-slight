@@ -28,7 +28,6 @@ public class TestType {
 		assertFalse(Type.isNumeric(Type.BOOL));
 		assertFalse(Type.isNumeric(Type.CHAR));
 		assertFalse(Type.isNumeric(Type.STRING));
-		assertFalse(Type.isNumeric(Type.FUNCTION));
 		assertFalse(Type.isNumeric(Type.UNKNOWN));
 	}
 	

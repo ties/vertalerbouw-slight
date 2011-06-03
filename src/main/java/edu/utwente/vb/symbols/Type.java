@@ -10,7 +10,7 @@ import java.util.List;
  *
  */
 public enum Type{
-	VOID, INT, CHAR, STRING, BOOL, UNKNOWN, FUNCTION;
+	VOID, INT, CHAR, STRING, BOOL, UNKNOWN;
 	
 	public static boolean isNumeric(Type t){
 		return Type.INT.equals(t);
