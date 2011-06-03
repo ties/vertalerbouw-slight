@@ -176,7 +176,34 @@ andExpression returns [Type type]
   ;
 
 equationExpression returns [Type type]
-  : plusExpression ((LTEQ^ | GTEQ^ | GT^ | LT^ | EQ^ | NOTEQ^) plusExpression)*
+  @init{
+    List<plusExpression_return> plex = new ArrayList<plusExpression_return>();
+    List<TypedNode> ops              = new ArrayList<TypedNode>();
+  }
+  : base=plusExpression (op=(LTEQ^ | GTEQ^ | GT^ | LT^ | EQ^ | NOTEQ^) pe=plusExpression { ops.add(op); plex.add(pe); })*
+    { if(plex!=null && plex.size()>0){
+        //Deze operators kunnen alleen bij integers worden toegepast
+        if(ops.contains(LTEQ) || ops.contains(GTEQ) || ops.contains(GT) || ops.contains(LT)){
+          ch.testTypes($base.type, Type.INT);
+          ch.st($base.tree, $base.type);
+          for(plusExpression_return o : plex){
+            ch.testTypes(o.type, Type.INT);
+            ch.st(o.tree, o.type);
+          }          
+        }else{
+          //Bij operators EQ en NOTEQ mogen alle Typen behalve Void worden gebruikt
+          ch.testNotType($base.type, Type.VOID);
+          ch.st($base.tree, $base.type);
+          for(plusExpression_return o : plex){
+            ch.testNotType(o.type, Type.VOID);
+            ch.st(o.tree, o.type);
+          }          
+        }
+      }else{
+        ch.st($base.tree, $base.type);
+        $type = $base.type;
+      }
+    }
   ;
 
 plusExpression returns [Type type]

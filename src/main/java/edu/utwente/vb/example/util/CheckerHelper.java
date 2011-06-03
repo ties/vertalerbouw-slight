@@ -109,7 +109,25 @@ public class CheckerHelper {
 		root.setNodeType(lhs.getNodeType());
 	}
 	
+	/**
+	 * Throws exception if two given types are not equal
+	 * @param type1
+	 * @param type2
+	 */
 	public void testTypes(Type type1, Type type2) {
+		if(!type1.equals(type2)){
+			//TODO: Een exceptie gooien 
+			
+			//throw new IncompatibleTypesException("LHS " + type1 + " ander type dan RHS " + type2);
+		}
+	}
+	
+	/**
+	 * Throws exception if two given types are equal
+	 * @param type1
+	 * @param type2
+	 */
+	public void testNotType(Type type1, Type type2) {
 		if(!type1.equals(type2)){
 			//TODO: Een exceptie gooien 
 			
