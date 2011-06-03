@@ -84,17 +84,36 @@ declaration returns [Type type]
   : ^(VAR prim=primitive IDENTIFIER runtimeValueDeclaration) { ch.declareVar($IDENTIFIER, $prim.text); ch.tbn($VAR, $prim.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
   | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) { ch.testTypes(Type.byName($prim.text), $cvd.type); ch.declareConst($IDENTIFIER, $prim.text); ch.tbn($CONST, $prim.text); }
-  | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERVAR, Type.UNKNOWN); }
-  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) { ch.declareVar($IDENTIFIER, Type.UNKNOWN); ch.st($INFERCONST, Type.UNKNOWN); }
+  | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
+      { if(run==null){
+          ch.declareVar($IDENTIFIER, Type.UNKNOWN);
+          ch.st($INFERVAR, Type.UNKNOWN);
+        }else{
+          Type type = $run.type;
+          ch.declareVar($IDENTIFIER, type);
+          ch.st($INFERVAR, type);
+        }
+      }
+  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) 
+      { if(cons==null){
+          ch.declareVar($IDENTIFIER, Type.UNKNOWN); 
+          ch.st($INFERCONST, Type.UNKNOWN); 
+        }else{
+          Type type = $cons.type;
+          ch.declareVar($IDENTIFIER, type);
+          ch.st($INFERCONST, type);
+        }
+      }
   ;
   
 runtimeValueDeclaration returns [Type type]
   : BECOMES ce=compoundExpression
-      {ch.st($ce.tree, $ce.type); }
+    { ch.st($ce.tree, $ce.type); }
   ;
  
 constantValueDeclaration returns [Type type]
-  : BECOMES atom { ch.st($atom.tree, $atom.type); $type = $atom.type; }
+  : BECOMES atom 
+    { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   ;
   
 functionDef returns [Type type]
@@ -266,9 +285,9 @@ simpleExpression returns [Type type]
   : atom                                     { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | (IDENTIFIER LPAREN)=> fc=functionCall    { ch.st($fc.tree, $fc.type); $type = fc.type; }
-  | variable
-  | paren
+  | (IDENTIFIER LPAREN)=> fc=functionCall    { ch.st($fc.tree, $fc.type); $type = $fc.type; }
+  | variable                                 { ch.st($variable.tree, $variable.type); $type = $variable.type; }
+  | paren                                    { ch.st($paren.tree, $paren.type); $type = $paren.type; }
   | closedCompoundExpression
   | statements
   ;
@@ -302,13 +321,15 @@ atom returns [Type type]
   | FALSE                         { ch.st($FALSE,Type.BOOL);            $type = Type.BOOL;   }
   ;
   
-paren
-  : LPAREN! expression RPAREN!
+paren returns [Type type]
+  : LPAREN! expression RPAREN!    { ch.st($expression.tree, $expression.type); $type = $expression.type; }
   ;
   
 variable returns [Type type]
   : id=IDENTIFIER
-    { 
+    { Type varType = ch.getVarType(id.getText());
+      ch.st($id, varType);
+      $type = varType;
     }
   ;
   
