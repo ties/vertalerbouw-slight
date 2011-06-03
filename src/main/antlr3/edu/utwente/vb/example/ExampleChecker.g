@@ -97,25 +97,30 @@ constantValueDeclaration returns [Type type]
   : BECOMES atom { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   ;
   
-functionDef
+functionDef returns [Type type]
   @init{
     List<TypedNode> pl = new ArrayList<TypedNode>();
   }
-  : { ch.openScope(); }^(FUNCTION IDENTIFIER (p=parameterDef { pl.add($p.node); }(p=parameterDef { pl.add($p.node); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.getTree(), pl); ch.closeScope(); }
+  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add($p.node); }(p=parameterDef { pl.add($p.node); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.type, pl); ch.closeScope(); }
   ;
   
-parameterDef returns[TypedNode node]
-  : ^(FORMAL type=primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $type.text); ch.tbn($FORMAL, $type.text); $node=new TypedNode($FORMAL); }
+parameterDef returns[Type type, TypedNode node]
+  : ^(FORMAL primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $primitive.type); ch.st($FORMAL, $primitive.type); $node=$FORMAL; $type=$primitive.type; }
   ; 
 
-closedCompoundExpression returns[Type type]
-  : {ch.openScope();} ^(SCOPE compoundExpression*) {ch.closeScope();}
+// TODO: Nog naar kijken
+closedCompoundExpression returns[Type type, Boolean hasReturn]
+  @init{
+    List<Type> coex = new ArrayList<Type>();
+    
+  }
+  : {ch.openScope();} ^(SCOPE (ce=compoundExpression { coex.add($ce.type); })*) {ch.closeScope(); $hasReturn=coex.contains(true);}
   ;
 
-compoundExpression returns [Type type]
-  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; }
-  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; }
-  | ^(ret=RETURN expr=expression) {ch.st($ret.tree, $expr.type); $type = $expr.type; }
+compoundExpression returns [Type type, Boolean isReturn]
+  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; $isReturn=false; }
+  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; $isReturn=false; }
+  | ^(ret=RETURN expr=expression) {ch.st($ret.tree, $expr.type); $type = $expr.type; $isReturn=true; }
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
@@ -129,36 +134,44 @@ expression returns [Type type]
   ;
 
 orExpression returns [Type type]
-  : base=andExpression (OR^ andExpression)*
-    { /**if(opt!=null && opt.size()>0){
+  @init{
+    List<andExpression_return> anex = new ArrayList<andExpression_return>();
+    
+  }
+  : base=andExpression (OR^ an=andExpression { anex.add(an); })*
+    { if(anex!=null && anex.size()>0){
         ch.testTypes($base.type, Type.BOOL);
-        for(Token o : opt){
-          ch.testType($o.type, Type.Bool);
-          ch.st($o.tree, $o.type);
+        for(andExpression_return o : anex){
+          ch.testTypes(o.type, Type.BOOL);
+          ch.st(o.tree, o.type);
         }
         ch.st($base.tree, $base.type);
-        $type = Type.Bool;
+        $type = Type.BOOL;
       }else{
         ch.st($base.tree, $base.type);
         $type = $base.type;
       }
-    **/}
+    }
   ;
   
 andExpression returns [Type type]
-  : base=equationExpression (AND^ equationExpression)*
-    { /**if(opt!=null && opt.size()>0){
+  @init{
+    List<equationExpression_return> eqex = new ArrayList<equationExpression_return>();
+    
+  }
+  : base=equationExpression (AND^ eq=equationExpression { eqex.add(eq); } )*
+    { if(eqex!=null && eqex.size()>0){
         ch.testTypes($base.type, Type.BOOL);
-        for(Token o : opt){
-          ch.testType($o.type, Type.Bool);
-          ch.st($o.tree, $o.type);
+        for(equationExpression_return o : eqex){
+          ch.testTypes(o.type, Type.BOOL);
+          ch.st(o.tree, o.type);
         }
         ch.st($base.tree, $base.type);
-        $type = Type.Bool;
+        $type = Type.BOOL;
       }else{
         ch.st($base.tree, $base.type);
         $type = $base.type;
-      }**/
+      }
     }
   ;
 
@@ -206,12 +219,12 @@ whileStatement
   : ^(WHILE expression closedCompoundExpression)
   ;    
     
-primitive
-  : VOID
-  | BOOLEAN
-  | CHAR
-  | INT
-  | STRING
+primitive returns [Type type]
+  : VOID      { $type = Type.VOID; }
+  | BOOLEAN   { $type = Type.BOOL; }
+  | CHAR      { $type = Type.CHAR; }
+  | INT       { $type = Type.INT; }
+  | STRING    { $type = Type.STRING; }
   ;
 
 atom returns [Type type]

@@ -93,11 +93,7 @@ public class CheckerHelper {
 		symbolTable.put(varId);
 	}
 	
-	public void declareFunction(TypedNode node, Object returnTypeObj, List<TypedNode> params){
-		assert returnTypeObj instanceof TypedNode;
-		TypedNode returnTypeNode = (TypedNode) returnTypeObj;
-		Type returnType = returnTypeNode.getNodeType();
-		
+	public void declareFunction(TypedNode node, Type returnType, List<TypedNode> params){
 		List<VariableId> ids = new ArrayList<VariableId>();
 		for(TypedNode param : params)
 			ids.add(new VariableId(param, param.getNodeType()));
