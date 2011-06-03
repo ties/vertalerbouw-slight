@@ -72,7 +72,7 @@ program
   : { checkNotNull(this.ch); } ^(PROGRAM content)
   ;
 
-content	
+content
   : (compoundExpression | functionDef)* 
   ;
   
@@ -120,20 +120,33 @@ functionDef returns [Type type]
   @init{
     List<TypedNode> pl = new ArrayList<TypedNode>();
   }
-  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add($p.node); }(p=parameterDef { pl.add($p.node); })*)? returnTypeNode=closedCompoundExpression) { ch.declareFunction($IDENTIFIER, returnTypeNode.type, pl); ch.closeScope(); }
+  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add($p.node); }(p=parameterDef { pl.add($p.node); })*)? returnTypeNode=closedCompoundExpression) 
+    { ch.declareFunction($IDENTIFIER, returnTypeNode.type, pl);
+      ch.st($FUNCTION, returnTypeNode.type);
+      $type = returnTypeNode.type;
+      ch.closeScope();
+    }
   ;
   
 parameterDef returns[Type type, TypedNode node]
   : ^(FORMAL primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $primitive.type); ch.st($FORMAL, $primitive.type); $node=$FORMAL; $type=$primitive.type; }
   ; 
 
-// TODO: Nog naar kijken
-closedCompoundExpression returns[Type type, Boolean hasReturn]
+closedCompoundExpression returns[Type type]
   @init{
-    List<Type> coex = new ArrayList<Type>();
-    
+    List<compoundExpression_return> coex = new ArrayList<compoundExpression_return>();
   }
-  : {ch.openScope();} ^(SCOPE (ce=compoundExpression { coex.add($ce.type); })*) {ch.closeScope(); $hasReturn=coex.contains(true);}
+  : { ch.openScope(); } ^(SCOPE (ce=compoundExpression { coex.add(ce); })*) { ch.closeScope(); }
+    { List<Boolean> retList = new ArrayList<Boolean>();
+      for(compoundExpression_return cer: coex){
+        retList.add(cer.isReturn);
+      }
+      Type returnType = Type.VOID;
+      if(retList.contains(true)){
+        returnType = coex.get(retList.indexOf(true)).type;
+      }
+      $type=returnType;
+    }
   ;
 
 compoundExpression returns [Type type, Boolean isReturn]
@@ -217,7 +230,7 @@ equationExpression returns [Type type]
           for(plusExpression_return o : plex){
             ch.testNotType(o.type, Type.VOID);
             ch.st(o.tree, o.type);
-          }          
+          }
         }
       }else{
         ch.st($base.tree, $base.type);
