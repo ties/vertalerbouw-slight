@@ -31,8 +31,9 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * @param t Node
 	 * @param r return type
 	 * @param p formal parameters.
+	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public FunctionId(T t, Type r, VariableId<T>... p){
+	public FunctionId(T t, Type r, VariableId<T>... p) throws IllegalFunctionDefinitionException{
 		this.token = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		//
@@ -41,7 +42,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
-	public FunctionId(T t, Type r, List<VariableId<T>> p){
+	public FunctionId(T t, Type r, List<VariableId<T>> p) throws IllegalFunctionDefinitionException{
 		this.token = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		//

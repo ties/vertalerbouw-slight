@@ -10,6 +10,9 @@ import org.antlr.runtime.tree.BaseTree;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+
 public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	private Env inner;
 	private int level;
@@ -24,7 +27,7 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		level++;
 	}
 	
-	public void closeScope(){
+	public void closeScope() throws SymbolTableException{
 		if(level <= 0)
 			throw new SymbolTableException("Can not close level 0 - unbalanced indents");
 		inner = inner.prev;
@@ -32,12 +35,12 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	@Override
-	public void put(VariableId<T> i) {
+	public void put(VariableId<T> i) throws IllegalVariableDefinitionException {
 		inner.put(i);
 	}
 	
 	@Override
-	public void put(FunctionId<T> i) {
+	public void put(FunctionId<T> i) throws IllegalFunctionDefinitionException {
 		inner.put(i);
 	}
 	
@@ -46,15 +49,15 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		return inner.get(w);
 	}
 	
-	public FunctionId<T> apply(String w, List<Type> applied){
+	public FunctionId<T> apply(String w, List<Type> applied) throws SymbolTableException{
 		return apply(w, Type.asArray(applied));
 	}
 	
-	public FunctionId<T> apply(String w, Type... applied){
+	public FunctionId<T> apply(String w, Type... applied) throws SymbolTableException{
 		return inner.apply(w, applied);
 	}
 	
-	public VariableId<T> apply(String n){
+	public VariableId<T> apply(String n) throws SymbolTableException{
 		return inner.apply(n);
 	}
 	

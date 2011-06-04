@@ -1,19 +1,22 @@
 package edu.utwente.vb.exceptions;
 
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.Tree;
 
 import edu.utwente.vb.symbols.SymbolTableException;
 
-public class IncompatibleTypesException extends RecognitionException {
+public class IncompatibleTypesException extends SymbolTableException {
 
 	/**
-	 * 
+	 * Exception thrown when operation is called on two variabeles of incompatible types
 	 */
 	
-	private static final long serialVersionUID = 1185659439434144841L;
-
-	public IncompatibleTypesException(String message) {
-		super();
+	public IncompatibleTypesException(String reason) {
+		super(reason);
+	}
+	
+	public IncompatibleTypesException(Tree tree, String reason) {
+		super(tree, reason);
 	}
 
 }

@@ -1,6 +1,8 @@
 package edu.utwente.vb.symbols;
 
 import org.junit.Test;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import static edu.utwente.vb.example.util.CheckerHelper.*;
 import static junit.framework.Assert.*;
 
@@ -35,21 +37,21 @@ public class TestIds {
 	}
 	
 	@Test
-	public void testFunctionEqualsSig(){
+	public void testFunctionEqualsSig() throws IllegalFunctionDefinitionException{
 		FunctionId f1 = createBuiltin("+", Type.INT, Type.CHAR, Type.CHAR);
 		
 		assertTrue(f1.equalsSignature("+", Type.asArray(Type.CHAR, Type.CHAR)));
 	}
 	
 	@Test
-	public void testFunctionNotEqualsSig(){
+	public void testFunctionNotEqualsSig() throws IllegalFunctionDefinitionException{
 		FunctionId f1 = createBuiltin("+", Type.INT, Type.CHAR, Type.CHAR);
 		
 		assertFalse(f1.equalsSignature("+", Type.asArray(Type.INT, Type.INT)));
 	} 
 	
 	@Test
-	public void testFunctionNotEqualsWrongName(){
+	public void testFunctionNotEqualsWrongName() throws IllegalFunctionDefinitionException{
 		FunctionId f1 = createBuiltin("+", Type.INT, Type.CHAR, Type.CHAR);
 		
 		assertFalse(f1.equalsSignature("-", Type.asArray(Type.CHAR, Type.CHAR)));

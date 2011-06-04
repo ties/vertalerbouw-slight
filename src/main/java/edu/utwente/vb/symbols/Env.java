@@ -53,8 +53,9 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	
 	/**
 	 * Put a variable into the symbol table, checking if it's name is unique at the current level
+	 * @throws IllegalVariableDefinitionException 
 	 */
-	public void put(final VariableId<T> i){
+	public void put(final VariableId<T> i) throws IllegalVariableDefinitionException{
 		checkNotNull(i); checkNotNull(i.getText());
 		if(variables.containsKey(i.getText())){//duplicate definition in this scope level
 			throw new IllegalVariableDefinitionException("duplicate definition of variable \"" + i.getText() + "\" in the current scope");
@@ -63,9 +64,10 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	/**
-	 * Put a function into the symbol table, checking if it's name is unique at the current level w/ the same type of opperands
+	 * Put a function into the symbol table, checking if it's name is unique at the current level w/ the same type of operands
+	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public void put(final FunctionId<T> i){
+	public void put(final FunctionId<T> i) throws IllegalFunctionDefinitionException{
 		checkNotNull(i); checkNotNull(i.getText());
 		if(functions.containsKey(i.getText())){//duplicate definition in this scope level
 			for(FunctionId<T> potential : functions.get(i.getText())){
@@ -94,6 +96,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	
 	/**
 	 * Get the binding occurrence of this applied occurrence
+	 * @throws SymbolTableException 
 	 * @require !applied.contains(Type.VOID) || applied.size() == 1
 	 * 
 	 * *: Invariant: *als* er een match was die gelijk was op hetzelfde niveau, was die gevonden bij put
@@ -101,7 +104,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 * daarnaast is dit efficienter, hij springt er eerder uit
 	 */
 	@Override
-	public FunctionId<T> apply(final String n, final Type... applied) {
+	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException {
 		//zie (*)
 		for(Env e = this; e != null; e = e.prev){
 			for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
@@ -113,7 +116,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	@Override
-	public VariableId<T> apply(final String n) {
+	public VariableId<T> apply(final String n) throws SymbolTableException {
 		for(Env e = this; e != null; e = e.prev){
 			if(e.variables.containsKey(n))
 				return (VariableId<T>) e.variables.get(n);

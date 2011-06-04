@@ -6,6 +6,9 @@ import java.util.Set;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+
 /**
  * API voor een Symbol Table (laag)
  * @author ties
@@ -17,12 +20,12 @@ public interface EnvApi<T extends BaseTree> {
 	 * Voeg een functie aan de Environment toe
 	 * @param i
 	 */
-	public void put(final FunctionId<T> i);
+	public void put(final FunctionId<T> i) throws IllegalFunctionDefinitionException;
 	
 	/**
 	 * 
 	 */
-	public void put(final VariableId<T> var);
+	public void put(final VariableId<T> var) throws IllegalVariableDefinitionException;
 	
 	/**
 	 * Haal alle mappings van de tekst van dit ID op
@@ -37,7 +40,7 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param applied applied parameter types
 	 * @return the id
 	 */
-	public VariableId<T> apply(final String n);
+	public VariableId<T> apply(final String n) throws SymbolTableException;
 	
 	/**
 	 * Apply a function
@@ -45,5 +48,5 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param applied types of the parameters
 	 * @return
 	 */
-	public FunctionId<T> apply(final String n, final Type... applied);
+	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException;
 }

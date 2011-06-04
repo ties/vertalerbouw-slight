@@ -3,6 +3,7 @@ package edu.utwente.vb.symbols;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.tree.TypedNode;
 import static edu.utwente.vb.example.util.CheckerHelper.*;
@@ -16,7 +17,7 @@ public class TestSymbolTableOverloading {
 	}
 	
 	@Test
-	public void testVariableAndFunction(){
+	public void testVariableAndFunction() throws IllegalFunctionDefinitionException, IllegalVariableDefinitionException{
 		VariableId<TypedNode> t1 = createVariableId("a", Type.INT);
 		FunctionId<TypedNode> f1 = createBuiltin("a", Type.INT, Type.INT, Type.INT);
 		
@@ -25,7 +26,7 @@ public class TestSymbolTableOverloading {
 	}
 	
 	@Test
-	public void testVariableFunctions(){
+	public void testVariableFunctions() throws IllegalFunctionDefinitionException{
 		FunctionId<TypedNode> f1 = createBuiltin("a", Type.INT, Type.INT, Type.INT);
 		FunctionId<TypedNode> f2 = createBuiltin("a", Type.INT, Type.INT, Type.CHAR);
 		
@@ -34,7 +35,7 @@ public class TestSymbolTableOverloading {
 	} 
 	
 	@Test(expected=IllegalVariableDefinitionException.class)
-	public void testOverlappingVariables(){
+	public void testOverlappingVariables() throws IllegalVariableDefinitionException{
 		VariableId<TypedNode> v1 = createVariableId("a", Type.INT);
 		VariableId<TypedNode> v2 = createVariableId("a", Type.CHAR);
 		
