@@ -302,8 +302,9 @@ simpleExpression returns [Type type]
   | (IDENTIFIER LPAREN)=> fc=functionCall    { ch.st($fc.tree, $fc.type); $type = $fc.type; }
   | variable                                 { ch.st($variable.tree, $variable.type); $type = $variable.type; }
   | paren                                    { ch.st($paren.tree, $paren.type); $type = $paren.type; }
-  | closedCompoundExpression
-  | statements
+  | cce=closedCompoundExpression             { ch.st($cce.tree, $cce.type); $type = $cce.type; }
+  | statements                               { //TODO: Wat gaan we hier doen met typen? 
+                                               ch.st($statements.tree, Type.BOOL); $type = Type.BOOL; }
   ;
   
 statements
@@ -333,6 +334,7 @@ atom returns [Type type]
   | STRING_LITERAL                { ch.st($STRING_LITERAL,Type.STRING); $type = Type.STRING; }
   | TRUE                          { ch.st($TRUE,Type.BOOL);             $type = Type.BOOL;   }
   | FALSE                         { ch.st($FALSE,Type.BOOL);            $type = Type.BOOL;   }
+  //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
 paren returns [Type type]
