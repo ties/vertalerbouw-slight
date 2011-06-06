@@ -18,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FunctionId<T extends BaseTree> implements Id<T>{
 	private Type returnType;
-	private T token;
+	private T node;
 	private List<VariableId<T>> formalParameters;
 	
 	/**
@@ -34,18 +34,20 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * @throws IllegalFunctionDefinitionException 
 	 */
 	public FunctionId(T t, Type r, VariableId<T>... p) throws IllegalFunctionDefinitionException{
-		this.token = checkNotNull(t);
+		this.node = checkNotNull(t);
 		this.returnType = checkNotNull(r);
-		//
+		
+		System.out.println("node: " + t+ ", type: "+r+", p: "+p);
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
 		if(formalParameters.contains(Type.VOID))
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
 	public FunctionId(T t, Type r, List<VariableId<T>> p) throws IllegalFunctionDefinitionException{
-		this.token = checkNotNull(t);
+		this.node = checkNotNull(t);
 		this.returnType = checkNotNull(r);
-		//
+		
+		System.out.println("node: " + t+ ", type: "+r+", p: "+p);
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
 		if(extractTypes(formalParameters).contains(Type.VOID))
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
@@ -59,17 +61,17 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public T getNode() {
-		return token;
+		return node;
 	}
 	
 	@Override
 	public String getText() {
-		return token.getText();
+		return node.getText();
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(token, returnType);
+		return Objects.hashCode(node, returnType);
 	}
 	
 	public List<Type> getTypeParameters() {
@@ -78,14 +80,14 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public String toString() {
-		return token.getText() + " (" + Objects.toStringHelper(formalParameters) + ") -> " + returnType;
+		return node.getText() + " (" + Objects.toStringHelper(formalParameters) + ") -> " + returnType;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
 			FunctionId that = (FunctionId)obj;
-			return Objects.equal(this.token, that.token) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.formalParameters, that.formalParameters);
+			return Objects.equal(this.node, that.node) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.formalParameters, that.formalParameters);
 		}
 		return false;
 	}
@@ -93,7 +95,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public boolean equalsSignature(String name, Type... applied) {
-		return Objects.equal(this.token.getText(), name) && Arrays.deepEquals(applied, Type.asArray(extractTypes(formalParameters)));
+		return Objects.equal(this.node.getText(), name) && Arrays.deepEquals(applied, Type.asArray(extractTypes(formalParameters)));
 	}
 	
 	/**

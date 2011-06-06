@@ -82,7 +82,7 @@ declaration returns [Type type]
     TypedNode decl = null;
   }
 
-  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($rvd.tree, $rvd.type); ch.declareVar($IDENTIFIER, $prim.type); ch.inferBecomes($VAR.tree, $prim.tree, $rvd.tree);  }
+  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($rvd.tree, $rvd.type); ch.declareVar($IDENTIFIER, $prim.type); ch.inferBecomes($VAR, $prim.tree, $rvd.tree);  }
   //Constanten kunnen alleen een simpele waarde krijgen
   | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($cvd.tree, $cvd.type); ch.declareConst($IDENTIFIER, $prim.type); ch.inferBecomes($CONST.tree, $prim.tree, $cvd.tree);  }
   | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
@@ -109,7 +109,7 @@ declaration returns [Type type]
   
 runtimeValueDeclaration returns [Type type]
   : BECOMES ce=compoundExpression
-    { ch.st($ce.tree, $ce.type); }
+    { ch.st($ce.tree, $ce.type); $type = $ce.type; }
   ;
  
 constantValueDeclaration returns [Type type]
@@ -121,19 +121,27 @@ functionDef returns [Type type]
   @init{
     List<parameterDef_return> pl = new ArrayList<parameterDef_return>();
   }
-  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add(p); }(p=parameterDef { pl.add(p); })*)? returnTypeNode=closedCompoundExpression) 
-    { List<TypedNode> nodes = new ArrayList<TypedNode>();
+  //Hack, voor closedcompoundexpression function declareren, anders wordt de function niet herkend in geval van recursion
+  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add(p); })* 
+     { List<TypedNode> nodes = new ArrayList<TypedNode>();
       
-      for(parameterDef_return ret : pl){
-        nodes.add(ret.node);
-        ch.declareVar(ret.node, ret.type);
-      }
+       for(parameterDef_return ret : pl)
+         nodes.add(ret.node);
       
-      ch.declareFunction($IDENTIFIER, returnTypeNode.type, nodes);
-            
+      ch.declareFunction($IDENTIFIER, Type.UNKNOWN, nodes);
+
+     }  
+  returnTypeNode=closedCompoundExpression) 
+    {
+      List<TypedNode> nodes = new ArrayList<TypedNode>();
+      
+       for(parameterDef_return ret : pl)
+         nodes.add(ret.node);
+         
       ch.st($FUNCTION, returnTypeNode.type);
       $type = returnTypeNode.type;
       ch.closeScope();
+      ch.declareFunction($IDENTIFIER, returnTypeNode.type, nodes);
     }
   ;
   

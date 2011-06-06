@@ -42,7 +42,7 @@ content
   
 declaration
   // Regels herschrijven naar consistente vorm
-  : primitive IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration?)
+  : primitive id=IDENTIFIER runtimeValueDeclaration? -> ^(VAR[$id] primitive IDENTIFIER runtimeValueDeclaration?)
   // Constanten kunnen alleen van primitive typen zijn
   | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration)
   | VAR IDENTIFIER runtimeValueDeclaration? -> ^(INFERVAR IDENTIFIER runtimeValueDeclaration?)
@@ -57,7 +57,7 @@ constantValueDeclaration
   : BECOMES atom;
   
 functionDef
-  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN COLON closedCompoundExpression -> ^(FUNCTION IDENTIFIER (parameterDef (parameterDef)*)? closedCompoundExpression)
+  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN COLON closedCompoundExpression -> ^(FUNCTION IDENTIFIER parameterDef* closedCompoundExpression)
   ;
   
 parameterDef
