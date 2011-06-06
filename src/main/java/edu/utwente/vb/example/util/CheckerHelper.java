@@ -154,11 +154,10 @@ public class CheckerHelper {
 	 * Method to identify the type of a variable. Throws exception if variable is not found within reachable scopes.
 	 * @param identifier
 	 * @return the type of the variable which name matches identifier
+	 * @throws SymbolTableException 
 	 */
-	public Type getVarType(String identifier){
-		List<Id<TypedNode>> matches = symbolTable.get(identifier);
-		//TODO: Herkennen welke matchende variabele gereturned moet worden. Hiervoor moet de get van symbolTable waarschijnlijk informatie over de scope van elk ID gaan bevatten.
-		return matches.get(0).getType();
+	public Type getVarType(String identifier) throws SymbolTableException{
+		return symbolTable.apply(identifier).getType();
 	}
 	
 	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) throws IncompatibleTypesException {
