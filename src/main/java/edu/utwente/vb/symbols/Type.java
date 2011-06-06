@@ -37,4 +37,9 @@ public enum Type{
 	public static Type[] asArray(List<Type> types){
 		return types.toArray(new Type[0]);
 	}
+	
+	@Override
+	public String toString() {
+		return name();
+	}
 }
