@@ -82,9 +82,9 @@ declaration returns [Type type]
     TypedNode decl = null;
   }
 
-  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($rvd.tree, $rvd.type); ch.declareVar($IDENTIFIER, $prim.type); ch.inferBecomes($VAR, $prim.tree, $rvd.tree);  }
+  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($rvd.tree, $rvd.type); ch.declareVar($IDENTIFIER, $prim.type); ch.inferBecomes($VAR, $prim.tree, $rvd.tree); $type = $prim.type; }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($cvd.tree, $cvd.type); ch.declareConst($IDENTIFIER, $prim.type); ch.inferBecomes($CONST.tree, $prim.tree, $cvd.tree);  }
+  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($cvd.tree, $cvd.type); ch.declareConst($IDENTIFIER, $prim.type); ch.inferBecomes($CONST.tree, $prim.tree, $cvd.tree); $type = $prim.type; }
   | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
       { if(run==null){
           ch.declareVar($IDENTIFIER, Type.UNKNOWN);
