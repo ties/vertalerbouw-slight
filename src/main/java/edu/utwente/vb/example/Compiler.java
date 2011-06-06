@@ -6,6 +6,7 @@ import java.io.PrintStream;
 
 import edu.utwente.vb.*;
 import edu.utwente.vb.example.util.CheckerHelper;
+import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
@@ -121,10 +122,11 @@ public class Compiler {
 				}
 				/* TODO: Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
+				Prelude pre = new Prelude();
+				pre.inject(symtab);
 				symtab.openScope();
 				/* raar */
-				
-				CheckerHelper ch = new CheckerHelper();
+				CheckerHelper ch = new CheckerHelper(symtab);
 				checker.setCheckerHelper(ch);
 				
 				checker.setTreeAdaptor(new TypedNodeAdaptor());

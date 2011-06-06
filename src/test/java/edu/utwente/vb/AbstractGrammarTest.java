@@ -24,6 +24,7 @@ import edu.utwente.vb.example.ExampleChecker;
 import edu.utwente.vb.example.ExampleLexer;
 import edu.utwente.vb.example.ExampleParser;
 import edu.utwente.vb.example.util.CheckerHelper;
+import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
@@ -58,7 +59,10 @@ public abstract class AbstractGrammarTest{
 		ExampleChecker	checker = new ExampleChecker(nodes, new BlankDebugEventListener());
 		/* Patch de symbol table met default functies */
 		SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
-		CheckerHelper ch = new CheckerHelper();
+		Prelude pre = new Prelude();
+		pre.inject(symtab);
+		symtab.openScope();
+		CheckerHelper ch = new CheckerHelper(symtab);
 		checker.setCheckerHelper(ch);
 		
 		checker.setTreeAdaptor(new TypedNodeAdaptor());
