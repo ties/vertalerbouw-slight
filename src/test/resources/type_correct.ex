@@ -8,4 +8,4 @@ string	d	= "Str"
 
 int e = a + 1
 bool f = b and !b
-string e = d + d
+string g = d + d
