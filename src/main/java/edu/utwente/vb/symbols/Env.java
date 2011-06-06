@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
@@ -32,6 +34,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @param T the custom Token type
  */
 public class Env<T extends BaseTree> implements EnvApi<T>{
+	private Logger log = LoggerFactory.getLogger(Env.class);
 	/** The table of functions for this level */
 	private final SetMultimap<String, FunctionId<T>> functions = HashMultimap.create();
 	/** The table of variables for this level */
@@ -106,22 +109,15 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 */
 	@Override
 	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException {
+		log.debug("applyFunction: " + n + " (" + Arrays.toString(applied) + ")");
 		//zie (*)
-		int i=0;
-		for(Type t : applied){
-			i++;
-			System.out.println("type arg["+i+"] :" + t);
-		}
-			
-		
-		
 		for(Env e = this; e != null; e = e.prev){
 			for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
 				if(id.equalsSignature(n, applied))
 					return id;
 			}
 		}
-		throw new SymbolTableException("No matching entry for function " + n + " and types "  + Arrays.toString(applied));
+		throw new SymbolTableException("No matching entry for " + n + " ("  + Arrays.toString(applied) + ")");
 	}
 	
 	@Override

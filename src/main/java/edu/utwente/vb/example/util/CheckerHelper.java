@@ -166,7 +166,7 @@ public class CheckerHelper {
 		
 		FunctionId funcId = new FunctionId(node, returnType, ids);
 		
-		log.debug("declareFunction " + node + " " + Objects.toStringHelper(params) +  " -> "  + returnType);
+		log.debug("declareFunction " + node + " (" + Objects.toStringHelper(params) +  ") -> "  + returnType);
 		
 		symbolTable.put(funcId);
 	}
