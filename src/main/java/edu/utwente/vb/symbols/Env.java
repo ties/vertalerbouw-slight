@@ -107,6 +107,14 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	@Override
 	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException {
 		//zie (*)
+		int i=0;
+		for(Type t : applied){
+			i++;
+			System.out.println("type arg["+i+"] :" + t);
+		}
+			
+		
+		
 		for(Env e = this; e != null; e = e.prev){
 			for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
 				if(id.equalsSignature(n, applied))
