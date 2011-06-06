@@ -18,7 +18,6 @@ import org.antlr.runtime.debug.BlankDebugEventListener;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
-import org.apache.log4j.Logger;
 
 public class Compiler {
 	private final static PrintStream out = System.out;

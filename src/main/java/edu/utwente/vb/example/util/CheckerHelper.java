@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,6 +26,7 @@ import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
 
 public class CheckerHelper {
+	private Logger log = LoggerFactory.getLogger(CheckerHelper.class);
 	private final SymbolTable<TypedNode> symbolTable;
 	
 	/**
@@ -73,6 +77,7 @@ public class CheckerHelper {
 	 */	
 	public void tbn(TypedNode node, String type) {
 		checkNotNull(node); checkNotNull(type);
+		log.debug("tbn: " + node + " as " + type);
 		((TypedNode) node).setType(Type.byName(type));
 	}
 	
@@ -84,6 +89,7 @@ public class CheckerHelper {
 	public void st(TypedNode node, Type type) {
 		checkNotNull(node); 
 		checkNotNull(type);
+		log.debug("st: " + node + " as " + type);
 		((TypedNode) node).setType(type);
 	}
 	
@@ -96,6 +102,9 @@ public class CheckerHelper {
 	public void declareVar(TypedNode node, Type type) throws IllegalVariableDefinitionException{
 		checkNotNull(node); checkNotNull(type);
 		VariableId varId = new VariableId(node, type);
+		
+		log.debug("declareVar: " + node + " as " + type);
+		
 		symbolTable.put(varId);
 	}
 	
@@ -107,6 +116,9 @@ public class CheckerHelper {
 	 */
 	public void declareVar(TypedNode node, String type) throws IllegalVariableDefinitionException{
 		checkNotNull(node); checkNotNull(type);
+		
+		log.debug("declareVar: " + node + " as " + type);
+		
 		VariableId varId = new VariableId(node, Type.byName(type));
 		symbolTable.put(varId);
 	}
@@ -125,11 +137,17 @@ public class CheckerHelper {
 	 */
 	public void declareConst(TypedNode node, Type type) throws IllegalVariableDefinitionException{
 		VariableId varId = new VariableId(node, type);
+		
+		log.debug("declareConst " + node + " as " + type);
+		
 		symbolTable.put(varId);
 	}
 	
 	public void declareConst(TypedNode node, String type) throws IllegalVariableDefinitionException{
 		VariableId varId = new VariableId(node, Type.byName(type));
+		
+		log.debug("declareConst " + node + " as " + type);
+		
 		symbolTable.put(varId);
 	}
 	
@@ -147,6 +165,9 @@ public class CheckerHelper {
 			ids.add(new VariableId(param, param.getNodeType()));
 		
 		FunctionId funcId = new FunctionId(node, returnType, ids);
+		
+		log.debug("declareFunction " + node + " " + Objects.toStringHelper(params) +  " -> "  + returnType);
+		
 		symbolTable.put(funcId);
 	}
 	
@@ -157,6 +178,8 @@ public class CheckerHelper {
 	 * @throws SymbolTableException 
 	 */
 	public Type getVarType(String identifier) throws SymbolTableException{
+		log.debug("getVarType " + identifier);
+		
 		return symbolTable.apply(identifier).getType();
 	}
 	
@@ -164,6 +187,8 @@ public class CheckerHelper {
 		if(!lhs.getNodeType().equals(rhs.getNodeType())){
 			throw new IncompatibleTypesException(root, "type " + rhs.getNodeType() + " cannot be assigned to variable of type " + lhs.getNodeType());
 		}
+		log.debug("inferBecomes " + root + " lhs: " + lhs + " rhs: " + rhs);
+		
 		root.setNodeType(lhs.getNodeType());
 	}
 	

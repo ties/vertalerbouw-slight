@@ -1,26 +1,19 @@
 package edu.utwente.vb;
 
+import static java.lang.System.out;
+
 import java.io.File;
-
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
-import org.apache.log4j.Logger;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-
-import static java.lang.System.out;
 
 public class ParserTestGenerator{	
 	public ParserTestGenerator() throws IOException, URISyntaxException {
