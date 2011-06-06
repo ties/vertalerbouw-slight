@@ -291,6 +291,7 @@ primitive returns [Type type]
 
 atom returns [Type type]
   : INT_LITERAL                   { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
+  | NEGATIVE INT_LITERAL          { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
   | CHAR_LITERAL                  { ch.st($CHAR_LITERAL,Type.CHAR);     $type = Type.CHAR;   }
   | STRING_LITERAL                { ch.st($STRING_LITERAL,Type.STRING); $type = Type.STRING; }
   | TRUE                          { ch.st($TRUE,Type.BOOL);             $type = Type.BOOL;   }
