@@ -41,6 +41,8 @@ public class Prelude {
 		builder.add(createBuiltin(">=", BOOL, INT, INT));
 		// string -> tijdelijk met +..
 		builder.add(createBuiltin("+", STRING, STRING, STRING));
+		builder.add(createBuiltin("+", STRING, STRING, CHAR));
+		builder.add(createBuiltin("+", STRING, STRING, INT));
 		builder.add(createBuiltin("==", BOOL, STRING, STRING));
 		builder.add(createBuiltin("!=", BOOL, STRING, STRING));
 		// char
