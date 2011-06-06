@@ -1,6 +1,7 @@
 #
 #
 # Test scenario waarbij een variabele wordt gebruikt in een lagere scope dan waarin hij is gedefinieerdy
+# checkerexpected: SymbolTableException
 #
 #
 

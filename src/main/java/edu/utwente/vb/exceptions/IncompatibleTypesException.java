@@ -3,7 +3,6 @@ package edu.utwente.vb.exceptions;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 
-import edu.utwente.vb.symbols.SymbolTableException;
 
 public class IncompatibleTypesException extends SymbolTableException {
 

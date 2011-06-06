@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
 import edu.utwente.vb.symbols.SymbolTable;
 
 import junit.framework.TestCase;

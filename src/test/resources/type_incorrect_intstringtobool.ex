@@ -1,5 +1,5 @@
 # Test typechecking op int-bool optelling
-# checkerexpected: IncompatibleTypesException
+# checkerexpected: SymbolTableException
 
 int 	a 	= 0
 bool 	b 	= True

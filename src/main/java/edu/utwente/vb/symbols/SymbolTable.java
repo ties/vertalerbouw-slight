@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
 
 public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	private Logger log = LoggerFactory.getLogger(SymbolTable.class);

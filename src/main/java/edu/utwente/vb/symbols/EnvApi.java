@@ -8,6 +8,7 @@ import org.antlr.runtime.tree.BaseTree;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
 
 /**
  * API voor een Symbol Table (laag)

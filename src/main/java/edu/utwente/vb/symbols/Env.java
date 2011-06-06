@@ -25,6 +25,7 @@ import com.google.common.collect.Sets;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkArgument;
