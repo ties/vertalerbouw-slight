@@ -1,4 +1,6 @@
 # Test typechecking op int-bool optelling
+# checkerexpected: IncompatibleTypesException
+
 
 int 	a 	= 0
 bool 	b 	= True

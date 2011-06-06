@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import edu.utwente.vb.example.ExampleParser;
 import edu.utwente.vb.example.ExampleChecker;
+import edu.utwente.vb.exceptions.*;
 
 public class <classname> extends AbstractGrammarTest {
 <functions>
