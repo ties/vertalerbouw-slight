@@ -22,8 +22,8 @@ import com.google.common.io.Files;
 
 import static java.lang.System.out;
 
-public class ParserTestGenerator{	
-	public ParserTestGenerator() throws IOException, URISyntaxException {
+public class CheckerTestGenerator{	
+	public CheckerTestGenerator() throws IOException, URISyntaxException {
 		URL templateGroupFile = getClass().getResource("/dogfood.stg");
 		
 		assert templateGroupFile != null;
@@ -43,10 +43,12 @@ public class ParserTestGenerator{
 			values.put("rule", "program");
 			values.put("filename", f.getName());
 			//
-			if(values.containsKey("expected")){
-				 functionTemplate = group.getInstanceOf("testParserWithExpected");
+			if(values.containsKey("expected") || values.containsKey("checkerexpected")){
+				if(values.containsKey("checkerexpected"))
+					values.put("expected", values.get("checkerexpected"));
+				 functionTemplate = group.getInstanceOf("testCheckerWithExpected");
 			} else {
-				functionTemplate = group.getInstanceOf("testParser");
+				functionTemplate = group.getInstanceOf("testChecker");
 			}
 			functionTemplate.setAttributes(values);
 
@@ -56,18 +58,18 @@ public class ParserTestGenerator{
 		}
 		
 		StringTemplate clazzSource = group.getInstanceOf("testclass");
-		clazzSource.setAttribute("classname", "TestParserWithExamples");
+		clazzSource.setAttribute("classname", "TestCheckerWithExamples");
 		clazzSource.setAttribute("functions", testFunctions.toString());
 		
 		
 		//Nu Target file verzinnen;
 		File parent = dogfoodStg.getParentFile().getParentFile().getParentFile();//targets/generated-sources/antlr3/
 		//schrijven
-		Files.write(clazzSource.toString(), new File(parent, "/src/test/java/edu/utwente/vb/TestParserWithExamples.java"), Charset.defaultCharset());
+		Files.write(clazzSource.toString(), new File(parent, "/src/test/java/edu/utwente/vb/TestCheckerWithExamples.java"), Charset.defaultCharset());
 	}
 		
 	public static void main(String[] args) throws Exception{
-		new ParserTestGenerator();
+		new CheckerTestGenerator();
 	}
 	
 }

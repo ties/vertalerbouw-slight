@@ -12,6 +12,7 @@ import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
 import edu.utwente.vb.example.ExampleParser;
+import edu.utwente.vb.example.ExampleChecker;
 
 public class <classname> extends AbstractGrammarTest {
 <functions>
@@ -19,7 +20,7 @@ public class <classname> extends AbstractGrammarTest {
 
 >>
 
-testFunction(filename, testname, rule, uitleg) ::= <<
+testParser(filename, testname, rule, uitleg) ::= <<
   /**
   <uitleg>
   */
@@ -34,12 +35,37 @@ testFunction(filename, testname, rule, uitleg) ::= <<
 /**
   <uitleg>
   */
-testWithExpected(filename, testname, rule, expected, uitleg) ::= <<
+testParserWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
     File f = new File(getClass().getResource("/<filename>").toURI());
     ExampleParser parser = createParser(asCharStream(f));
     parser.<rule>();
+  }
+  
+>>
+
+testChecker(filename, testname, rule, uitleg) ::= <<
+  /**
+  <uitleg>
+  */
+  @Test
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    ExampleChecker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
+    checker.<rule>();
+  }
+  
+>>
+/**
+  <uitleg>
+  */
+testCheckerWithExpected(filename, testname, rule, expected, uitleg) ::= <<
+  @Test(expected=<expected>.class)
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    ExampleChecker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
+    checker.<rule>();
   }
   
 >>

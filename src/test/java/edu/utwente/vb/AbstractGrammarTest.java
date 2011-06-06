@@ -12,14 +12,20 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.debug.BlankDebugEventListener;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
+import edu.utwente.vb.example.ExampleChecker;
 import edu.utwente.vb.example.ExampleLexer;
 import edu.utwente.vb.example.ExampleParser;
+import edu.utwente.vb.example.util.CheckerHelper;
+import edu.utwente.vb.symbols.SymbolTable;
+import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
 import junit.framework.TestCase;
 
@@ -44,6 +50,20 @@ public abstract class AbstractGrammarTest{
 		//*needed* :)
 		parser.setTreeAdaptor(new TypedNodeAdaptor());
 		return parser;
+	}
+	
+	protected ExampleChecker createChecker(CharStream stream, ExampleParser parser) throws IOException, RecognitionException{
+		CommonTreeNodeStream nodes = new CommonTreeNodeStream(parser.program().getTree());
+		
+		ExampleChecker	checker = new ExampleChecker(nodes, new BlankDebugEventListener());
+		/* Patch de symbol table met default functies */
+		SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
+		CheckerHelper ch = new CheckerHelper();
+		checker.setCheckerHelper(ch);
+		
+		checker.setTreeAdaptor(new TypedNodeAdaptor());
+
+		return checker;
 	}
 	
 	protected CharStream asCharStream(File f) throws IOException{
