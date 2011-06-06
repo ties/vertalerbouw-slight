@@ -193,7 +193,7 @@ public class CheckerHelper {
 		}
 		log.debug("inferBecomes " + root + " lhs: " + lhs + " rhs: " + rhs);
 		
-		root.setNodeType(lhs.getNodeType());
+		root.setType(lhs.getNodeType());
 	}
 	
 	/**

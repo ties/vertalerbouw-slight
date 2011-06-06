@@ -51,7 +51,7 @@ public class TypedNode extends CommonTree {
 	}
 
 	public void setNodeType(Type nodeType) {
-		this.type = nodeType;
+		this.type = checkNotNull(nodeType);
 		
 	}
 }
