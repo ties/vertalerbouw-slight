@@ -18,7 +18,6 @@ options {
   package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
   import edu.utwente.vb.tree.TypedNode;
-  import edu.utwente.vb.tree.AppliedOccurrenceNode;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -37,12 +36,12 @@ program
   ;
 
 content	
-  : (compoundExpression | functionDef)* -> functionDef* compoundExpression*
+  : (compoundExpression | functionDef)* 
   ;
   
 declaration
   // Regels herschrijven naar consistente vorm
-  : primitive id=IDENTIFIER runtimeValueDeclaration? -> ^(VAR[$id] primitive IDENTIFIER runtimeValueDeclaration?)
+  : primitive id=IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration?)
   // Constanten kunnen alleen van primitive typen zijn
   | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration)
   | VAR IDENTIFIER runtimeValueDeclaration? -> ^(INFERVAR IDENTIFIER runtimeValueDeclaration?)
@@ -91,7 +90,6 @@ equationExpression
   ;
 
 plusExpression
-  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   : multiplyExpression (
                           (PLUS)=>(PLUS^ multiplyExpression)
                           |(MINUS)=>(MINUS^ multiplyExpression)
@@ -157,9 +155,9 @@ paren
   
 //TODO: Werkt wel! niet, nog naar kijken.
 variable
-  : IDENTIFIER<AppliedOccurrenceNode>
+  : IDENTIFIER
   ;
   
 functionCall
-  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER<AppliedOccurrenceNode> expression*)
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER expression*)
   ;

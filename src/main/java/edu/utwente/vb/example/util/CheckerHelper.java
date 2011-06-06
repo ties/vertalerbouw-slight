@@ -22,7 +22,6 @@ import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.SymbolTableException;
 import edu.utwente.vb.symbols.Type;
 import edu.utwente.vb.symbols.VariableId;
-import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
 
 public class CheckerHelper {
