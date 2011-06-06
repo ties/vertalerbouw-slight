@@ -113,7 +113,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 					return id;
 			}
 		}
-		throw new SymbolTableException("No matching entry for function " + n + " and types "  + Objects.toStringHelper(applied));
+		throw new SymbolTableException("No matching entry for function " + n + " and types "  + Arrays.toString(applied));
 	}
 	
 	@Override
