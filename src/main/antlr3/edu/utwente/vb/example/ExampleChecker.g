@@ -119,10 +119,18 @@ constantValueDeclaration returns [Type type]
   
 functionDef returns [Type type]
   @init{
-    List<TypedNode> pl = new ArrayList<TypedNode>();
+    List<parameterDef_return> pl = new ArrayList<parameterDef_return>();
   }
-  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add($p.node); }(p=parameterDef { pl.add($p.node); })*)? returnTypeNode=closedCompoundExpression) 
-    { ch.declareFunction($IDENTIFIER, returnTypeNode.type, pl);
+  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add(p); }(p=parameterDef { pl.add(p); })*)? returnTypeNode=closedCompoundExpression) 
+    { List<TypedNode> nodes = new ArrayList<TypedNode>();
+      
+      for(parameterDef_return ret : pl){
+        nodes.add(ret.node);
+        ch.declareVar(ret.node, ret.type);
+      }
+      
+      ch.declareFunction($IDENTIFIER, returnTypeNode.type, nodes);
+            
       ch.st($FUNCTION, returnTypeNode.type);
       $type = returnTypeNode.type;
       ch.closeScope();
@@ -153,7 +161,7 @@ closedCompoundExpression returns[Type type]
 compoundExpression returns [Type type, Boolean isReturn]
   : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; $isReturn=false; }
   | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; $isReturn=false; }
-  | ^(ret=RETURN expr=expression) {ch.st($ret.tree, $expr.type); $type = $expr.type; $isReturn=true; }
+  | ^(ret=RETURN expr=expression) {$type = $expr.type; $isReturn=true; }
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
@@ -172,12 +180,12 @@ expression returns [Type type]
 
 orExpression returns [Type type]
   : ^(OR base=andExpression sec=orExpression)
-	    { ch.testTypes($base.type, Type.BOOL);
-	      ch.testTypes($sec.type, Type.BOOL);
-	      ch.st($base.tree, $base.type);
-	      ch.st($sec.tree, $sec.type);
-	      $type = Type.BOOL;
-	    }
+    { ch.testTypes($base.type, Type.BOOL);
+      ch.testTypes($sec.type, Type.BOOL);
+      ch.st($base.tree, $base.type);
+      ch.st($sec.tree, $sec.type);
+      $type = Type.BOOL;
+    }
   | base=andExpression
     {ch.st($base.tree, $base.type);
       $type = $base.type;
@@ -248,7 +256,9 @@ multiplyExpression returns [Type type]
 unaryExpression returns [Type type]
   : ^(op=NOT base=simpleExpression)
     //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
-    { ch.testTypes($base.type, Type.BOOL); }
+    { ch.testTypes($base.type, Type.BOOL);
+      $type = $base.type;
+     }
   
   | base=simpleExpression
     {ch.st($base.tree, $base.type);
@@ -312,5 +322,10 @@ variable returns [Type type]
   ;
   
 functionCall returns [Type type]
-  : ^(CALL IDENTIFIER expression*)
+  @init{
+    List<Type> args = new ArrayList<Type>();
+  }
+  : ^(CALL id=IDENTIFIER (ex=expression {args.add($ex.type);})*)
+    { $type = ch.getFuncType($id.text, args);
+    }
   ; 
