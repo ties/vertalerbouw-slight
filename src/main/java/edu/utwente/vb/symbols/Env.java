@@ -9,6 +9,7 @@ import java.util.Set;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
@@ -112,7 +113,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 					return id;
 			}
 		}
-		throw new SymbolTableException("No matching entry for function " + n + " and types "  + applied.toString());
+		throw new SymbolTableException("No matching entry for function " + n + " and types "  + Objects.toStringHelper(applied));
 	}
 	
 	@Override
