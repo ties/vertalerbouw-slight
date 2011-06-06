@@ -82,7 +82,8 @@ public class CheckerHelper {
 	 * @param type type to set
 	 */
 	public void st(TypedNode node, Type type) {
-		checkNotNull(node); checkNotNull(type);
+		checkNotNull(node); 
+		checkNotNull(type);
 		((TypedNode) node).setType(type);
 	}
 	
