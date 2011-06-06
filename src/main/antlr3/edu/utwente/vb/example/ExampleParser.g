@@ -142,7 +142,10 @@ primitive
   ;
 
 atom
-  : (PLUS^ | MINUS^)? INT_LITERAL
+  //Negative wordt gebruikt om onderscheid te maken tussen MINUS bij een negatief getal en MINUS bij aftrekken
+  : PLUS! INT_LITERAL
+  | MINUS INT_LITERAL -> NEGATIVE INT_LITERAL
+  | INT_LITERAL
   | CHAR_LITERAL
   | STRING_LITERAL
   | TRUE 

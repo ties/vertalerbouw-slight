@@ -21,6 +21,7 @@ tokens {
   INFER;
   INFERVAR;
   INFERCONST;
+  NEGATIVE;
 }
 
 @header{
