@@ -10,4 +10,6 @@ def faculty(int a):
 	else:
 		return 1
 
+int a = 5
+
 print("5!: " + faculty(a))
