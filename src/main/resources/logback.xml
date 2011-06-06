@@ -5,7 +5,7 @@
 			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
 		</layout>
 	</appender>
-	<logger name="edu.utwente.vb" level="INFO" />
+	<logger name="edu.utwente.vb" level="DEBUG" />
 	<root level="debug">
 		<appender-ref ref="STDOUT" />
 	</root>
