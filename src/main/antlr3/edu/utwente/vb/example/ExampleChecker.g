@@ -260,7 +260,7 @@ simpleExpression returns [Type type]
   : atom                                     { ch.st($atom.tree, $atom.type); $type = $atom.type; }
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | (IDENTIFIER LPAREN)=> fc=functionCall    { ch.st($fc.tree, $fc.type); $type = $fc.type; }
+  | fc=functionCall                          { ch.st($fc.tree, $fc.type); $type = $fc.type; }
   | variable                                 { ch.st($variable.tree, $variable.type); $type = $variable.type; }
   | paren                                    { ch.st($paren.tree, $paren.type); $type = $paren.type; }
   | cce=closedCompoundExpression             { ch.st($cce.tree, $cce.type); $type = $cce.type; }
