@@ -142,7 +142,10 @@ primitive
   ;
 
 atom
-  : (PLUS^ | MINUS^)? INT_LITERAL
+  //Gevalsonderscheiding bij INT_LITERAL. In het geval van een negatief getal setten we de INT_LITERAL token met de negatieve waarde van het getal. Hierdoor is het niet meer nodig een MINUS-node in de AST op te nemen.
+  : PLUS! INT_LITERAL
+  | MINUS! INT_LITERAL { INT_LITERAL.setText("-"+INT_LITERAL.text); }
+  | INT_LITERAL
   | CHAR_LITERAL
   | STRING_LITERAL
   | TRUE 

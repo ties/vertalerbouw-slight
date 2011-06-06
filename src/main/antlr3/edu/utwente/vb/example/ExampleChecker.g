@@ -159,138 +159,99 @@ compoundExpression returns [Type type, Boolean isReturn]
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression returns [Type type]
-  : base=orExpression (BECOMES^ opt=expression)?
-    { ch.testTypes($base.type, $opt.type);
-      ch.st($opt.tree, $opt.type);
-      $type = $opt.type;
+  : ^(BECOMES lhs=orExpression rhs=expression)
+    { ch.testTypes($lhs.type, $rhs.type);
+      ch.st($rhs.tree, $rhs.type);
+      $type = $rhs.type;
     }
+  | base=orExpression
+    {ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }    
   ;
 
 orExpression returns [Type type]
-  @init{
-    List<andExpression_return> anex = new ArrayList<andExpression_return>();
-    
-  }
-  : base=andExpression (OR^ an=andExpression { anex.add(an); })*
-    { if(anex!=null && anex.size()>0){
-        ch.testTypes($base.type, Type.BOOL);
-        for(andExpression_return o : anex){
-          ch.testTypes(o.type, Type.BOOL);
-          ch.st(o.tree, o.type);
-        }
-        ch.st($base.tree, $base.type);
-        $type = Type.BOOL;
-      }else{
-        ch.st($base.tree, $base.type);
-        $type = $base.type;
-      }
-    }
+  : ^(OR base=andExpression sec=orExpression)
+	    { ch.testTypes($base.type, Type.BOOL);
+	      ch.testTypes($sec.type, Type.BOOL);
+	      ch.st($base.tree, $base.type);
+	      ch.st($sec.tree, $sec.type);
+	      $type = Type.BOOL;
+	    }
+  | base=andExpression
+    {ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }      
   ;
   
 andExpression returns [Type type]
-  @init{
-    List<equationExpression_return> eqex = new ArrayList<equationExpression_return>();
-    
-  }
-  : base=equationExpression (AND^ eq=equationExpression { eqex.add(eq); } )*
-    { if(eqex!=null && eqex.size()>0){
-        ch.testTypes($base.type, Type.BOOL);
-        ch.st($base.tree, $base.type);
-        $type = Type.BOOL;
-        for(equationExpression_return o : eqex){
-          ch.testTypes(o.type, Type.BOOL);
-          ch.st(o.tree, o.type);
-        }
-      }else{
-        ch.st($base.tree, $base.type);
-        $type = $base.type;
-      }
+  : ^(AND base=equationExpression sec=andExpression)
+    { ch.testTypes($base.type, Type.BOOL);
+      ch.testTypes($sec.type, Type.BOOL);
+      ch.st($base.tree, $base.type);
+      ch.st($sec.tree, $sec.type);
+      $type = Type.BOOL;
     }
+  | base=equationExpression
+    {ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }          
   ;
 
 equationExpression returns [Type type]
-  @init{
-    List<plusExpression_return> plex = new ArrayList<plusExpression_return>();
-    List<TypedNode> ops              = new ArrayList<TypedNode>();
-  }
-  : base=plusExpression (op=(LTEQ^ | GTEQ^ | GT^ | LT^ | EQ^ | NOTEQ^) pe=plusExpression { ops.add(op); plex.add(pe); })*
-    { if(plex!=null && plex.size()>0){
-        //Deze operators kunnen alleen bij integers worden toegepast
-        if(ops.contains(LTEQ) || ops.contains(GTEQ) || ops.contains(GT) || ops.contains(LT)){
-          ch.testTypes($base.type, Type.INT);
-          ch.st($base.tree, $base.type);
-          $type = $base.type;
-          for(plusExpression_return o : plex){
-            ch.testTypes(o.type, Type.INT);
-            ch.st(o.tree, o.type);
-          }          
-        }else{
-          //Bij operators EQ en NOTEQ mogen alle Typen behalve Void worden gebruikt
-          ch.testNotType($base.type, Type.VOID);
-          ch.st($base.tree, $base.type);
-          for(plusExpression_return o : plex){
-            ch.testNotType(o.type, Type.VOID);
-            ch.st(o.tree, o.type);
-          }
-        }
-      }else{
-        ch.st($base.tree, $base.type);
-        $type = $base.type;
-      }
+  : ^((LTEQ | GTEQ | GT | LT) base=plusExpression sec=equationExpression)
+    { ch.testTypes($base.type, Type.INT);
+      ch.testTypes($base.type, $sec.type);
+      ch.st($base.tree, $base.type);
+      $type = $base.type;
     }
+  | ^((EQ | NOTEQ) base=plusExpression sec=equationExpression)
+    { ch.testNotType($base.type, Type.VOID);
+      ch.testTypes($base.type, $sec.type);
+      ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }
+  | base=plusExpression
+    {ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }          
   ;
 
 plusExpression returns [Type type]
-  @init{
-    List<multiplyExpression_return> muex = new ArrayList<multiplyExpression_return>();
-  }
-  : base=multiplyExpression (
-                          (PLUS)=>(PLUS^ me=multiplyExpression {muex.add(me);})
-                          |(MINUS)=>(MINUS^ me=multiplyExpression {muex.add(me);})
-                        )*
-    { if(muex!=null && muex.size()>0){
-        // Alles moet int zijn voor optellen/aftrekken.
-        ch.testTypes($base.type, Type.INT);
-        ch.st($base.tree, $base.type);
-        $type = $base.type;
-          for(multiplyExpression_return o : muex){
-            ch.testTypes(o.type, Type.INT);
-            ch.st(o.tree, o.type);
-          }
-      }else{
-        ch.st($base.tree, $base.type);
-        $type = $base.type; 
-      }
-    }        
+  : ^((PLUS|MINUS) base=multiplyExpression sec=plusExpression)
+    { ch.testTypes($base.type, Type.INT);
+      ch.testTypes($sec.type, Type.INT);
+      ch.st($base.tree, $base.type);
+      ch.st($sec.tree, $sec.type);
+      $type = $base.type;
+    }
+  | base=multiplyExpression
+    {ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }     
   ;
 
 multiplyExpression returns [Type type]
-  @init{
-    List<unaryExpression_return> unex = new ArrayList<unaryExpression_return>();
-  }
-  : base=unaryExpression ((MULT^ | DIV^ | MOD^) ue=unaryExpression {unex.add(ue);})*
-    { if(unex!=null && unex.size()>0){
-        // Alles moet int zijn voor vermenigvuldigen/delen/modulo
-        ch.testTypes($base.type, Type.INT);
-        ch.st($base.tree, $base.type);
-          for(unaryExpression_return o : unex){
-            ch.testTypes(o.type, Type.INT);
-            ch.st(o.tree, o.type);
-          }
-      }else{
-        ch.st($base.tree, $base.type);
-        $type = $base.type; 
-      }
-    }        
+  : ^((MULT | DIV | MOD) base=unaryExpression sec=multiplyExpression)
+    { ch.testTypes($base.type, Type.INT);
+      ch.testTypes($sec.type, Type.INT);
+      ch.st($base.tree, $base.type);
+      ch.st($sec.tree, $sec.type);
+      $type = $base.type;
+    }
+  | base=unaryExpression
+    {ch.st($base.tree, $base.type);
+      $type = $base.type;
+    }      
   ;
 
 unaryExpression returns [Type type]
-  : (op=NOT^)? base=simpleExpression
+  : ^(op=NOT base=simpleExpression)
     //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
-    { if(op.getText()=="!"){
-        ch.testTypes($base.type, Type.BOOL);
-      }
-      ch.st($base.tree, $base.type);
+    { ch.testTypes($base.type, Type.BOOL); }
+  
+  | base=simpleExpression
+    {ch.st($base.tree, $base.type);
       $type = $base.type;
     }
   ;
@@ -329,7 +290,7 @@ primitive returns [Type type]
   ;
 
 atom returns [Type type]
-  : (PLUS^ | MINUS^)? INT_LITERAL { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
+  : INT_LITERAL                   { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
   | CHAR_LITERAL                  { ch.st($CHAR_LITERAL,Type.CHAR);     $type = Type.CHAR;   }
   | STRING_LITERAL                { ch.st($STRING_LITERAL,Type.STRING); $type = Type.STRING; }
   | TRUE                          { ch.st($TRUE,Type.BOOL);             $type = Type.BOOL;   }
