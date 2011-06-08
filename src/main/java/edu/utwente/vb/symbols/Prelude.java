@@ -27,7 +27,7 @@ public class Prelude {
 		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("and", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("or", BOOL, BOOL, BOOL));
-		builder.add(createFunctionId("!", Type.BOOL, createVariableId("rhs", Type.BOOL));
+		builder.add(createFunctionId("!", Type.BOOL, createVariableId("rhs", Type.BOOL)));
 		// int
 		builder.add(createBuiltin("+", INT, INT, INT));
 		builder.add(createBuiltin("-", INT, INT, INT));

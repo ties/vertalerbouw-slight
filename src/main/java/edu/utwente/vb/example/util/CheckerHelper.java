@@ -1,6 +1,7 @@
 package edu.utwente.vb.example.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.runtime.CommonToken;
@@ -165,7 +166,7 @@ public class CheckerHelper {
 		
 		FunctionId funcId = new FunctionId(node, returnType, ids);
 		
-		log.debug("declareFunction " + node + " (" + Objects.toStringHelper(params) +  ") -> "  + returnType);
+		log.debug("declareFunction " + node + " (" + params.toString() +  ") -> "  + returnType);
 		
 		symbolTable.put(funcId);
 	}
