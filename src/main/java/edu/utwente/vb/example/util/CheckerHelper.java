@@ -85,11 +85,12 @@ public class CheckerHelper {
 	 * @param node node to set the type on
 	 * @param type type to set
 	 */
-	public void st(TypedNode node, Type type) {
+	public Type st(TypedNode node, Type type) {
 		checkNotNull(node); 
 		checkNotNull(type);
 		log.debug("st: " + node + " as " + type);
 		((TypedNode) node).setType(type);
+		return type;
 	}
 	
 	/**
@@ -170,22 +171,6 @@ public class CheckerHelper {
 		symbolTable.put(funcId);
 	}
 	
-	/**
-	 * Method to identify the type of a variable. Throws exception if variable is not found within reachable scopes.
-	 * @param identifier
-	 * @return the type of the variable which name matches identifier
-	 * @throws SymbolTableException 
-	 */
-	public Type getVarType(String identifier) throws SymbolTableException{
-		log.debug("getVarType " + identifier);
-		
-		return symbolTable.apply(identifier).getType();
-	}
-	
-	public Type getFuncType(String id, List<Type> applied) throws SymbolTableException{
-		FunctionId function = symbolTable.apply(id, applied);
-		return function.getType();
-	}
 	
 	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) throws IncompatibleTypesException {
 		if(!lhs.getNodeType().equals(rhs.getNodeType())){
@@ -194,6 +179,44 @@ public class CheckerHelper {
 		log.debug("inferBecomes " + root + " lhs: " + lhs + " rhs: " + rhs);
 		
 		root.setType(lhs.getNodeType());
+	}
+	
+	/**
+	 * Apply a function/operator (given its arguments) and return the type
+	 * @param operator
+	 * @param applied
+	 * @return
+	 * @throws SymbolTableException
+	 */
+	public Type apply(TypedNode operator, TypedNode... applied) throws SymbolTableException{
+		return symbolTable.apply(operator.getText(), TypedNode.extractTypes(applied)).getType();
+	}
+	
+	public Type apply(TypedNode operator, List<Type> applied) throws SymbolTableException{
+		return symbolTable.apply(operator.getText(), applied).getType();
+	}
+	
+	public Type apply(TypedNode operator, Type... applied) throws SymbolTableException{
+		return symbolTable.apply(operator.getText(), applied).getType();
+	}
+	
+	public Type apply(String op, List<Type> applied) throws SymbolTableException{
+		return symbolTable.apply(op, applied).getType();
+	}
+	
+	public Type apply(String op, Type... applied) throws SymbolTableException{
+		return symbolTable.apply(op, applied).getType();
+	}
+	
+	/**
+	 * Method to identify the type of a variable. Throws exception if variable is not found within reachable scopes.
+	 * @param identifier
+	 * @return the type of the variable which name matches identifier
+	 * @throws SymbolTableException 
+	 */
+	public Type apply(String identifier) throws SymbolTableException{
+		log.debug("getVarType " + identifier);	
+		return symbolTable.apply(identifier).getType();
 	}
 	
 	/**
