@@ -235,6 +235,10 @@ public class CheckerHelper {
 		return types[0];
 	}
 	
+	public Type testTypes(List<TypedNode> nodes) throws IncompatibleTypesException{
+		return testTypes(TypedNode.extractTypes(nodes).toArray(new Type[0]));
+	}
+	
 	/**
 	 * Throws exception if two given types are equal
 	 * @param type1
