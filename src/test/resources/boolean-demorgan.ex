@@ -7,9 +7,9 @@
 #
 def deMorgan(bool a, bool b):
 	if(!(a and b) and (!a or !b)):
-		return true
+		return True
 	else:
-		return false
+		return False
 
 deMorgan(True, True)
 deMorgan(False, False)

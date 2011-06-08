@@ -15,8 +15,7 @@ print(hoger(1, 2))
 
 #functie zonder parameter aanmaken
 def verlagen():
-	c = c - 1
+	var c = 5 - 1
 
 #functie zonder parameter aanroepen
-c = 2
 verlagen()
