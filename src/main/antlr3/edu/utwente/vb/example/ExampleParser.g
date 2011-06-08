@@ -150,7 +150,7 @@ atom
   | FALSE;
 
 paren
-  : LPAREN! expression RPAREN!
+  : LPAREN expression RPAREN -> ^(PAREN expression)
   ;
   
 variable

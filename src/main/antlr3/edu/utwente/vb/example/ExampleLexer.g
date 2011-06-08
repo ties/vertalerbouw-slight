@@ -22,6 +22,7 @@ tokens {
   INFERVAR;
   INFERCONST;
   NEGATIVE;
+  PAREN;
 }
 
 @header{

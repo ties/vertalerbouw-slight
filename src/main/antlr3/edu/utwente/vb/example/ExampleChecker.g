@@ -166,102 +166,92 @@ parameterDef returns[Type type, TypedNode node]
   : ^(FORMAL primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $primitive.type); ch.st($FORMAL, $primitive.type); $node=$FORMAL; $type=$primitive.type; }
   ; 
 
-closedCompoundExpression returns[Type type]
+closedCompoundExpression returns[Type type, Type returns]
   @init{
     List<compoundExpression_return> coex = new ArrayList<compoundExpression_return>();
   }
   : { ch.openScope(); } ^(SCOPE (ce=compoundExpression { coex.add(ce); })*) { ch.closeScope(); }
     {
     //Standaard return type
-    $type = Type.UNKNOWN;
+    $type = Type.VOID;
+    $returns = Type.UNKNOWN;
     //Nu alle 
     for(compoundExpression_return cer: coex){//alle compound expressies
-        log.debug("checking " + cer + " type: " + cer.type + " return? " + cer.isReturn);
-        if(cer.isReturn){//het is een return
-          if($type == Type.UNKNOWN){//1e return
-            $type = cer.type;
-            log.debug("setting type to " + cer.type);
-          } else {//Alle 2..ne returns moeten zelfde type hebben als 1e
-            if(cer.type != $type){
+        log.debug("checking " + cer + " type: " + cer.type + " return: " + cer.returns);
+
+          if($returns == Type.UNKNOWN && cer.returns!=null){//1e return
+            $returns = cer.returns;
+            log.debug("setting type to " + cer.returns);
+          } else if (cer.returns != null){//Alle 2..ne returns moeten zelfde type hebben als 1e
+            if(cer.returns != $returns){
               throw new IllegalFunctionDefinitionException("Multiple return types");
             }
           }
         }
-      }
+      
       //Als type nog unknown is: Er is geen return geweest, effectieve type is dan VOID
-      $type = $type == Type.UNKNOWN ? Type.VOID : $type;
-      log.debug("end of function analysis, effective type is "  + $type);
+      $returns = $returns==Type.UNKNOWN ? Type.VOID : $returns;
+      log.debug("end of function analysis, effective type is "  + $returns);
     }
   ;
 
-compoundExpression returns [Type type, Boolean isReturn]
-  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; $isReturn=false; }
-  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; $isReturn=false; }
-  | ^(ret=RETURN expr=expression) {$type = $expr.type; $isReturn=true; }
+compoundExpression returns [Type type, Type returns]
+  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; }
+  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; }
+  | ^(ret=RETURN expr=expression) {$returns = $type = $expr.type; }
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression returns [Type type]
-  : ^(BECOMES lhs=orExpression rhs=expression)
+expression returns [Type type, Type returns]
+  : ^(op=BECOMES lhs=orExpression rhs=expression)
     { ch.testTypes($lhs.type, $rhs.type);
       ch.st($rhs.tree, $rhs.type);
-      $type = $rhs.type;
+      $type = ch.apply($op, $lhs.tree, $rhs.tree);
     }
   | base=orExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    { ch.st($base.tree, $base.type);
+      $returns = $type = $base.type;
     }    
   ;
 
-orExpression returns [Type type]
-  : ^(OR base=andExpression sec=orExpression)
-    { ch.testTypes($base.type, Type.BOOL);
-      ch.testTypes($sec.type, Type.BOOL);
-      ch.st($base.tree, $base.type);
+orExpression returns [Type type, Type returns]
+  : ^(op=OR base=andExpression sec=orExpression)
+    { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
-      $type = Type.BOOL;
+      $type = ch.apply($op, $base.tree, $sec.tree);
     }
   | base=andExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    { ch.st($base.tree, $base.type);
+      $returns = $type = $base.type;
     }      
   ;
   
-andExpression returns [Type type]
-  : ^(AND base=equationExpression sec=andExpression)
-    { ch.testTypes($base.type, Type.BOOL);
-      ch.testTypes($sec.type, Type.BOOL);
-      ch.st($base.tree, $base.type);
+andExpression returns [Type type, Type returns]
+  : ^(op=AND base=equationExpression sec=andExpression)
+    { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
-      $type = Type.BOOL;
+      $type = ch.apply($op, $base.tree, $sec.tree);
     }
   | base=equationExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    { ch.st($base.tree, $base.type);
+      $returns = $type = $base.type;
     }          
   ;
 
-equationExpression returns [Type type]
-  : ^((LTEQ | GTEQ | GT | LT) base=plusExpression sec=equationExpression)
-    { ch.testTypes($base.type, Type.INT);
-      ch.testTypes($base.type, $sec.type);
-      ch.st($base.tree, $base.type);
-      $type = $base.type;
-    }
-  | ^((EQ | NOTEQ) base=plusExpression sec=equationExpression)
-    { ch.testNotType($base.type, Type.VOID);
-      ch.testTypes($base.type, $sec.type);
-      ch.st($base.tree, $base.type);
-      $type = $base.type;
+equationExpression returns [Type type, Type returns]
+  : ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=plusExpression sec=equationExpression)
+    { ch.st($base.tree, $base.type);
+      ch.st($sec.tree, $sec.type);
+      $type = ch.apply($op, $base.tree, $sec.tree);
     }
   | base=plusExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    { ch.st($base.tree, $base.type);
+      $returns = $type = $base.type;
     }          
   ;
 
-plusExpression returns [Type type]
+plusExpression returns [Type type, Type returns]
   : ^(op=(PLUS|MINUS) base=multiplyExpression sec=plusExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
@@ -269,11 +259,11 @@ plusExpression returns [Type type]
     }
   | base=multiplyExpression
     { 
-      $type = ch.st($base.tree, $base.type);
+      $returns = $type = ch.st($base.tree, $base.type);
     }     
   ;
 
-multiplyExpression returns [Type type]
+multiplyExpression returns [Type type, Type returns]
   : ^(op=(MULT | DIV | MOD) base=unaryExpression sec=multiplyExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
@@ -281,11 +271,11 @@ multiplyExpression returns [Type type]
     }
   | base=unaryExpression
     {
-      $type = ch.st($base.tree, $base.type);
+      $returns = $type = ch.st($base.tree, $base.type);
     }      
   ;
 
-unaryExpression returns [Type type]
+unaryExpression returns [Type type, Type returns]
   : ^(op=NOT base=simpleExpression)
     //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
     { 
@@ -294,42 +284,49 @@ unaryExpression returns [Type type]
   
   | base=simpleExpression
     {
-      $type = ch.st($base.tree, $base.type);
+      $returns = $type = ch.st($base.tree, $base.type);
     }
   ;
   
-simpleExpression returns [Type type]
-  : atom                                     { $type = ch.st($atom.tree, $atom.type); }
+simpleExpression returns [Type type, Type returns]
+  : atom                                     { $returns = $type = ch.st($atom.tree, $atom.type); }
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | fc=functionCall                          { $type = ch.st($fc.tree, $fc.type); }
-  | variable                                 { $type = ch.st($variable.tree, $variable.type); }
-  | paren                                    { $type = ch.st($paren.tree, $paren.type); }
-  | cce=closedCompoundExpression             { $type = ch.st($cce.tree, $cce.type); }
-  | statements                               { //TODO: Wat gaan we hier doen met typen? 
-                                               $type = ch.st($statements.tree, Type.BOOL);}
+  | fc=functionCall                          { $returns = $type = ch.st($fc.tree, $fc.type); }
+  | variable                                 { $returns = $type = ch.st($variable.tree, $variable.type); }
+  | paren                                    { $returns = $type = ch.st($paren.tree, $paren.type); }
+  | cce=closedCompoundExpression             { $returns = $type = ch.st($cce.tree, $cce.type); }
+  | statements                               { $returns = $type = ch.st($statements.tree, $statements.type);}
   ;
   
-statements
-  : ifStatement
-  | whileStatement
+statements returns [Type type, Type returns]
+  : ifState=ifStatement
+    { $type = Type.VOID;
+      $returns = $ifState.type;
+    }
+  | whileState=whileStatement
+    { $type = Type.VOID;
+      $returns = $whileState.type;  
+    }
   ;
 
-ifStatement returns [Type type]
+ifStatement returns [Type type, Type returns]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
       { ch.testTypes($cond.type, Type.BOOL); 
-        $type = ch.testTypes($ifExpr.type, $elseExpr.type);
+        $type = Type.VOID;
+        $returns = ch.testTypes($ifExpr.returns, $elseExpr.returns);
       }
   ;  
     
-whileStatement returns [Type type]
+whileStatement returns [Type type, Type returns]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
       { ch.testTypes($cond.type, Type.BOOL);
-        $type = $loop.type;
+        $returns = $loop.returns;
+        $type = Type.VOID;
       }
   ;    
     
-primitive returns [Type type]
+primitive returns [Type type, Type returns]
   : VOID      { $type = Type.VOID; }
   | BOOLEAN   { $type = Type.BOOL; }
   | CHAR      { $type = Type.CHAR; }
@@ -337,7 +334,7 @@ primitive returns [Type type]
   | STRING    { $type = Type.STRING; }
   ;
 
-atom returns [Type type]
+atom returns [Type type, Type returns]
   : INT_LITERAL                   { $type = ch.st($INT_LITERAL,Type.INT); }
   | NEGATIVE INT_LITERAL          { $type = ch.st($INT_LITERAL,Type.INT); }
   | CHAR_LITERAL                  { $type = ch.st($CHAR_LITERAL,Type.CHAR); }
@@ -347,18 +344,18 @@ atom returns [Type type]
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
-paren returns [Type type]
-  : LPAREN! expression RPAREN!    { $type = ch.st($expression.tree, $expression.type); }
+paren returns [Type type, Type returns]
+  : ^(PAREN expression)           { $type = ch.st($expression.tree, $expression.type); }
   ;
   
-variable returns [Type type]
+variable returns [Type type, Type returns]
   : id=IDENTIFIER
     { /* get the type of variable and set it on the node */
       $type = ch.st($id, ch.apply(id.getText()));
     }
   ;
   
-functionCall returns [Type type]
+functionCall returns [Type type, Type returns]
   @init{
     List<Type> args = new ArrayList<Type>();
   }
