@@ -18,6 +18,7 @@ import edu.utwente.vb.tree.TypedNode;
 public class Prelude {
 	public final Set<FunctionId<TypedNode>> builtins;
 	
+	@SuppressWarnings("unchecked")
 	public Prelude() throws IllegalFunctionDefinitionException{
 		ImmutableSet.Builder<FunctionId<TypedNode>> builder = ImmutableSet.builder();
 		//Voeg operatoren toe
@@ -26,6 +27,7 @@ public class Prelude {
 		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("and", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("or", BOOL, BOOL, BOOL));
+		builder.add(createFunctionId("!", Type.BOOL, createVariableId("rhs", Type.BOOL));
 		// int
 		builder.add(createBuiltin("+", INT, INT, INT));
 		builder.add(createBuiltin("-", INT, INT, INT));

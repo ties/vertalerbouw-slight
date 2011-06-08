@@ -188,10 +188,12 @@ public class CheckerHelper {
 	}
 	
 	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) throws IncompatibleTypesException {
-		if(!lhs.getNodeType().equals(rhs.getNodeType())){
+		log.debug("inferBecomes " + root + " lhs: " + lhs + " rhs: " + rhs);
+		if(lhs.getNodeType() != Type.UNKNOWN){
+			lhs.setNodeType(rhs.getNodeType());
+		} else if(lhs.getNodeType().equals(rhs.getNodeType())){
 			throw new IncompatibleTypesException(root, "type " + rhs.getNodeType() + " cannot be assigned to variable of type " + lhs.getNodeType());
 		}
-		log.debug("inferBecomes " + root + " lhs: " + lhs + " rhs: " + rhs);
 		
 		root.setType(lhs.getNodeType());
 	}
