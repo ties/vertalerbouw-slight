@@ -317,15 +317,15 @@ statements
 
 ifStatement returns [Type type]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
-      { ch.testTypes(cond.type, Type.BOOL); 
-        $type = ch.testTypes(ifExpr.type, elseExpr.type);
+      { ch.testTypes($cond.type, Type.BOOL); 
+        $type = ch.testTypes($ifExpr.type, $elseExpr.type);
       }
   ;  
     
-whileStatement
+whileStatement returns [Type type]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
-      { ch.testTypes(cond.type, Type.BOOL);
-        $type = loop.type;
+      { ch.testTypes($cond.type, Type.BOOL);
+        $type = $loop.type;
       }
   ;    
     
