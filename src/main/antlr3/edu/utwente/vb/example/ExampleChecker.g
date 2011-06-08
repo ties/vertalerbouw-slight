@@ -122,13 +122,18 @@ functionDef returns [Type type]
     List<parameterDef_return> pl = new ArrayList<parameterDef_return>();
   }
   //Hack, voor closedcompoundexpression function declareren, anders wordt de function niet herkend in geval van recursion
-  : { ch.openScope(); } ^(FUNCTION IDENTIFIER (p=parameterDef { pl.add(p); })* 
+  : { ch.openScope(); } ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef { pl.add(p); })* 
      { List<TypedNode> nodes = new ArrayList<TypedNode>();
       
-       for(parameterDef_return ret : pl)
-         nodes.add(ret.node);
-      
-      ch.declareFunction($IDENTIFIER, Type.UNKNOWN, nodes);
+        for(parameterDef_return ret : pl)
+          nodes.add(ret.node);
+        
+        if(t!=null){
+          $type = t.type;
+          ch.declareFunction($IDENTIFIER, $type, nodes);
+        }else{
+          ch.declareFunction($IDENTIFIER, Type.UNKNOWN, nodes);
+        }
 
      }  
   returnTypeNode=closedCompoundExpression) 
@@ -137,11 +142,17 @@ functionDef returns [Type type]
       
        for(parameterDef_return ret : pl)
          nodes.add(ret.node);
-         
-      ch.st($FUNCTION, returnTypeNode.type);
-      $type = returnTypeNode.type;
+      
+      if($type != null && !$type.equals(returnTypeNode.type)){
+        throw new IllegalFunctionDefinitionException("Return type in function body does not match defined return type");
+      } else {
+        $type = returnTypeNode.type;
+      }
+      
+      ch.st($FUNCTION, $type);
+      
       ch.closeScope();
-      ch.declareFunction($IDENTIFIER, returnTypeNode.type, nodes);
+      ch.declareFunction($IDENTIFIER, $type, nodes);
     }
   ;
   
@@ -154,15 +165,17 @@ closedCompoundExpression returns[Type type]
     List<compoundExpression_return> coex = new ArrayList<compoundExpression_return>();
   }
   : { ch.openScope(); } ^(SCOPE (ce=compoundExpression { coex.add(ce); })*) { ch.closeScope(); }
-    { List<Boolean> retList = new ArrayList<Boolean>();
-      for(compoundExpression_return cer: coex){
-        retList.add(cer.isReturn);
+    { for(compoundExpression_return cer: coex){//alle compound expressies
+        if(cer.isReturn){//het is een return
+          if($type == null){//1e return
+            $type = cer.type;
+          } else {//Alle 2..ne returns moeten zelfde type hebben als 1e
+            if(cer.type != $type){
+              throw new IllegalFunctionDefinitionException("Multiple return types");
+            }
+          }
+        }
       }
-      Type returnType = Type.VOID;
-      if(retList.contains(true)){
-        returnType = coex.get(retList.indexOf(true)).type;
-      }
-      $type=returnType;
     }
   ;
 

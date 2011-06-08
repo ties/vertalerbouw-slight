@@ -56,7 +56,7 @@ constantValueDeclaration
   : BECOMES atom;
   
 functionDef
-  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN COLON closedCompoundExpression -> ^(FUNCTION IDENTIFIER parameterDef* closedCompoundExpression)
+  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression -> ^(FUNCTION primitive? IDENTIFIER parameterDef*  closedCompoundExpression)
   ;
   
 parameterDef
