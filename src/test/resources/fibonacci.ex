@@ -6,7 +6,7 @@
 #f(0) = 0
 #f(1) = 1
 #f(n) = f(n - 1) + f(n - 2)
-def fibonacci(int n):
+def fibonacci(int n) -> int:
 	if n == 0:
 		return 0
 	if n == 1:

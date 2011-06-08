@@ -94,21 +94,21 @@ declaration returns [Type type]
   | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
       { if(run==null){
           ch.declareVar($IDENTIFIER, Type.UNKNOWN);
-          ch.st($INFERVAR, Type.UNKNOWN);
+          $type = ch.st($INFERVAR, Type.UNKNOWN);
         }else{
           Type type = $run.type;
           ch.declareVar($IDENTIFIER, type);
-          ch.st($INFERVAR, type);
+          $type = ch.st($INFERVAR, type);
         }
       }
   | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) 
       { if(cons==null){
           ch.declareVar($IDENTIFIER, Type.UNKNOWN); 
-          ch.st($INFERCONST, Type.UNKNOWN); 
+          $type = ch.st($INFERCONST, Type.UNKNOWN); 
         }else{
           Type type = $cons.type;
           ch.declareVar($IDENTIFIER, type);
-          ch.st($INFERCONST, type);
+          $type = ch.st($INFERCONST, type);
         }
       }
   ;
