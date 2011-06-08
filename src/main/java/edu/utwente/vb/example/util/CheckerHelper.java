@@ -229,7 +229,7 @@ public class CheckerHelper {
 	 */
 	public Type testTypes(Type... types) throws IncompatibleTypesException{
 		for(int i = 0; i < checkNotNull(types).length; i++){
-			if(!checkNotNull(types[i]).equals(types[(i + 1) % types.length]))
+			if(!checkNotNull(types[i]).equals(checkNotNull(types[(i + 1) % types.length])))
 				throw new IncompatibleTypesException("type " + types[i] + " ander type dan RHS " + types[i+1]);
 		}
 		return types[0];
