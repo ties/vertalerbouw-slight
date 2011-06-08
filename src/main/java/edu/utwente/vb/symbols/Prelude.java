@@ -22,6 +22,11 @@ public class Prelude {
 	public Prelude() throws IllegalFunctionDefinitionException{
 		ImmutableSet.Builder<FunctionId<TypedNode>> builder = ImmutableSet.builder();
 		//Voeg operatoren toe
+		// apply/becomes varianten
+		builder.add(createBuiltin("=", BOOL, BOOL, BOOL));
+		builder.add(createBuiltin("=", INT, INT, INT));
+		builder.add(createBuiltin("=", CHAR, CHAR, CHAR));
+		builder.add(createBuiltin("=", STRING, STRING, STRING));
 		// boolean
 		builder.add(createBuiltin("==", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
