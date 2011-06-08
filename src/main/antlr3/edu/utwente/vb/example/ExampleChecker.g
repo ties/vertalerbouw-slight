@@ -24,6 +24,11 @@ options {
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
   
+  /** Logger */
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
+  
+  
   import static com.google.common.base.Preconditions.checkNotNull;
 }
 
@@ -38,6 +43,7 @@ options {
 
 @members{
   private CheckerHelper ch;
+  private Logger log = LoggerFactory.getLogger(ExampleChecker.class);
 
   /** 
   * Compositie met hulp van een CheckerHelper. In members stoppen is onhandig;
@@ -144,7 +150,7 @@ functionDef returns [Type type]
          nodes.add(ret.node);
       
       if($type != null && !$type.equals(returnTypeNode.type)){
-        throw new IllegalFunctionDefinitionException("Return type in function body does not match defined return type");
+        throw new IllegalFunctionDefinitionException("Return type in function body (" +returnTypeNode.type + ") does not match defined return type (" + $type +")");
       } else {
         $type = returnTypeNode.type;
       }
@@ -165,10 +171,16 @@ closedCompoundExpression returns[Type type]
     List<compoundExpression_return> coex = new ArrayList<compoundExpression_return>();
   }
   : { ch.openScope(); } ^(SCOPE (ce=compoundExpression { coex.add(ce); })*) { ch.closeScope(); }
-    { for(compoundExpression_return cer: coex){//alle compound expressies
+    {
+    //Standaard return type
+    $type = Type.UNKNOWN;
+    //Nu alle 
+    for(compoundExpression_return cer: coex){//alle compound expressies
+        log.debug("checking " + cer + " type: " + cer.type + " return? " + cer.isReturn);
         if(cer.isReturn){//het is een return
-          if($type == null){//1e return
+          if($type == Type.UNKNOWN){//1e return
             $type = cer.type;
+            log.debug("setting type to " + cer.type);
           } else {//Alle 2..ne returns moeten zelfde type hebben als 1e
             if(cer.type != $type){
               throw new IllegalFunctionDefinitionException("Multiple return types");
@@ -176,6 +188,9 @@ closedCompoundExpression returns[Type type]
           }
         }
       }
+      //Als type nog unknown is: Er is geen return geweest, effectieve type is dan VOID
+      $type = $type == Type.UNKNOWN ? Type.VOID : $type;
+      log.debug("end of function analysis, effective type is "  + $type);
     }
   ;
 
@@ -300,12 +315,18 @@ statements
   | whileStatement
   ;
 
-ifStatement
-  : ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
+ifStatement returns [Type type]
+  : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
+      { ch.testTypes(cond.type, Type.BOOL); 
+        $type = ch.testTypes(ifExpr.type, elseExpr.type);
+      }
   ;  
     
 whileStatement
-  : ^(WHILE expression closedCompoundExpression)
+  : ^(WHILE cond=expression loop=closedCompoundExpression)
+      { ch.testTypes(cond.type, Type.BOOL);
+        $type = loop.type;
+      }
   ;    
     
 primitive returns [Type type]
