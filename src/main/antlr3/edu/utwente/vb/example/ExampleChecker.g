@@ -166,7 +166,7 @@ parameterDef returns[Type type, TypedNode node]
   : ^(FORMAL primitive IDENTIFIER) { ch.declareVar($IDENTIFIER, $primitive.type); ch.st($FORMAL, $primitive.type); $node=$FORMAL; $type=$primitive.type; }
   ; 
 
-closedCompoundExpression returns[Type type]
+closedCompoundExpression returns[Type type, Boolean hasReturn]
   @init{
     List<compoundExpression_return> coex = new ArrayList<compoundExpression_return>();
   }
@@ -174,10 +174,12 @@ closedCompoundExpression returns[Type type]
     {
     //Standaard return type
     $type = Type.UNKNOWN;
+    $hasReturn = false;
     //Nu alle 
     for(compoundExpression_return cer: coex){//alle compound expressies
         log.debug("checking " + cer + " type: " + cer.type + " return? " + cer.isReturn);
-        if(cer.isReturn){//het is een return
+        if(cer.isReturn || cer.hasReturn){//het is een return of heeft een return dieper in zijn boomstructuur liggen
+          $hasReturn = true;
           if($type == Type.UNKNOWN){//1e return
             $type = cer.type;
             log.debug("setting type to " + cer.type);
@@ -194,135 +196,154 @@ closedCompoundExpression returns[Type type]
     }
   ;
 
-compoundExpression returns [Type type, Boolean isReturn]
-  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; $isReturn=false; }
-  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; $isReturn=false; }
-  | ^(ret=RETURN expr=expression) {$type = $expr.type; $isReturn=true; }
+compoundExpression returns [Type type, Boolean isReturn, Boolean hasReturn]
+  : expr=expression { ch.st($expr.tree, $expr.type); $type = $expr.type; $isReturn=false; $hasReturn=$expr.hasReturn; }
+  | dec=declaration { ch.st($dec.tree, $dec.type); $type = $dec.type; $isReturn=false; $hasReturn=false; }
+  | ^(ret=RETURN expr=expression) { $type = $expr.type; $isReturn=true; $hasReturn=$expr.hasReturn; }
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression returns [Type type]
+expression returns [Type type, Boolean hasReturn]
   : ^(op=BECOMES lhs=orExpression rhs=expression)
-    { ch.testTypes($lhs.type, $rhs.type);
-      ch.st($rhs.tree, $rhs.type);
-      $type = $rhs.type;
+    { ch.st($rhs.tree, $rhs.type);
+      ch.st($lhs.tree, $lhs.type);
       $type = ch.apply($op, $lhs.tree, $rhs.tree);
+      $hasReturn=false;
     }
   | base=orExpression
     {ch.st($base.tree, $base.type);
       $type = $base.type;
+      $hasReturn=$base.hasReturn;
     }    
   ;
 
-orExpression returns [Type type]
+orExpression returns [Type type, Boolean hasReturn]
   : ^(op=OR base=andExpression sec=orExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
       $type = ch.apply($op, $base.tree, $sec.tree);
+      $hasReturn=false;
     }
   | base=andExpression
     {ch.st($base.tree, $base.type);
       $type = $base.type;
+      $hasReturn=$base.hasReturn;
     }      
   ;
   
-andExpression returns [Type type]
+andExpression returns [Type type, Boolean hasReturn]
   : ^(op=AND base=equationExpression sec=andExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
       $type = ch.apply($op, $base.tree, $sec.tree);
+      $hasReturn=false;
     }
   | base=equationExpression
     {ch.st($base.tree, $base.type);
       $type = $base.type;
+      $hasReturn=$base.hasReturn;
     }          
   ;
 
-equationExpression returns [Type type]
+equationExpression returns [Type type, Boolean hasReturn]
   : ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=plusExpression sec=equationExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
       $type = ch.apply($op, $base.tree, $sec.tree);
+      $hasReturn=false;
     }
   | base=plusExpression
     {ch.st($base.tree, $base.type);
       $type = $base.type;
+      $hasReturn=$base.hasReturn;
     }          
   ;
 
-plusExpression returns [Type type]
+plusExpression returns [Type type, Boolean hasReturn]
   : ^(op=(PLUS|MINUS) base=multiplyExpression sec=plusExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
       $type = ch.apply($op, $base.tree, $sec.tree);
+      $hasReturn=false;
     }
   | base=multiplyExpression
     { 
       $type = ch.st($base.tree, $base.type);
+      $hasReturn=$base.hasReturn;
     }     
   ;
 
-multiplyExpression returns [Type type]
+multiplyExpression returns [Type type, Boolean hasReturn]
   : ^(op=(MULT | DIV | MOD) base=unaryExpression sec=multiplyExpression)
     { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
       $type = ch.apply($op, $base.tree, $sec.tree);
+      $hasReturn=false;
     }
   | base=unaryExpression
     {
       $type = ch.st($base.tree, $base.type);
+      $hasReturn=$base.hasReturn;
     }      
   ;
 
-unaryExpression returns [Type type]
+unaryExpression returns [Type type, Boolean hasReturn]
   : ^(op=NOT base=simpleExpression)
     //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
-    { 
-      $type = ch.apply($op, ch.st($base.tree, $base.type));
+    { $type = ch.apply($op, ch.st($base.tree, $base.type));
+      $hasReturn=false;
      }
   
   | base=simpleExpression
     {
       $type = ch.st($base.tree, $base.type);
+      $hasReturn=$base.hasReturn;
     }
   ;
   
-simpleExpression returns [Type type]
-  : atom                                     { $type = ch.st($atom.tree, $atom.type); }
+simpleExpression returns [Type type, Boolean hasReturn]
+  : atom                                     { $type = ch.st($atom.tree, $atom.type); $hasReturn=false;}
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | fc=functionCall                          { $type = ch.st($fc.tree, $fc.type); }
-  | variable                                 { $type = ch.st($variable.tree, $variable.type); }
-  | paren                                    { $type = ch.st($paren.tree, $paren.type); }
-  | cce=closedCompoundExpression             { $type = ch.st($cce.tree, $cce.type); }
-  | statements                               { $type = ch.st($statements.tree, $statements.type);}
+  | fc=functionCall                          { $type = ch.st($fc.tree, $fc.type); $hasReturn=false;}
+  | variable                                 { $type = ch.st($variable.tree, $variable.type); $hasReturn=false;}
+  | paren                                    { $type = ch.st($paren.tree, $paren.type); $hasReturn=false;}
+  | cce=closedCompoundExpression             { $type = ch.st($cce.tree, $cce.type); $hasReturn=false;}
+  | s=statements                             { $type = ch.st($s.tree, $s.type); $hasReturn=$s.hasReturn;}
   ;
   
-statements returns [Type type]
+statements returns [Type type, Boolean hasReturn]
   : ifState=ifStatement
-    { $type = ch.st($ifState.tree, $ifState.type); }
+    { $type = ch.st($ifState.tree, $ifState.type); 
+      $hasReturn = $ifState.hasReturn;
+    }
   | whileState=whileStatement
-    { $type = ch.st($whileState.tree, $whileState.type); }
+    { $type = ch.st($whileState.tree, $whileState.type);
+      $hasReturn = $whileState.hasReturn; 
+    }
     
   ;
 
-ifStatement returns [Type type]
+ifStatement returns [Type type, Boolean hasReturn]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
       { ch.testTypes($cond.type, Type.BOOL);
         if(elseExpr==null){
           $type = ch.st($ifExpr.tree, $ifExpr.type);
+          $hasReturn = $ifExpr.hasReturn;
         }else{
           ch.st($ifExpr.tree, $ifExpr.type);
           $type = ch.testTypes($ifExpr.type, $elseExpr.type);
+          $hasReturn = $ifExpr.hasReturn && $elseExpr.hasReturn;
         }
       }
   ;  
     
-whileStatement returns [Type type]
+whileStatement returns [Type type, Boolean hasReturn]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
       { ch.testTypes($cond.type, Type.BOOL);
         $type = $loop.type;
+        $hasReturn = $loop.hasReturn;
       }
   ;    
     
