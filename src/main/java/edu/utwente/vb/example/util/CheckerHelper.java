@@ -227,10 +227,11 @@ public class CheckerHelper {
 	 * @param type1
 	 * @param type2
 	 */
-	public void testTypes(Type type1, Type type2) {
-		if(!type1.equals(type2)){
-			//throw new IncompatibleTypesException("LHS " + type1 + " ander type dan RHS " + type2);
+	public Type testTypes(Type t1, Type t2) throws IncompatibleTypesException{
+		if(!checkNotNull(t1).equals(t2)){
+			throw new IncompatibleTypesException("LHS " + t1 + " ander type dan RHS " + t2);
 		}
+		return t1;
 	}
 	
 	/**
@@ -238,11 +239,9 @@ public class CheckerHelper {
 	 * @param type1
 	 * @param type2
 	 */
-	public void testNotType(Type type1, Type type2) {
-		if(!type1.equals(type2)){
-			//TODO: Een exceptie gooien 
-			
-			//throw new IncompatibleTypesException("LHS " + type1 + " ander type dan RHS " + type2);
+	public void testNotType(Type t1, Type t2) throws IncompatibleTypesException{
+		if(checkNotNull(t1).equals(t2)){
+			throw new IncompatibleTypesException("LHS " + t1 + " ander type dan RHS " + t2);
 		}
 	}
 	
