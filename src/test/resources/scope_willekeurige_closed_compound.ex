@@ -5,9 +5,7 @@
 #
 print('a')
 	# open een willekeurige scope
-	int a = 3
+	var int a = 3
 print('b')
-	int a = 4
+	var int a = 4
 	# weer een willekeurige scope
-# a zou niet moeten bestaan!
-print(a)
