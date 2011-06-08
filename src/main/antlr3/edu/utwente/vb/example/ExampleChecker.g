@@ -234,56 +234,52 @@ equationExpression returns [Type type]
   ;
 
 plusExpression returns [Type type]
-  : ^((PLUS|MINUS) base=multiplyExpression sec=plusExpression)
-    { ch.testTypes($base.type, Type.INT);
-      ch.testTypes($sec.type, Type.INT);
-      ch.st($base.tree, $base.type);
+  : ^(op=(PLUS|MINUS) base=multiplyExpression sec=plusExpression)
+    { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
-      $type = $base.type;
+      $type = ch.apply($op, $base.tree, $sec.tree);
     }
   | base=multiplyExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    { 
+      $type = ch.st($base.tree, $base.type);
     }     
   ;
 
 multiplyExpression returns [Type type]
-  : ^((MULT | DIV | MOD) base=unaryExpression sec=multiplyExpression)
-    { ch.testTypes($base.type, Type.INT);
-      ch.testTypes($sec.type, Type.INT);
-      ch.st($base.tree, $base.type);
+  : ^(op=(MULT | DIV | MOD) base=unaryExpression sec=multiplyExpression)
+    { ch.st($base.tree, $base.type);
       ch.st($sec.tree, $sec.type);
-      $type = $base.type;
+      $type = ch.apply($op, $base.tree, $sec.tree);
     }
   | base=unaryExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    {
+      $type = ch.st($base.tree, $base.type);
     }      
   ;
 
 unaryExpression returns [Type type]
   : ^(op=NOT base=simpleExpression)
     //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
-    { ch.testTypes($base.type, Type.BOOL);
-      $type = $base.type;
+    { 
+      $type = ch.apply($op, ch.st($base.tree, $base.type));
      }
   
   | base=simpleExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
+    {
+      $type = ch.st($base.tree, $base.type);
     }
   ;
   
 simpleExpression returns [Type type]
-  : atom                                     { ch.st($atom.tree, $atom.type); $type = $atom.type; }
+  : atom                                     { $type = ch.st($atom.tree, $atom.type); }
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | fc=functionCall                          { ch.st($fc.tree, $fc.type); $type = $fc.type; }
-  | variable                                 { ch.st($variable.tree, $variable.type); $type = $variable.type; }
-  | paren                                    { ch.st($paren.tree, $paren.type); $type = $paren.type; }
-  | cce=closedCompoundExpression             { ch.st($cce.tree, $cce.type); $type = $cce.type; }
+  | fc=functionCall                          { $type = ch.st($fc.tree, $fc.type); }
+  | variable                                 { $type = ch.st($variable.tree, $variable.type); }
+  | paren                                    { $type = ch.st($paren.tree, $paren.type); }
+  | cce=closedCompoundExpression             { $type = ch.st($cce.tree, $cce.type); }
   | statements                               { //TODO: Wat gaan we hier doen met typen? 
-                                               ch.st($statements.tree, Type.BOOL); $type = Type.BOOL; }
+                                               $type = ch.st($statements.tree, Type.BOOL);}
   ;
   
 statements
@@ -308,24 +304,23 @@ primitive returns [Type type]
   ;
 
 atom returns [Type type]
-  : INT_LITERAL                   { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
-  | NEGATIVE INT_LITERAL          { ch.st($INT_LITERAL,Type.INT);       $type = Type.INT;    }
-  | CHAR_LITERAL                  { ch.st($CHAR_LITERAL,Type.CHAR);     $type = Type.CHAR;   }
-  | STRING_LITERAL                { ch.st($STRING_LITERAL,Type.STRING); $type = Type.STRING; }
-  | TRUE                          { ch.st($TRUE,Type.BOOL);             $type = Type.BOOL;   }
-  | FALSE                         { ch.st($FALSE,Type.BOOL);            $type = Type.BOOL;   }
+  : INT_LITERAL                   { $type = ch.st($INT_LITERAL,Type.INT); }
+  | NEGATIVE INT_LITERAL          { $type = ch.st($INT_LITERAL,Type.INT); }
+  | CHAR_LITERAL                  { $type = ch.st($CHAR_LITERAL,Type.CHAR); }
+  | STRING_LITERAL                { $type = ch.st($STRING_LITERAL,Type.STRING); }
+  | TRUE                          { $type = ch.st($TRUE,Type.BOOL); }
+  | FALSE                         { $type = ch.st($FALSE,Type.BOOL); }
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
 paren returns [Type type]
-  : LPAREN! expression RPAREN!    { ch.st($expression.tree, $expression.type); $type = $expression.type; }
+  : LPAREN! expression RPAREN!    { $type = ch.st($expression.tree, $expression.type); }
   ;
   
 variable returns [Type type]
   : id=IDENTIFIER
-    { Type varType = ch.getVarType(id.getText());
-      ch.st($id, varType);
-      $type = varType;
+    { /* get the type of variable and set it on the node */
+      $type = ch.st($id, ch.apply(id.getText()));
     }
   ;
   
@@ -334,6 +329,6 @@ functionCall returns [Type type]
     List<Type> args = new ArrayList<Type>();
   }
   : ^(CALL id=IDENTIFIER (ex=expression {args.add($ex.type);})*)
-    { $type = ch.getFuncType($id.text, args);
+    { $type = ch.apply($id.text, args);
     }
   ; 
