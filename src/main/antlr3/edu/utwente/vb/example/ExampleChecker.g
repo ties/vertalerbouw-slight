@@ -217,7 +217,7 @@ compoundExpression returns [Type type, Boolean isReturn, Boolean hasReturn]
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression returns [Type type, Boolean hasReturn]
-  : ^(op=BECOMES base=expression sec=expression) { if($base.type==Type.UNKNOWN) ch.changeType($base, $sec.type); basebasech.st($sec.tree, $sec.type); ch.st($base.tree, $base.type); $type = ch.applyBecomes($base.tree, $sec.tree); $hasReturn=false; }
+  : ^(op=BECOMES base=expression sec=expression) { if($base.type==Type.UNKNOWN) ch.changeType($base.tree, $sec.type); ch.st($sec.tree, $sec.type); ch.st($base.tree, $base.type); $type = ch.applyBecomes($base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=OR base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=AND base=expression sec=expression)  { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }

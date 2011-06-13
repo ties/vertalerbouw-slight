@@ -173,6 +173,17 @@ public class CheckerHelper {
 		symbolTable.put(funcId);
 	}
 	
+	/**
+	 * Changes the type of the given variable to the given type
+	 * @param node
+	 * @param type
+	 * @throws SymbolTableException
+	 */
+	public void changeType(TypedNode node, Type type) throws SymbolTableException{
+		String varName = node.getText();
+		VariableId<TypedNode> var = symbolTable.apply(varName);
+		var.updateType(type);
+	}
 	
 	/**
 	 * Use of an assignment
