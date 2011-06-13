@@ -21,4 +21,6 @@ public interface Id<T extends BaseTree> {
 	public boolean equals(Object obj);
 	
 	public boolean equalsSignature(String name, Type... params);
+	
+	public void updateType(Type t);
 }

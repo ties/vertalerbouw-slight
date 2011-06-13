@@ -1,6 +1,7 @@
 package edu.utwente.vb.symbols;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import org.antlr.runtime.tree.BaseTree;
 import com.google.common.base.Objects;
 
 public class VariableId<T extends BaseTree> implements Id<T>{
-	private final Type type;
+	private Type type;
 	private final T node;
 	/** Variable is a constant (ie: not assignable) */
 	private boolean constant = false;
@@ -64,5 +65,13 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	
 	public void setConstant(boolean c){
 		constant = c;
+	}
+	
+	@Override
+	public void updateType(Type t) {
+		checkArgument(!constant, "Trying to update the type of a constant");
+		checkArgument(Type.UNKNOWN.equals(this.type), "Trying to update the type of a variable which is not Type.UNKNOWN");
+		checkArgument(!Type.UNKNOWN.equals(t), "Can not update to Type.UNKNOWN");
+		this.type = t;
 	}
 }

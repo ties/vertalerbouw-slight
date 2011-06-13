@@ -56,4 +56,52 @@ public class TestIds {
 		
 		assertFalse(f1.equalsSignature("-", Type.asArray(Type.CHAR, Type.CHAR)));
 	} 
+	
+	@Test
+	public void testUpdateType() throws IllegalFunctionDefinitionException{
+		FunctionId f1 = createBuiltin("/", Type.UNKNOWN, Type.INT, Type.INT);
+		assertEquals(f1.getType(), Type.UNKNOWN);
+		
+		f1.updateType(Type.CHAR);
+		
+		assertEquals(f1.getType(), Type.CHAR);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testFunctionUpdateNotUnknown() throws IllegalFunctionDefinitionException{
+		FunctionId f1 = createBuiltin("+", Type.INT, Type.CHAR, Type.CHAR);
+		
+		f1.updateType(Type.BOOL);
+	}
+	
+	@Test
+	public void testUpdateVariableType() throws IllegalFunctionDefinitionException{
+		VariableId v1 = createVariableId("+", Type.UNKNOWN);
+		
+		assertEquals(v1.getType(), Type.UNKNOWN);
+		
+		v1.updateType(Type.INT);
+		
+		assertEquals(v1.getType(), Type.INT);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testUpdateVariableTypeNotUnknown() throws IllegalFunctionDefinitionException{
+		VariableId v1 = createVariableId("+", Type.INT);
+		v1.updateType(Type.INT);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testUpdateVariableTypeToUnknown() throws IllegalFunctionDefinitionException{
+		VariableId v1 = createVariableId("+", Type.UNKNOWN);
+		v1.updateType(Type.UNKNOWN);
+	}
+
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testFunctionUpdateToUnknown() throws IllegalFunctionDefinitionException{
+		FunctionId f1 = createBuiltin("+", Type.UNKNOWN, Type.CHAR, Type.CHAR);
+		
+		f1.updateType(Type.UNKNOWN);
+	}
 }

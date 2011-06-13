@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FunctionId<T extends BaseTree> implements Id<T>{
@@ -110,5 +111,15 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 				return input.getType();
 			}
 		});
+	}
+	
+	/**
+	 * Update het return type van deze methode 
+	 */
+	@Override
+	public void updateType(Type t) {
+		checkArgument(Type.UNKNOWN.equals(this.returnType), "Return type is not unknown");
+		checkArgument(!Type.UNKNOWN.equals(t), "Can not update to type UNKNOWN");
+		this.returnType = t;
 	}
 }
