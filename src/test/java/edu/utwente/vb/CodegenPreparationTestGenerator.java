@@ -36,9 +36,13 @@ public class CodegenPreparationTestGenerator {
 			values.put("rule", "program");
 			values.put("filename", f.getName());
 			//
-			if(values.containsKey("expected") || values.containsKey("checkerexpected")){
-				if(values.containsKey("checkerexpected"))
+			if(values.containsKey("expected") || values.containsKey("checkerexpected") || values.containsKey("preparationexpected")){
+				if(values.containsKey("checkerexpected")){
 					values.put("expected", values.get("checkerexpected"));
+				}
+				if(values.containsKey("preparationexpected")){
+					values.put("expected", values.get("preparationexpected"));
+				}
 				 functionTemplate = group.getInstanceOf("testCodegenPreparationWithExpected");
 			} else {
 				functionTemplate = group.getInstanceOf("testCodegenPreparation");
