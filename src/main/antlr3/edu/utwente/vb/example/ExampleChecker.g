@@ -123,15 +123,10 @@ declaration returns [Type type]
           $type = ch.st($INFERVAR, type);
         }
       }
-  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) 
-      { if(cons==null){
-          ch.declareConst($IDENTIFIER, Type.UNKNOWN); 
-          $type = ch.st($INFERCONST, Type.UNKNOWN); 
-        }else{
-          Type type = $cons.type;
-          ch.declareConst($IDENTIFIER, type);
-          $type = ch.st($INFERCONST, type);
-        }
+  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration) 
+      { Type type = $cons.type;
+        ch.declareConst($IDENTIFIER, type);
+        $type = ch.st($INFERCONST, type);
       }
   ;
   
