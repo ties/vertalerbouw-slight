@@ -77,7 +77,7 @@ public class CheckerHelper {
 	 */	
 	public void tbn(TypedNode node, String type) {
 		checkNotNull(node); checkNotNull(type);
-		log.debug("tbn: " + node + " as " + type);
+		log.debug("tbn: {} as {}", node, type);
 		((TypedNode) node).setType(Type.byName(type));
 	}
 	
@@ -89,7 +89,7 @@ public class CheckerHelper {
 	public Type st(TypedNode node, Type type) {
 		checkNotNull(node); 
 		checkNotNull(type);
-		log.debug("st: " + node + " as " + type);
+		log.debug("st: {} as {}", node, type);
 		((TypedNode) node).setType(type);
 		return type;
 	}
@@ -109,7 +109,7 @@ public class CheckerHelper {
 		
 		VariableId varId = new VariableId(node, type);
 		
-		log.debug("declareVar: " + node + " as " + type);
+		log.debug("declareVar: {} as {}", node, type);
 		
 		symbolTable.put(varId);
 	}
@@ -143,7 +143,7 @@ public class CheckerHelper {
 		VariableId varId = new VariableId(node, type);
 		varId.setConstant(true);
 		
-		log.debug("declareConst " + node + " as " + type);
+		log.debug("declareConst {} as {}", node, type);
 		
 		symbolTable.put(varId);
 	}
@@ -168,7 +168,7 @@ public class CheckerHelper {
 		
 		FunctionId funcId = new FunctionId(node, returnType, ids);
 		
-		log.debug("declareFunction " + node + " (" + params.toString() +  ") -> "  + returnType);
+		log.debug("declareFunction {} ({}) -> {}", new Object[]{node, params.toString(), returnType});
 		
 		symbolTable.put(funcId);
 	}
@@ -249,7 +249,7 @@ public class CheckerHelper {
 	 * @throws SymbolTableException 
 	 */
 	public Type apply(String identifier) throws SymbolTableException{
-		log.debug("getVarType " + identifier);	
+		log.debug("getVarType {}", identifier);	
 		return symbolTable.apply(identifier).getType();
 	}
 	
