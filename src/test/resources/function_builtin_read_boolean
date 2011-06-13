@@ -1,0 +1,3 @@
+# checkerexpected: SymbolTableException
+bool a
+read(a)

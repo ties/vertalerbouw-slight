@@ -1,0 +1,3 @@
+# checkerexpected: SymbolTableException
+const int a
+read(a)

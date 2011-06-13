@@ -1,0 +1,6 @@
+int a = 5
+char b = 'c'
+string woord = "woord"
+boolean c = True
+
+print("a=" + a + ",b=" + b + ",woord=" + woord + ",c="+c);

@@ -65,10 +65,12 @@ public class Prelude {
 		builder.add(createBuiltin(">", BOOL, CHAR, CHAR));
 		builder.add(createBuiltin(">=", BOOL, CHAR, CHAR));
 		//Builting functions
-		builder.add(createFunctionId("print", Type.VOID, createVariableId("str", Type.STRING)));
-		builder.add(createFunctionId("print", Type.VOID, createVariableId("str", Type.INT)));
-		builder.add(createFunctionId("print", Type.VOID, createVariableId("str", Type.CHAR)));
-		builder.add(createFunctionId("read", Type.STRING));
+		builder.add(createFunctionId("print", Type.VOID, 	createVariableId("str", Type.STRING)));
+		builder.add(createFunctionId("print", Type.VOID, 	createVariableId("str", Type.INT)));
+		builder.add(createFunctionId("print", Type.VOID, 	createVariableId("str", Type.CHAR)));
+		builder.add(createFunctionId("read", Type.STRING, 	createVariableId("str", Type.STRING)));
+		builder.add(createFunctionId("read", Type.INT, 		createVariableId("num", Type.INT)));
+		builder.add(createFunctionId("read", Type.CHAR, 	createVariableId("chr", Type.CHAR)));
 		//Sla op
 		builtins = builder.build();
 	}
