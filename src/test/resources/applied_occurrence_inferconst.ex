@@ -1,2 +1,3 @@
-var a
+# expected: RecognitionException
+const a
 a=5

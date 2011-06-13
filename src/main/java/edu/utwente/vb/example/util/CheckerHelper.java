@@ -182,7 +182,12 @@ public class CheckerHelper {
 	public void changeType(TypedNode node, Type type) throws SymbolTableException{
 		String varName = node.getText();
 		VariableId<TypedNode> var = symbolTable.apply(varName);
-		var.updateType(type);
+		
+		try{
+			var.updateType(type);
+		}catch(IllegalArgumentException e){
+			throw new SymbolTableException("Cannot assign the type " + type + "to variable " + node.getText());
+		}
 	}
 	
 	/**

@@ -27,6 +27,11 @@ public class Prelude {
 		builder.add(createBuiltin("=", INT, INT, INT));
 		builder.add(createBuiltin("=", CHAR, CHAR, CHAR));
 		builder.add(createBuiltin("=", STRING, STRING, STRING));
+		// voor inferring van variabele-typen in applied-occurrences
+		builder.add(createBuiltin("=", BOOL, UNKNOWN, BOOL));
+		builder.add(createBuiltin("=", INT, UNKNOWN, INT));
+		builder.add(createBuiltin("=", CHAR, UNKNOWN, CHAR));
+		builder.add(createBuiltin("=", STRING, UNKNOWN, STRING));
 		// boolean
 		builder.add(createBuiltin("==", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
