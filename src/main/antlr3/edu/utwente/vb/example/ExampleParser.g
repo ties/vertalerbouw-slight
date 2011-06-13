@@ -25,7 +25,7 @@ options {
 @rulecatch { 
     catch (RecognitionException e) { 
         throw e; 
-    } 
+    }
 }
 
 /**
@@ -43,7 +43,7 @@ declaration
   // Regels herschrijven naar consistente vorm
   : primitive id=IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration?)
   // Constanten kunnen alleen van primitive typen zijn
-  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration)
+  | (CONST primitive) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration) 
   | VAR IDENTIFIER runtimeValueDeclaration? -> ^(INFERVAR IDENTIFIER runtimeValueDeclaration?)
   | CONST IDENTIFIER constantValueDeclaration -> ^(INFERCONST IDENTIFIER constantValueDeclaration)
   ;
