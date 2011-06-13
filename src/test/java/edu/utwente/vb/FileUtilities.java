@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 public class FileUtilities {
 	
 	public static List<File> getTestFiles() {
-		URL testLoc = FileUtilities.class.getResource("/const.ex");
+		URL testLoc = FileUtilities.class.getResource("/dogfood.stg");
 		File testDir = new File(testLoc.getFile()).getParentFile();
 		assert testDir.isDirectory();
 		return Lists.newArrayList(testDir.listFiles(new FileFilter() {
