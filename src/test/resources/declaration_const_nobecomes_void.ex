@@ -1,3 +1,3 @@
 # Try to define a void variable
-# checkerexpected: SymbolTableException
+# expected: MismatchedTokenException
 const void f

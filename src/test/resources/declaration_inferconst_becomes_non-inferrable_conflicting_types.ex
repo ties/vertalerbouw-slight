@@ -1,2 +1,2 @@
 # checkerexpected: SymbolTableException
-const c = 'b' - 1
+const c = 'b'-1

@@ -1,7 +1,7 @@
 #
 #
 # Constant declaration
-#
+# expected: MismatchedTokenException
 #
 const var a
 const int b

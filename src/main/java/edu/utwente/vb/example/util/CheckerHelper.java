@@ -138,7 +138,7 @@ public class CheckerHelper {
 	 */
 	public void declareConst(TypedNode node, Type type) throws IllegalVariableDefinitionException{
 		if(type==Type.VOID)
-			throw new IllegalVariableDefinitionException("variale cannot be declared as type void");
+			throw new IllegalVariableDefinitionException("constant cannot be declared as type void");
 			
 		VariableId varId = new VariableId(node, type);
 		varId.setConstant(true);
