@@ -24,8 +24,7 @@ import com.google.common.io.Files;
  * let op: implements Opcodes ipv import static org.objectweb.asm.Opcodes.*;
  * 
  * Om dit te schrijven is gebruik gemaakt van de code in
- * http://stackoverflow.com
- * /questions/5346908/generating-a-hello-world-class-with-the-java-asm-library
+ * http://stackoverflow.com/questions/5346908/generating-a-hello-world-class-with-the-java-asm-library
  * en de ASM guide.
  */
 public class ASMAdapter implements Opcodes {
@@ -44,6 +43,11 @@ public class ASMAdapter implements Opcodes {
 	/** De logger */
 	private final Logger log = LoggerFactory.getLogger(ASMAdapter.class);
 
+	public ASMAdapter(String className, String sourceName){
+		this(className);
+		cv.visitSource(sourceName, null);
+	}
+	
 	public ASMAdapter(String className) {
 		log.debug("instantiating ASMAdapter for {}", className);
 		// Instantieer een ClassWriter
@@ -70,6 +74,7 @@ public class ASMAdapter implements Opcodes {
 		// Constructor stub
 		MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "<init>", "()V", null,
 				null);
+		mv.visitCode();
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
 		mv.visitInsn(RETURN);

@@ -12,14 +12,14 @@ import static junit.framework.Assert.*;
 public class TestASMAdapter {
 	@Test
 	public void testEmptyClass(){
-		ASMAdapter a = new ASMAdapter("edu.utwente.EmptyClass");
+		ASMAdapter a = new ASMAdapter("EmptyClass");
 		a.visitEnd();
 	}
 	
 	@Test
 	public void testWriteClass() throws IOException{
-		ASMAdapter a = new ASMAdapter("edu.utwente.EmptyClass");
-		File f = File.createTempFile("junitAsmAdapterTest", ".class");
+		ASMAdapter a = new ASMAdapter("EmptyClass");
+		File f = File.createTempFile("EmptyClass", ".class");
 		
 		a.visitEnd(f);
 		
