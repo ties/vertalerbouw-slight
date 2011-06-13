@@ -1,8 +1,9 @@
 #!/bin/bash
 rm src/test/java/edu/utwente/vb/TestParserWithExamples.java
 rm src/test/java/edu/utwente/vb/TestCheckerWithExamples.java
+rm src/test/java/edu/utwente/vb/TestCodegenPreparationWithExamples.java
 
 mvn clean test-compile
 mvn exec:java -Dexec.mainClass=edu.utwente.vb.ParserTestGenerator -Dexec.classpathScope=test -e
 mvn exec:java -Dexec.mainClass=edu.utwente.vb.CheckerTestGenerator -Dexec.classpathScope=test -e
-
+mvn exec:java -Dexec.mainClass=edu.utwente.vb.CodegenPreparationTestGenerator -Dexec.classpathScope=test -e
