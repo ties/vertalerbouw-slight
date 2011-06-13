@@ -12,6 +12,8 @@ import com.google.common.base.Objects;
 public class VariableId<T extends BaseTree> implements Id<T>{
 	private final Type type;
 	private final T node;
+	/** Variable is a constant (ie: not assignable) */
+	private boolean constant = false;
 	
 	public VariableId(T n, Type t){
 		this.type =	checkNotNull(t);
@@ -48,11 +50,19 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public String toString() {
-		return type + " " + getText();
+		return Objects.toStringHelper(VariableId.class).add("name", getText()).add("type",type).add("constant", constant).toString();
 	}
 	
 	@Override
 	public boolean equalsSignature(String name, Type... params) {
 		return Objects.equal(this.node.getText(), name) && (params == null || params.length == 0);
+	}
+	
+	public boolean isConstant() {
+		return constant;
+	}
+	
+	public void setConstant(boolean c){
+		constant = c;
 	}
 }

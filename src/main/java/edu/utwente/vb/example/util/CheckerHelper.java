@@ -138,6 +138,7 @@ public class CheckerHelper {
 	 */
 	public void declareConst(TypedNode node, Type type) throws IllegalVariableDefinitionException{
 		VariableId varId = new VariableId(node, type);
+		varId.setConstant(true);
 		
 		log.debug("declareConst " + node + " as " + type);
 		
@@ -146,6 +147,7 @@ public class CheckerHelper {
 	
 	public void declareConst(TypedNode node, String type) throws IllegalVariableDefinitionException{
 		VariableId varId = new VariableId(node, Type.byName(type));
+		varId.setConstant(true);
 		
 		log.debug("declareConst " + node + " as " + type);
 		
@@ -185,6 +187,23 @@ public class CheckerHelper {
 	}
 	
 	/**
+	 * Gebruik van assignment
+	 * @param operator
+	 * @param lhs
+	 * @param rhs
+	 * @return
+	 * @throws SymbolTableException
+	 */
+	public Type applyBecomes(TypedNode operator, TypedNode lhs, TypedNode rhs) throws SymbolTableException{
+		// variabele:
+		VariableId<TypedNode> lhvar = symbolTable.apply(lhs.getText()); 
+		if(lhvar.isConstant()){
+			throw new IllegalFunctionDefinitionException("Trying to assign to the constant " + lhs.toString());
+		}
+		return apply(operator, lhs, rhs);
+	}
+	
+	/**
 	 * Apply a function/operator (given its arguments) and return the type
 	 * @param operator
 	 * @param applied
@@ -209,6 +228,10 @@ public class CheckerHelper {
 	
 	public Type apply(String op, Type... applied) throws SymbolTableException{
 		return symbolTable.apply(op, applied).getType();
+	}
+	
+	public TypedNode applyVariable(String name) throws SymbolTableException{
+		return symbolTable.apply(name).getNode();
 	}
 	
 	/**
