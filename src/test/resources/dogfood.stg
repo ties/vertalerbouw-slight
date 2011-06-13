@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import edu.utwente.vb.example.ExampleParser;
 import edu.utwente.vb.example.ExampleChecker;
+import edu.utwente.vb.example.CodegenPreparation;
 import edu.utwente.vb.exceptions.*;
 
 public class <classname> extends AbstractGrammarTest {
@@ -67,6 +68,31 @@ testCheckerWithExpected(filename, testname, rule, expected, uitleg) ::= <<
     File f = new File(getClass().getResource("/<filename>").toURI());
     ExampleChecker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
     checker.<rule>();
+  }
+  
+>>
+
+testCodegenPreparation(filename, testname, rule, uitleg) ::= <<
+  /**
+  <uitleg>
+  */
+  @Test
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    CodegenPreparation prepare = createCodegenPreparation(asCharStream(f), createParser(asCharStream(f)));
+    prepare.<rule>();
+  }
+  
+>>
+/**
+  <uitleg>
+  */
+testCodegenPreparationWithExpected(filename, testname, rule, expected, uitleg) ::= <<
+  @Test(expected=<expected>.class)
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    CodegenPreparation prepare = createCodegenPreparation(asCharStream(f), createParser(asCharStream(f)));
+    prepare.<rule>();
   }
   
 >>

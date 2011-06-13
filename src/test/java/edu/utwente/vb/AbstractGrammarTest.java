@@ -14,12 +14,14 @@ import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.debug.BlankDebugEventListener;
+import org.antlr.runtime.tree.BufferedTreeNodeStream;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
+import edu.utwente.vb.example.CodegenPreparation;
 import edu.utwente.vb.example.ExampleChecker;
 import edu.utwente.vb.example.ExampleLexer;
 import edu.utwente.vb.example.ExampleParser;
@@ -69,6 +71,16 @@ public abstract class AbstractGrammarTest{
 
 		return checker;
 	}
+	
+	protected CodegenPreparation createCodegenPreparation(CharStream stream, ExampleParser parser) throws IOException, RecognitionException{
+		ExampleChecker checker = createChecker(stream, parser);
+		ExampleChecker.program_return checker_result = checker.program();
+		
+		BufferedTreeNodeStream checker_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
+		CodegenPreparation prepare = new CodegenPreparation(checker_nodes, new BlankDebugEventListener());
+		return prepare;
+	}
+
 	
 	protected CharStream asCharStream(File f) throws IOException{
 		return new ANTLRFileStream(f.toString());

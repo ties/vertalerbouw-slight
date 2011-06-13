@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import edu.utwente.vb.*;
+import edu.utwente.vb.example.ExampleChecker.program_return;
 import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
@@ -108,6 +109,7 @@ public class Compiler {
 
 			ExampleChecker checker;
 			
+			ExampleChecker.program_return checker_result = null;
 			//Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
 				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
@@ -129,12 +131,14 @@ public class Compiler {
 				checker.setCheckerHelper(ch);
 				
 				checker.setTreeAdaptor(new TypedNodeAdaptor());
-				checker.program();
+				checker_result = checker.program();
 				symtab.closeScope();
 			}
 			
 			{
-				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(null);
+				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
+				CodegenPreparation prepare = new CodegenPreparation(nodes);
+				CodegenPreparation.program_return prepare_result = prepare.program();
 			}
 			//
 			// if (!opt_no_interpreter) { // interpret the AST

@@ -110,7 +110,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 */
 	@Override
 	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException {
-		log.debug("applyFunction: " + n + " (" + Arrays.toString(applied) + ")");
+		log.debug("applyFunction {} ({})", n, Arrays.toString(applied));
 		//zie (*)
 		for(Env e = this; e != null; e = e.prev){
 			for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
