@@ -227,101 +227,14 @@ compoundExpression returns [Type type, Boolean isReturn, Boolean hasReturn]
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression returns [Type type, Boolean hasReturn]
-  : ^(op=BECOMES lhs=orExpression rhs=expression)
-    { ch.st($rhs.tree, $rhs.type);
-      ch.st($lhs.tree, $lhs.type);
-      $type = ch.applyBecomes($lhs.tree, $rhs.tree);
-      $hasReturn=false;
-    }
-  | base=orExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
-      $hasReturn=$base.hasReturn;
-    }    
-  ;
-
-orExpression returns [Type type, Boolean hasReturn]
-  : ^(op=OR base=andExpression sec=orExpression)
-    { ch.st($base.tree, $base.type);
-      ch.st($sec.tree, $sec.type);
-      $type = ch.apply($op, $base.tree, $sec.tree);
-      $hasReturn=false;
-    }
-  | base=andExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
-      $hasReturn=$base.hasReturn;
-    }      
-  ;
-  
-andExpression returns [Type type, Boolean hasReturn]
-  : ^(op=AND base=equationExpression sec=andExpression)
-    { ch.st($base.tree, $base.type);
-      ch.st($sec.tree, $sec.type);
-      $type = ch.apply($op, $base.tree, $sec.tree);
-      $hasReturn=false;
-    }
-  | base=equationExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
-      $hasReturn=$base.hasReturn;
-    }          
-  ;
-
-equationExpression returns [Type type, Boolean hasReturn]
-  : ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=plusExpression sec=equationExpression)
-    { ch.st($base.tree, $base.type);
-      ch.st($sec.tree, $sec.type);
-      $type = ch.apply($op, $base.tree, $sec.tree);
-      $hasReturn=false;
-    }
-  | base=plusExpression
-    {ch.st($base.tree, $base.type);
-      $type = $base.type;
-      $hasReturn=$base.hasReturn;
-    }          
-  ;
-
-plusExpression returns [Type type, Boolean hasReturn]
-  : ^(op=(PLUS|MINUS) base=multiplyExpression sec=plusExpression)
-    { ch.st($base.tree, $base.type);
-      ch.st($sec.tree, $sec.type);
-      $type = ch.apply($op, $base.tree, $sec.tree);
-      $hasReturn=false;
-    }
-  | base=multiplyExpression
-    { 
-      $type = ch.st($base.tree, $base.type);
-      $hasReturn=$base.hasReturn;
-    }     
-  ;
-
-multiplyExpression returns [Type type, Boolean hasReturn]
-  : ^(op=(MULT | DIV | MOD) base=unaryExpression sec=multiplyExpression)
-    { ch.st($base.tree, $base.type);
-      ch.st($sec.tree, $sec.type);
-      $type = ch.apply($op, $base.tree, $sec.tree);
-      $hasReturn=false;
-    }
-  | base=unaryExpression
-    {
-      $type = ch.st($base.tree, $base.type);
-      $hasReturn=$base.hasReturn;
-    }      
-  ;
-
-unaryExpression returns [Type type, Boolean hasReturn]
-  : ^(op=NOT base=simpleExpression)
-    //TODO: Hieronder lelijke hack. Manier bedenken waar 'op' vergeleken kan worden met de NOT-token zonder deze hierin te hardcoden.
-    { $type = ch.apply($op, ch.st($base.tree, $base.type));
-      $hasReturn=false;
-     }
-  
-  | base=simpleExpression
-    {
-      $type = ch.st($base.tree, $base.type);
-      $hasReturn=$base.hasReturn;
-    }
+  : ^(op=BECOMES base=expression sec=expression) { ch.st($sec.tree, $sec.type); ch.st($base.tree, $base.type); $type = ch.applyBecomes($base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=OR base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=AND base=expression sec=expression)  { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=NOT base=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | sim=simpleExpression  { $type = ch.st($sim.tree, $sim.type); $hasReturn = $sim.hasReturn; }
   ;
   
 simpleExpression returns [Type type, Boolean hasReturn]
