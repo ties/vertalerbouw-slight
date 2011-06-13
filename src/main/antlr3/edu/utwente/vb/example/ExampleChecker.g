@@ -123,15 +123,10 @@ declaration returns [Type type]
           $type = ch.st($INFERVAR, type);
         }
       }
-  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) 
-      { if(cons==null){
-          ch.declareConst($IDENTIFIER, Type.UNKNOWN); 
-          $type = ch.st($INFERCONST, Type.UNKNOWN); 
-        }else{
-          Type type = $cons.type;
-          ch.declareConst($IDENTIFIER, type);
-          $type = ch.st($INFERCONST, type);
-        }
+  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration) 
+      { Type type = $cons.type;
+        ch.declareConst($IDENTIFIER, type);
+        $type = ch.st($INFERCONST, type);
       }
   ;
   
@@ -233,7 +228,7 @@ expression returns [Type type, Boolean hasReturn]
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
-  | ^(op=NOT base=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
+  | ^(op=NOT base=expression) { ch.st($base.tree, $base.type); $type = ch.apply($op, $base.tree); $hasReturn=false; }
   | sim=simpleExpression  { $type = ch.st($sim.tree, $sim.type); $hasReturn = $sim.hasReturn; }
   ;
   
