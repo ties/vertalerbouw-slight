@@ -88,16 +88,38 @@ declaration returns [Type type]
     TypedNode decl = null;
   }
 
-  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($rvd.tree, $rvd.type); ch.declareVar($IDENTIFIER, $prim.type); ch.inferBecomes($VAR, $prim.tree, $rvd.tree); $type = $prim.type; }
+  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration?) 
+      { 
+        if(rvd==null){
+	        ch.st($prim.tree, $prim.type);
+	        ch.declareVar($IDENTIFIER, $prim.type);
+	        $type = $prim.type;
+	      }else{
+	        ch.st($prim.tree, $prim.type);
+	        ch.st($rvd.tree, $rvd.type); 
+          ch.declareVar($IDENTIFIER, $prim.type);
+          ch.apply("=", $prim.type, $rvd.type);
+          $type = $prim.type;      
+        }
+      }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) { ch.st($prim.tree, $prim.type); ch.st($cvd.tree, $cvd.type); ch.declareConst($IDENTIFIER, $prim.type); ch.inferBecomes($CONST, $prim.tree, $cvd.tree); $type = $prim.type; }
+  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) 
+      { ch.st($prim.tree, $prim.type); 
+        ch.st($cvd.tree, $cvd.type); 
+        ch.declareConst($IDENTIFIER, $prim.type); 
+        ch.apply("=", $prim.type, $cvd.type);
+        $type = $prim.type;
+      }
   | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
       { if(run==null){
+          log.debug("Non-inferrable");
           ch.declareVar($IDENTIFIER, Type.UNKNOWN);
+          log.debug($IDENTIFIER + " declared as " + Type.UNKNOWN);
           $type = ch.st($INFERVAR, Type.UNKNOWN);
         }else{
+          log.debug("Inferrable");
           Type type = $run.type;
-          ch.declareVar($IDENTIFIER, type);
+          ch.declareConst($IDENTIFIER, type);
           $type = ch.st($INFERVAR, type);
         }
       }
@@ -107,7 +129,7 @@ declaration returns [Type type]
           $type = ch.st($INFERCONST, Type.UNKNOWN); 
         }else{
           Type type = $cons.type;
-          ch.declareVar($IDENTIFIER, type);
+          ch.declareConst($IDENTIFIER, type);
           $type = ch.st($INFERCONST, type);
         }
       }
@@ -208,7 +230,7 @@ expression returns [Type type, Boolean hasReturn]
   : ^(op=BECOMES lhs=orExpression rhs=expression)
     { ch.st($rhs.tree, $rhs.type);
       ch.st($lhs.tree, $lhs.type);
-      $type = ch.apply($op, $lhs.tree, $rhs.tree);
+      $type = ch.applyBecomes($lhs.tree, $rhs.tree);
       $hasReturn=false;
     }
   | base=orExpression

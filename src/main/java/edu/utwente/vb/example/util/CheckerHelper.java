@@ -175,32 +175,21 @@ public class CheckerHelper {
 	}
 	
 	
-	public void inferBecomes(TypedNode root, TypedNode lhs, TypedNode rhs) throws IncompatibleTypesException {
-		log.debug("inferBecomes " + root + " lhs: " + lhs + " rhs: " + rhs);
-		if(lhs.getNodeType() != Type.UNKNOWN){
-			lhs.setNodeType(rhs.getNodeType());
-		} else if(lhs.getNodeType().equals(rhs.getNodeType())){
-			throw new IncompatibleTypesException(root, "type " + rhs.getNodeType() + " cannot be assigned to variable of type " + lhs.getNodeType());
-		}
-		
-		root.setType(lhs.getNodeType());
-	}
-	
 	/**
-	 * Gebruik van assignment
+	 * Use of an assignment
 	 * @param operator
 	 * @param lhs
 	 * @param rhs
 	 * @return
 	 * @throws SymbolTableException
 	 */
-	public Type applyBecomes(TypedNode operator, TypedNode lhs, TypedNode rhs) throws SymbolTableException{
+	public Type applyBecomes(TypedNode lhs, TypedNode rhs) throws SymbolTableException{
 		// variabele:
 		VariableId<TypedNode> lhvar = symbolTable.apply(lhs.getText()); 
 		if(lhvar.isConstant()){
 			throw new IllegalFunctionDefinitionException("Trying to assign to the constant " + lhs.toString());
 		}
-		return apply(operator, lhs, rhs);
+		return apply("=", lhs, rhs);
 	}
 	
 	/**
@@ -220,6 +209,10 @@ public class CheckerHelper {
 	
 	public Type apply(TypedNode operator, Type... applied) throws SymbolTableException{
 		return symbolTable.apply(operator.getText(), applied).getType();
+	}
+	
+	public Type apply(String operator, TypedNode... applied) throws SymbolTableException{
+		return symbolTable.apply(operator, TypedNode.extractTypes(applied)).getType();
 	}
 	
 	public Type apply(String op, List<Type> applied) throws SymbolTableException{
