@@ -23,11 +23,56 @@ options {
 // Alter code generation so catch-clauses get replaced with this action. 
 // This disables ANTLR error handling;
 @rulecatch { 
-    catch (RecognitionException e) { 
+  catch (RecognitionException e) {
+      if(debug_mode==true) 
         throw e; 
-    }
+  }
 }
 
+@members {
+  //TODO: In Compiler.java integreren: als deze op debug mode, dan ook Checker op debug mode. 
+  private static boolean debug_mode = true;
+  /**
+  * In de sectie hieronder word de afhandeling van excepties geregeld.
+  *
+  */
+	public String getErrorMessage(RecognitionException e,
+	                              String[] tokenNames)
+	{
+	    List stack = getRuleInvocationStack(e, this.getClass().getName());
+	    String msg = null;
+	    if ( e instanceof NoViableAltException ) {
+	       NoViableAltException nvae = (NoViableAltException)e;
+	       msg = " No viable alternative, expected="+e.token+
+	          " (decision="+nvae.decisionNumber+
+	          " state "+nvae.stateNumber+")"+
+	          " decision=<<"+nvae.grammarDecisionDescription+">>";
+	          
+	    }else if ( e instanceof MismatchedTokenException ) {
+         MismatchedTokenException mte = (MismatchedTokenException)e;
+         msg = " Could not match token, expected="+e.token;            
+      }else {
+	       msg = super.getErrorMessage(e, tokenNames);
+	    }
+	    return stack+" "+msg;
+	}
+	
+	public String getTokenErrorDisplay(Token t) {
+	    return t.toString();
+	}
+
+  
+  protected int nrErr = 0;
+  public    int nrErrors() { return nrErr; }
+  
+  public void displayRecognitionError(String[] tokenNames, RecognitionException e){
+    nrErr += 1;
+    if (e instanceof RecognitionException)
+      emitErrorMessage("[Example] error: " + e.getMessage());
+    else
+      super.displayRecognitionError(tokenNames, e);
+  }
+}
 /**
  * A program consists of several functions
  */
