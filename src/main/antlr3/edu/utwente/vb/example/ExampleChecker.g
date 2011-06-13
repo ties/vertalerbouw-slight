@@ -119,13 +119,13 @@ declaration returns [Type type]
         }else{
           log.debug("Inferrable");
           Type type = $run.type;
-          ch.declareConst($IDENTIFIER, type);
+          ch.declareVar($IDENTIFIER, type);
           $type = ch.st($INFERVAR, type);
         }
       }
   | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) 
       { if(cons==null){
-          ch.declareVar($IDENTIFIER, Type.UNKNOWN); 
+          ch.declareConst($IDENTIFIER, Type.UNKNOWN); 
           $type = ch.st($INFERCONST, Type.UNKNOWN); 
         }else{
           Type type = $cons.type;
