@@ -132,6 +132,10 @@ public class Compiler {
 				checker.program();
 				symtab.closeScope();
 			}
+			
+			{
+				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(null);
+			}
 			//
 			// if (!opt_no_interpreter) { // interpret the AST
 			// BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);

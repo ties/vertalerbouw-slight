@@ -81,7 +81,7 @@ public class ASMAdapter implements Opcodes {
 		mv.visitMaxs(1, 1);
 		mv.visitEnd();
 	}
-
+	
 	/**
 	 * Einde van de visit
 	 */
