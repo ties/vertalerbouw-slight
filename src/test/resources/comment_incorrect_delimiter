@@ -2,4 +2,4 @@
 # expected: RecognitionException
 
 
-/* Dit is ook geen comment! */
+# Dit is ook geen comment! #

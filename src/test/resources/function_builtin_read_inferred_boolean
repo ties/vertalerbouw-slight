@@ -1,0 +1,4 @@
+# checkerexpected: SymbolTableException
+var a
+a=True
+read(a)
