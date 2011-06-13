@@ -99,9 +99,14 @@ public class CheckerHelper {
 	 * @param node
 	 * @param type
 	 * @throws IllegalVariableDefinitionException 
+	 * @throws IncompatibleTypesException 
 	 */
 	public void declareVar(TypedNode node, Type type) throws IllegalVariableDefinitionException{
 		checkNotNull(node); checkNotNull(type);
+		
+		if(type==Type.VOID)
+			throw new IllegalVariableDefinitionException("variale cannot be declared as type void");
+		
 		VariableId varId = new VariableId(node, type);
 		
 		log.debug("declareVar: " + node + " as " + type);
@@ -116,15 +121,10 @@ public class CheckerHelper {
 	 * @throws IllegalVariableDefinitionException when variable conflicts with existing variable in symboltable
 	 */
 	public void declareVar(TypedNode node, String type) throws IllegalVariableDefinitionException{
-		checkNotNull(node); checkNotNull(type);
-		
-		log.debug("declareVar: " + node + " as " + type);
-		
-		VariableId varId = new VariableId(node, Type.byName(type));
-		symbolTable.put(varId);
+		Type varType = Type.byName(type);
+		declareVar(node, varType);
 	}
 	
-	//TODO: Iets met herkenning van constants, dat ze onaanpasbaar zijn enzo;
 	/* Ideen voor bovenstaande todo:
 	 * Wat mij betreft zijn er twee oplossingen,
 	 * 1) de symboltable nog een aparte table geven voor constants. In checker kan bij becomes regel gekeken worden of lhs in constanttable staat, in dat geval exceptie gooien
@@ -137,6 +137,9 @@ public class CheckerHelper {
 	 * @throws IllegalVariableDefinitionException when variable conflicts with existing constant in symboltable
 	 */
 	public void declareConst(TypedNode node, Type type) throws IllegalVariableDefinitionException{
+		if(type==Type.VOID)
+			throw new IllegalVariableDefinitionException("constant cannot be declared as type void");
+			
 		VariableId varId = new VariableId(node, type);
 		varId.setConstant(true);
 		
@@ -146,12 +149,8 @@ public class CheckerHelper {
 	}
 	
 	public void declareConst(TypedNode node, String type) throws IllegalVariableDefinitionException{
-		VariableId varId = new VariableId(node, Type.byName(type));
-		varId.setConstant(true);
-		
-		log.debug("declareConst " + node + " as " + type);
-		
-		symbolTable.put(varId);
+		Type constType = Type.byName(type);
+		declareVar(node, constType);
 	}
 	
 	/**

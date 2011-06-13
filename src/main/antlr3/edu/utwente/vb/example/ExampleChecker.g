@@ -88,7 +88,7 @@ declaration returns [Type type]
     TypedNode decl = null;
   }
 
-  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration?) 
+  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
       { 
         if(rvd==null){
 	        ch.st($prim.tree, $prim.type);
@@ -103,14 +103,14 @@ declaration returns [Type type]
         }
       }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) 
+  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
       { ch.st($prim.tree, $prim.type); 
         ch.st($cvd.tree, $cvd.type); 
         ch.declareConst($IDENTIFIER, $prim.type); 
         ch.apply("=", $prim.type, $cvd.type);
         $type = $prim.type;
       }
-  | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
+  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
       { if(run==null){
           log.debug("Non-inferrable");
           ch.declareVar($IDENTIFIER, Type.UNKNOWN);
@@ -123,23 +123,18 @@ declaration returns [Type type]
           $type = ch.st($INFERVAR, type);
         }
       }
-  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration) 
+  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
       { Type type = $cons.type;
         ch.declareConst($IDENTIFIER, type);
         $type = ch.st($INFERCONST, type);
       }
   ;
   
-runtimeValueDeclaration returns [Type type]
+valueDeclaration returns [Type type]
   : BECOMES ce=compoundExpression
     { ch.st($ce.tree, $ce.type); $type = $ce.type; }
   ;
  
-constantValueDeclaration returns [Type type]
-  : BECOMES atom 
-    { ch.st($atom.tree, $atom.type); $type = $atom.type; }
-  ;
-  
 functionDef returns [Type type]
   @init{
     List<parameterDef_return> pl = new ArrayList<parameterDef_return>();
@@ -222,7 +217,7 @@ compoundExpression returns [Type type, Boolean isReturn, Boolean hasReturn]
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression returns [Type type, Boolean hasReturn]
-  : ^(op=BECOMES base=expression sec=expression) { ch.st($sec.tree, $sec.type); ch.st($base.tree, $base.type); $type = ch.applyBecomes($base.tree, $sec.tree); $hasReturn=false; }
+  : ^(op=BECOMES base=expression sec=expression) { if($base.type==Type.UNKNOWN) ch.changeType($base, $sec.type); basebasech.st($sec.tree, $sec.type); ch.st($base.tree, $base.type); $type = ch.applyBecomes($base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=OR base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=AND base=expression sec=expression)  { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) { ch.st($base.tree, $base.type); ch.st($sec.tree, $sec.type); $type = ch.apply($op, $base.tree, $sec.tree); $hasReturn=false; }

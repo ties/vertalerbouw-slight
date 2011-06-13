@@ -25,7 +25,7 @@ options {
 @rulecatch { 
     catch (RecognitionException e) { 
         throw e; 
-    } 
+    }
 }
 
 /**
@@ -41,20 +41,17 @@ content
   
 declaration
   // Regels herschrijven naar consistente vorm
-  : primitive id=IDENTIFIER runtimeValueDeclaration? -> ^(VAR primitive IDENTIFIER runtimeValueDeclaration?)
+  : primitive id=IDENTIFIER valueDeclaration? -> ^(VAR primitive IDENTIFIER valueDeclaration?)
   // Constanten kunnen alleen van primitive typen zijn
-  | (CONST (BOOLEAN | CHAR | INT | STRING)) => CONST primitive IDENTIFIER constantValueDeclaration -> ^(CONST primitive IDENTIFIER constantValueDeclaration)
-  | VAR IDENTIFIER runtimeValueDeclaration? -> ^(INFERVAR IDENTIFIER runtimeValueDeclaration?)
-  | CONST IDENTIFIER constantValueDeclaration -> ^(INFERCONST IDENTIFIER constantValueDeclaration)
+  | (CONST primitive) => CONST primitive IDENTIFIER valueDeclaration -> ^(CONST primitive IDENTIFIER valueDeclaration) 
+  | VAR IDENTIFIER valueDeclaration? -> ^(INFERVAR IDENTIFIER valueDeclaration?)
+  | CONST IDENTIFIER valueDeclaration -> ^(INFERCONST IDENTIFIER valueDeclaration)
   ;
   
-runtimeValueDeclaration
+valueDeclaration
   : BECOMES compoundExpression
   ;
  
-constantValueDeclaration
-  : BECOMES atom;
-  
 functionDef
   : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression -> ^(FUNCTION primitive? IDENTIFIER parameterDef*  closedCompoundExpression)
   ;
