@@ -3,4 +3,5 @@ char b = 'c'
 string woord = "woord"
 boolean c = True
 
-print("a=" + a + ",b=" + b + ",woord=" + woord + ",c="+c);
+def main():
+	print("a=" + a + ",b=" + b + ",woord=" + woord + ",c="+c);

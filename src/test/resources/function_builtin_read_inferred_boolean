@@ -1,4 +1,6 @@
 # checkerexpected: SymbolTableException
 var a
-a=True
-read(a)
+
+def main():
+	a=True
+	read(a)

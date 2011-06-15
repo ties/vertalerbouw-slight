@@ -4,7 +4,9 @@
 #
 #
 int a = 0
-print(a)
-	char a = 'b'
+
+def main():
 	print(a)
+		char a = 'b'
+		print(a)
 

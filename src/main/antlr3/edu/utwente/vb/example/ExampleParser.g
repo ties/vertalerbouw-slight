@@ -81,7 +81,7 @@ program
   ;
 
 content	
-  : (compoundExpression | functionDef)* -> functionDef* compoundExpression* 
+  : (declaration | functionDef)* -> declaration* functionDef* 
   ;
   
 declaration

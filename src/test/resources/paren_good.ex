@@ -3,4 +3,5 @@
 # Test van 'paren'
 #
 #
-(3 + 5)
+def main():
+	(3 + 5)

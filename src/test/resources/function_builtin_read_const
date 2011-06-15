@@ -1,3 +1,5 @@
 # checkerexpected: SymbolTableException
 const int a
-read(a)
+
+def main():
+	read(a)

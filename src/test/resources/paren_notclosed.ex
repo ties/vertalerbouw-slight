@@ -3,4 +3,5 @@
 # Test van 'paren'
 #
 # expected: RecognitionException
-(3 + 5
+def main():
+	(3 + 5

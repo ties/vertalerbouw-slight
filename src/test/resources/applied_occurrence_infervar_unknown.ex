@@ -1,4 +1,6 @@
 # checkerexpected: SymbolTableException
 var a
 var b
-a=b
+
+def main():
+	a=b

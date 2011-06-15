@@ -13,8 +13,9 @@ def fibonacci(int n) -> int:
 		return 1
 	return fibonacci(n - 1) + fibonacci(n - 2)
 
-int i = 0
-while(i > 0):
-	print("Fibonacci(" + i + ")" + fibonacci(i))
-	i = i-1
+def main():
+	int i = 0
+	while(i > 0):
+		print("Fibonacci(" + i + ")" + fibonacci(i))
+		i = i-1
 

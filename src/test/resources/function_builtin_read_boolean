@@ -1,3 +1,4 @@
 # checkerexpected: SymbolTableException
-bool a
-read(a)
+def main():
+	bool a
+	read(a)

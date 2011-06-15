@@ -12,4 +12,5 @@ def faculty(int a) -> int:
 
 int a = 5
 
-print("5!: " + faculty(a))
+def main():
+	print("5!: " + faculty(a))

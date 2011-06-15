@@ -94,7 +94,6 @@ BOOLEAN : 'bool';
 CHAR    : 'char';
 INT     : 'int';
 STRING  : 'string';
-MAIN    : 'main';
 
 WS  
     @init{

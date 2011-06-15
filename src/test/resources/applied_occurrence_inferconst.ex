@@ -3,4 +3,6 @@
 # expected: RecognitionException
 #
 const a
-a = 5
+
+def main():
+	a = 5

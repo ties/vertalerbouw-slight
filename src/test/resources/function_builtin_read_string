@@ -1,2 +1,4 @@
 string a
-read(a)
+
+def main():
+	read(a)

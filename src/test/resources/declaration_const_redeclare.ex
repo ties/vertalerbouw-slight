@@ -4,7 +4,9 @@
 #
 #
 const int a = 0
-print(a)
-	const char a = 'b'
+
+def main():
 	print(a)
+		const char a = 'b'
+		print(a)
 

@@ -1,3 +1,5 @@
 var a
-a='c'
-read(a)
+
+def main():
+	a='c'
+	read(a)

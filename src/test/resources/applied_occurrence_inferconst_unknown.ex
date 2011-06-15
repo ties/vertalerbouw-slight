@@ -1,4 +1,6 @@
 # checkerexpected: SymbolTableException
 const a
 const b
-a=b
+
+def main():
+	a=b

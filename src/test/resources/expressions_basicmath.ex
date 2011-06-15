@@ -3,9 +3,10 @@
 # Some simple math
 #
 #
-if(1 + 1 == 2):
-	print("correct!")
+def main():
+	if(1 + 1 == 2):
+		print("correct!")
 
-print(1 - -1)
+	print(1 - -1)
 
-100 % 25
+	100 % 25

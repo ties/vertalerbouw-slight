@@ -11,7 +11,8 @@ def deMorgan(bool a, bool b):
 	else:
 		return False
 
-deMorgan(True, True)
-deMorgan(False, False)
-deMorgan(True, False)
-deMorgan(False, True)
+def main():
+	deMorgan(True, True)
+	deMorgan(False, False)
+	deMorgan(True, False)
+	deMorgan(False, True)

@@ -56,7 +56,7 @@ program
   ;
 
 content
-  : functionDef* (expression | declaration)* -> functionDef* ^(GLOBAL declaration*) ^(FUNCTION VOID MAIN INDENT expression* DEDENT) 
+  : declaration* functionDef* 
   ;
   
 declaration

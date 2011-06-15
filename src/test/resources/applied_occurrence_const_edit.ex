@@ -2,4 +2,6 @@
 # checkerexpected: SymbolTableException
 
 const int a = 3
-a = a + 1
+
+def main():
+	a = a + 1

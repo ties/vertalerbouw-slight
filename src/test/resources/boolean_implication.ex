@@ -10,6 +10,7 @@ def implication(bool a, bool b):
 	else:
 		print("a !-> b")
 
-implication(False, True)
-implication(True, False)
-implication(True, True)
+def main():
+	implication(False, True)
+	implication(True, False)
+	implication(True, True)

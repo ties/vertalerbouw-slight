@@ -7,7 +7,9 @@
 
 int a = 0
 int b = 0
-if(a==b):
-	int c = 2
-# Hieronder hoort een fout op te treden, c bestaat niet op deze scope
-print(c)
+
+def main():
+	if(a==b):
+		int c = 2
+	# Hieronder hoort een fout op te treden, c bestaat niet op deze scope
+	print(c)

@@ -4,6 +4,8 @@
 #
 #
 var c = 3
-while c > 0:
-	print(c)
-	c = c - 1
+
+def main():
+	while c > 0:
+		print(c)
+		c = c - 1

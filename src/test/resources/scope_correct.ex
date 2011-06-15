@@ -4,14 +4,14 @@
 #
 #
 
-
-int a = 0
-int b = 0
-if(a==b):
-	int a = 1
+def main():
+	int a = 0
+	int b = 0
 	if(a==b):
-		print("Incorrect: variable a is redefined in new scope")
+		int a = 1
+		if(a==b):
+			print("Incorrect: variable a is redefined in new scope")
+		else:
+			print("Correct")
 	else:
-		print("Correct")
-else:
-	print("Incorrect: A and B both initialised to value 0")
+		print("Incorrect: A and B both initialised to value 0")
