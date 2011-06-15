@@ -68,38 +68,35 @@ content
   : (declaration | functionDef)*
   ;
   
-declaration returns [Type type]
+declaration
   : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
   | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
   | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
   | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
   ;
   
-valueDeclaration returns [Type type]
+valueDeclaration
   : BECOMES ce=compoundExpression
   ;
  
-functionDef returns [Type type]
+functionDef
   : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)* returnTypeNode=closedCompoundExpression) 
   ;
   
-parameterDef returns[Type type, TypedNode node]
+parameterDef
   : ^(FORMAL primitive IDENTIFIER)
   ; 
 
-closedCompoundExpression returns[Type type, Boolean hasReturn]
+closedCompoundExpression
   : ^(SCOPE (ce=compoundExpression)*)
   ;
 
-compoundExpression returns [Type type, Boolean isReturn, Boolean hasReturn]
+compoundExpression
   : expr=expression
   | dec=declaration
-  | ^(ret=RETURN expr=expression)
   ;
- 
-//TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
-// => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression returns [Type type, Boolean hasReturn]
+  
+expression
   : ^(op=BECOMES base=expression sec=expression) 
   | ^(op=OR base=expression sec=expression) 
   | ^(op=AND base=expression sec=expression) 
@@ -107,13 +104,12 @@ expression returns [Type type, Boolean hasReturn]
   | ^(op=(PLUS|MINUS) base=expression sec=expression) 
   | ^(op=(MULT | DIV | MOD) base=expression sec=expression) 
   | ^(op=NOT base=expression)
+  | ^(ret=RETURN expr=expression)
   | sim=simpleExpression
   ;
   
-simpleExpression returns [Type type, Boolean hasReturn]
+simpleExpression
   : atom                                     
-  //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
-  //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | fc=functionCall                          
   | variable                                 
   | paren                                    
@@ -121,20 +117,20 @@ simpleExpression returns [Type type, Boolean hasReturn]
   | s=statements                             
   ;
   
-statements returns [Type type, Boolean hasReturn]
+statements
   : ifState=ifStatement
   | whileState=whileStatement    
   ;
 
-ifStatement returns [Type type, Boolean hasReturn]
+ifStatement
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
   ;  
     
-whileStatement returns [Type type, Boolean hasReturn]
+whileStatement
   : ^(WHILE cond=expression loop=closedCompoundExpression)
   ;    
     
-primitive returns [Type type]
+primitive
   : VOID
   | BOOLEAN
   | CHAR
@@ -142,7 +138,7 @@ primitive returns [Type type]
   | STRING
   ;
 
-atom returns [Type type]
+atom
   : INT_LITERAL
   | NEGATIVE INT_LITERAL
   | CHAR_LITERAL
@@ -152,14 +148,14 @@ atom returns [Type type]
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
-paren returns [Type type]
+paren
   : ^(PAREN expression)
   ;
   
-variable returns [Type type]
+variable
   : id=IDENTIFIER
   ;
   
-functionCall returns [Type type]
+functionCall
   : ^(CALL id=IDENTIFIER (ex=expression)*)
   ; 
