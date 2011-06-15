@@ -49,7 +49,7 @@ options {
 
   private ASMAdapter aa;
   private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
-  private OuputMode mode;
+  private OutputMode mode;
   
   public void setOutputMode(OutputMode mode){
     this.mode = checkNotNull(mode);
