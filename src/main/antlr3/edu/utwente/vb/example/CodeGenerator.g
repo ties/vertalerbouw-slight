@@ -45,12 +45,18 @@ options {
 }
 
 @members{
+  public enum OutputMode{ FILE, LOG}
+
   private ASMAdapter aa;
   private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
+  private OuputMode mode;
+  
+  public void setOutputMode(OutputMode mode){
+    this.mode = checkNotNull(mode);
+  }
   
   public void setASMAdapter(ASMAdapter adap){
-    checkNotNull(adap);
-    this.aa = adap;
+    this.aa = checkNotNull(adap);
   }
 }
 

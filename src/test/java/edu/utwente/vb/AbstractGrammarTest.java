@@ -21,6 +21,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
+import edu.utwente.vb.example.CodeGenerator;
+import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import edu.utwente.vb.example.CodegenPreparation;
 import edu.utwente.vb.example.Checker;
 import edu.utwente.vb.example.Lexer;
@@ -81,6 +83,18 @@ public abstract class AbstractGrammarTest{
 		prepare.setTreeAdaptor(new TypedNodeAdaptor());
 		
 		return prepare;
+	}
+	
+	protected CodeGenerator createCodegenerator(CharStream stream, Parser parser) throws IOException, RecognitionException{
+		CodegenPreparation prep = createCodegenPreparation(stream, parser);
+		CodegenPreparation.program_return prep_result = prep.program();
+		
+		BufferedTreeNodeStream cg_nodes = new BufferedTreeNodeStream((TypedNode)prep_result.getTree());
+		CodeGenerator gen = new CodeGenerator(cg_nodes, new BlankDebugEventListener());
+		gen.setTreeAdaptor(new TypedNodeAdaptor());
+		gen.setOutputMode(OutputMode.FILE);
+		
+		return gen;
 	}
 
 	

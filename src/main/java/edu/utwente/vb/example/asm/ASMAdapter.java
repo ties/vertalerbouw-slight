@@ -27,7 +27,7 @@ import com.google.common.io.Files;
  * http://stackoverflow.com/questions/5346908/generating-a-hello-world-class-with-the-java-asm-library
  * en de ASM guide.
  */
-public class ASMAdapter implements Opcodes {
+public class ASMAdapter implements Opcodes {	
 	/** ClassWriter. Nodig voor toByteArray, maar liever niet aan zitten */
 	private ClassWriter $__cw;
 	/**

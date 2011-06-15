@@ -26,7 +26,7 @@ public class Compiler {
 	private static boolean opt_ast = false, opt_dot = false,
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
-			opt_debug_checker = false, opt_debug_parser = false, opt_debug_preparation = false;
+			opt_debug_checker = false, opt_debug_parser = false, opt_debug_preparation = false, opt_debug_codegen = false;
 
 	private static String filename = null;
 
@@ -56,6 +56,9 @@ public class Compiler {
 			} else if (args[i].equals("-debug_preparation")) {
 				out.println("// + debugging code generation preparation");
 				opt_debug_preparation = true;
+			} else if (args[i].equals("-debug_codegen")) {
+				out.println("// + debugging code generation");
+				opt_debug_codegen = true;
 			} else if (args[i].equals("-file_input") && (i + 1 < args.length)) {
 				opt_file_input = true;
 				i++;
@@ -65,7 +68,7 @@ public class Compiler {
 				System.err.println("// error: unknown option '" + args[i] + "'");
 				System.err.println("// valid options: -ast -dot "
 						+ "-no_checker -no_codegen -no_interpreter"
-						+ "-file_input <name> -debug_checker -debug_parser -debug_preparation");
+						+ "-file_input <name> -debug_checker -debug_parser -debug_preparation -debug_codegen");
 				throw new RuntimeException("Unknown options -- see readme");
 			}
 		}
@@ -153,7 +156,12 @@ public class Compiler {
 			if (!opt_no_codegen) { // run codegenerator
 				 CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
 				 nodes.setTokenStream(tokens);
-				 CodeGenerator codg = new CodeGenerator(nodes);
+				 CodeGenerator codg;
+				 if(opt_debug_codegen){
+					 codg= new CodeGenerator(nodes);
+				 } else {
+					 codg = new CodeGenerator(nodes, new BlankDebugEventListener());
+				 }
 				 codg.setTreeAdaptor(new TypedNodeAdaptor());
 				
 				 CodeGenerator.program_return res = codg.program();
