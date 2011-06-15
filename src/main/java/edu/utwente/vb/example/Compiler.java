@@ -149,23 +149,15 @@ public class Compiler {
 				prepare.setTreeAdaptor(new TypedNodeAdaptor());
 				CodegenPreparation.program_return prepare_result = prepare.program();
 			}
-			//
-			// if (!opt_no_interpreter) { // interpret the AST
-			// BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
-			// // CalcInterpreter interpreter = new CalcInterpreter(nodes);
-			// // interpreter.program();
-			// }
-			//
-			// if (!opt_no_codegen) { // run codegenerator
-			// CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-			// nodes.setTokenStream(tokens);
-			// SlightCodeGenerator codg = new SlightCodeGenerator(nodes);
-			// codg.setTemplateLib(templates);
-			//
-			// SlightCodeGenerator.program_return r2 = codg.program();
-			// StringTemplate output = (StringTemplate) r2.getTemplate();
-			// System.out.println(output.toString());
-			// }
+
+			if (!opt_no_codegen) { // run codegenerator
+				 CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+				 nodes.setTokenStream(tokens);
+				 CodeGenerator codg = new CodeGenerator(nodes);
+				 codg.setTreeAdaptor(new TypedNodeAdaptor());
+				
+				 CodeGenerator.program_return res = codg.program();
+			 }
             
 			/* HIERONDER CODE VOOR CODEGENERATOR, LATER WEER AANZETTEN
 			if (!opt_no_codegen) {

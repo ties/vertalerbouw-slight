@@ -8,12 +8,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import static junit.framework.Assert.*;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.MismatchedTokenException;
 import org.junit.Test;
 
-import edu.utwente.vb.example.ExampleParser;
-import edu.utwente.vb.example.ExampleChecker;
-import edu.utwente.vb.example.CodegenPreparation;
+import edu.utwente.vb.example.*;
 import edu.utwente.vb.exceptions.*;
 
 public class <classname> extends AbstractGrammarTest {
@@ -29,7 +28,7 @@ testParser(filename, testname, rule, uitleg) ::= <<
 	@Test
 	public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
 		File f = new File(getClass().getResource("/<filename>").toURI());
-		ExampleParser parser = createParser(asCharStream(f));
+		Parser parser = createParser(asCharStream(f));
 		parser.<rule>();
 	}
 	
@@ -41,7 +40,7 @@ testParserWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
     File f = new File(getClass().getResource("/<filename>").toURI());
-    ExampleParser parser = createParser(asCharStream(f));
+    Parser parser = createParser(asCharStream(f));
     parser.<rule>();
   }
   
@@ -54,7 +53,7 @@ testChecker(filename, testname, rule, uitleg) ::= <<
   @Test
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
     File f = new File(getClass().getResource("/<filename>").toURI());
-    ExampleChecker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
+    Checker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
     checker.<rule>();
   }
   
@@ -66,7 +65,7 @@ testCheckerWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
     File f = new File(getClass().getResource("/<filename>").toURI());
-    ExampleChecker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
+    Checker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
     checker.<rule>();
   }
   
