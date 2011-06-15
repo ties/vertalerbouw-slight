@@ -1,4 +1,4 @@
-# checkerexpected: MismatchedTokenException
+# expected: MismatchedTokenException
 const a
 const b
 

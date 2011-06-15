@@ -13,6 +13,8 @@ import java.util.Map;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 
+import org.antlr.runtime.tree.RewriteEmptyStreamException;
+
 import com.google.common.io.Files;
 
 public class CheckerTestGenerator{	
