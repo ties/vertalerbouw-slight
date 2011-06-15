@@ -48,9 +48,6 @@ options {
   private Logger log = LoggerFactory.getLogger(CodegenPreparation.class);
 }
 
-/**
- * A program consists of several functions
- */
 program 
   : ^(PROGRAM content)
   ;
@@ -59,78 +56,73 @@ content
   : (declaration | functionDef)*
   ;
   
-declaration
-  : ^(VAR prim=primitive IDENTIFIER rvd=runtimeValueDeclaration?) 
-  //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST prim=primitive IDENTIFIER cvd=constantValueDeclaration) 
-  | ^(INFERVAR IDENTIFIER run=runtimeValueDeclaration?) 
-  | ^(INFERCONST IDENTIFIER cons=constantValueDeclaration?) 
+declaration returns [Type type]
+  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
+  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
+  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
+  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
   ;
   
-runtimeValueDeclaration
+valueDeclaration returns [Type type]
   : BECOMES ce=compoundExpression
   ;
  
-constantValueDeclaration
-  : BECOMES atom 
-  ;
-  
-functionDef
+functionDef returns [Type type]
   : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)* returnTypeNode=closedCompoundExpression) 
   ;
   
-parameterDef
+parameterDef returns[Type type, TypedNode node]
   : ^(FORMAL primitive IDENTIFIER)
   ; 
 
-closedCompoundExpression
+closedCompoundExpression returns[Type type, Boolean hasReturn]
   : ^(SCOPE (ce=compoundExpression)*)
   ;
 
-compoundExpression
+compoundExpression returns [Type type, Boolean isReturn, Boolean hasReturn]
   : expr=expression
   | dec=declaration
+  | ^(ret=RETURN expr=expression)
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression
-  : ^(op=BECOMES base=expression sec=expression)
-  | ^(op=OR base=expression sec=expression)
-  | ^(op=AND base=expression sec=expression)
+expression returns [Type type, Boolean hasReturn]
+  : ^(op=BECOMES base=expression sec=expression) 
+  | ^(op=OR base=expression sec=expression) 
+  | ^(op=AND base=expression sec=expression) 
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)
-  | ^(op=(PLUS|MINUS) base=expression sec=expression)
-  | ^(op=(MULT | DIV | MOD) base=expression sec=expression)
+  | ^(op=(PLUS|MINUS) base=expression sec=expression) 
+  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) 
   | ^(op=NOT base=expression)
-  | ^(ret=RETURN expr=expression)
   | sim=simpleExpression
   ;
   
-simpleExpression
-  : atom
+simpleExpression returns [Type type, Boolean hasReturn]
+  : atom                                     
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | fc=functionCall
-  | variable
-  | paren
-  | cce=closedCompoundExpression
-  | s=statements
+  | fc=functionCall                          
+  | variable                                 
+  | paren                                    
+  | cce=closedCompoundExpression             
+  | s=statements                             
   ;
   
-statements
+statements returns [Type type, Boolean hasReturn]
   : ifState=ifStatement
-  | whileState=whileStatement
+  | whileState=whileStatement    
   ;
 
-ifStatement
+ifStatement returns [Type type, Boolean hasReturn]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
   ;  
     
-whileStatement
+whileStatement returns [Type type, Boolean hasReturn]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
   ;    
     
-primitive
+primitive returns [Type type]
   : VOID
   | BOOLEAN
   | CHAR
@@ -138,7 +130,7 @@ primitive
   | STRING
   ;
 
-atom
+atom returns [Type type]
   : INT_LITERAL
   | NEGATIVE INT_LITERAL
   | CHAR_LITERAL
@@ -148,14 +140,14 @@ atom
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
-paren
+paren returns [Type type]
   : ^(PAREN expression)
   ;
   
-variable
+variable returns [Type type]
   : id=IDENTIFIER
   ;
   
-functionCall
+functionCall returns [Type type]
   : ^(CALL id=IDENTIFIER (ex=expression)*)
   ; 

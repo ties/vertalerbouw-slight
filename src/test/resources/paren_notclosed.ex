@@ -2,7 +2,7 @@
 #
 # Test van 'paren'
 #
-# expected: MissingTokenException
+# expected: MismatchedTokenException
 def main():
 	(3 + 5
 
