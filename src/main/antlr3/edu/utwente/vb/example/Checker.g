@@ -100,25 +100,39 @@ valueDeclaration //becomes bij het declareren van een variable
  
 functionDef
   //Hack, voor closedcompoundexpression function declareren, anders wordt de function niet herkend in geval van recursion
-  : { ch.openScope(); } ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)*  returnTypeNode=closedCompoundExpression) 
+  : { ch.openScope(); } ^(FUNCTION (t=primitive?) IDENTIFIER 
+          (p=parameterDef)*  
+          returnTypeNode=closedCompoundExpression) 
+    { ch.closeScope();} 
   ;
   
 parameterDef
-  : ^(FORMAL primitive IDENTIFIER) { ch.copyNodeType($primitive.tree, $FORMAL); }
+  : ^(FORMAL primitive IDENTIFIER) { ch.copyNodeType($primitive.tree, $IDENTIFIER); ch.declareVar($IDENTIFIER); }
   ; 
 
-closedCompoundExpression
-  : { ch.openScope(); } ^(SCOPE (ce=compoundExpression)*) { ch.closeScope(); }
+closedCompoundExpression returns [Type return_type = null;]
+  : { ch.openScope(); } ^(SCOPE
+                             (ce=compoundExpression { if($return_type != null && $ce.return_type != Type.UNKNOWN){//Check of er een return type is; Check of dit overeen komt met wat al gezien is
+                                                        log.debug("Detected return type {}", $ce.return_type);
+                                                        if($ce.return_type != $return_type)
+                                                          throw new IllegalFunctionDefinitionException("Incompatible return types; " + $return_type + " and " + $ce.return_type);
+                                                          $return_type = $ce.return_type;
+                                                      }
+                                                    })*) 
+    { $return_type = $return_type == null ? Type.VOID : $return_type; //Als er nog geen return type is returnen we void
+      log.debug("Returning type {}", $return_type);
+      ch.closeScope(); }
   ;
 
 compoundExpression returns [Type return_type = Type.UNKNOWN;]
-  : expr=expression { if($expr.return_type != null){ log.debug("Detected return type {}", $expr.return_type); $return_type = $expr.return_type; } }
+  : expr=expression 
+  | ^(RETURN expr=expression) { $return_type = ch.copyNodeType($expr.start, $RETURN); }
   | dec=declaration 
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression returns [Type return_type = Type.UNKNOWN;]
+expression
   : ^(op=BECOMES base=expression sec=expression) { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=OR base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=AND base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
@@ -126,7 +140,6 @@ expression returns [Type return_type = Type.UNKNOWN;]
   | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=NOT base=expression) { ch.applyFunctionAndSetType($op, $base.tree); }
-  | ^(RETURN expr=expression) { $return_type = ch.copyNodeType($expr.tree, $RETURN); }
   | sim=simpleExpression
   ;
   
@@ -173,7 +186,7 @@ atom
   ;
   
 paren
-  : ^(PAREN expression)           { ch.copyNodeType($PAREN.tree,$expression.tree); }
+  : ^(PAREN expression)           { ch.copyNodeType($expression.tree, $PAREN); }
   ;
   
 variable

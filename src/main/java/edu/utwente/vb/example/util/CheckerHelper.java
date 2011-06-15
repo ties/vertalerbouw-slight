@@ -108,8 +108,11 @@ public class CheckerHelper {
 	
 	public Type copyNodeType(TypedNode rhs, TypedNode... targets){
 		checkNotNull(rhs);
-		for(TypedNode target : targets)
+		log.debug("src:" + rhs);
+		for(TypedNode target : targets){
+			log.debug("Target: " + target.toString());
 			target.setNodeType(rhs.getNodeType());//impliciet checkNotNull
+		}
 		return rhs.getNodeType();
 	}
 	

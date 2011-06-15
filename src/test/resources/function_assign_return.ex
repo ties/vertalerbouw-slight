@@ -6,7 +6,7 @@
 def hoger(int a, int b):
 	if a > b:
 		return(a)
-	return(b)
+	return (b)
 
 int c = hoger(1, 2)
 
