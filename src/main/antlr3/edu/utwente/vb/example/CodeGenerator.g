@@ -20,6 +20,7 @@ options {
 
   import edu.utwente.vb.example.asm.*;
     
+  import edu.utwente.vb.example.asm.ASMAdapter;
   import edu.utwente.vb.example.*;
   import edu.utwente.vb.example.util.*;
   import edu.utwente.vb.symbols.*;
@@ -67,9 +68,9 @@ options {
 
 //Program regel w/ check van precondities, uitvoeren van goede visitEnd regel
 program 
-  : { checkNotNull(aa); checkNotNull(mode); checkArgument(mode != OutputMode.FILE || target != null} 
+  : { checkNotNull(aa); checkNotNull(mode); checkArgument(mode != OutputMode.FILE || target != null); } 
       ^(PROGRAM content) 
-    { mode == OutputMode.FILE ? aa.visitEnd(target) : aa.visitEnd(); }
+    { if(mode == OutputMode.FILE){ aa.visitEnd(target); } else {aa.visitEnd(); }}
   ;
 
 content
@@ -77,7 +78,7 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($primitive.tree, $identifier.text); } rvd=valueDeclaration?) { aa.varBody($rvd.tree); aa.endVar(); }  
+  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($primitive.tree, $IDENTIFIER.text); } rvd=valueDeclaration?) { aa.varBody($rvd.tree); aa.endVar(); }  
   | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
   | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
   | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 

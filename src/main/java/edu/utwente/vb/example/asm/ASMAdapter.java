@@ -94,12 +94,16 @@ public class ASMAdapter implements Opcodes {
 		log.debug(buffer.toString());
 	}
 
-	public void visitEnd(File file) throws IOException {
+	public void visitEnd(File file){
 		log.debug("visitEnd({})", file.getName());
 		cv.visitEnd();
 		//
 		log.debug(buffer.toString());
-		Files.write($__cw.toByteArray(), file);
+		try{
+			Files.write($__cw.toByteArray(), file);
+		} catch(IOException e){
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public void declVar(TypedNode node, String name){

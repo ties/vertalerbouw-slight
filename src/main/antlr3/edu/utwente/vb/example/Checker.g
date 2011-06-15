@@ -68,15 +68,34 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) { ch.tbn($VAR, $prim.text); ch.declareVar($IDENTIFIER, $prim.text); }
-  //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) { ch.tbn($CONST, $prim.text); ch.declareConst($IDENTIFIER, $prim.text); } 
-  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) { ch.st($INFERVAR, $run.tree.getNodeType()); ch.declareVar($IDENTIFIER, $run.tree.getNodeType()); }
-  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) { ch.st($INFERCONST, $cons.tree.getNodeType()); ch.declareConst($IDENTIFIER, $cons.tree.getNodeType()); }
+  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
+    { ch.setNodeType($prim.text, $VAR, $IDENTIFIER); //type op VAR, IDENTIFIER 
+      ch.declareVar($IDENTIFIER); //declare var met zijn huidige type
+      if($rvd.tree != null){
+        ch.checkTypes($IDENTIFIER, $rvd.tree); //kijk of typen overeen komen
+      }
+    }
+  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
+    { ch.setNodeType($prim.text, $CONST, $IDENTIFIER); 
+      ch.declareConst($IDENTIFIER); 
+      ch.checkTypes($IDENTIFIER, $cvd.tree);
+    } 
+  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
+    {   Type inferredType = Type.UNKNOWN; 
+        if($run.tree != null){
+          inferredType = $run.tree.getNodeType();
+        } 
+        ch.setNodeType(inferredType, $INFERVAR, $IDENTIFIER);
+        ch.declareVar($IDENTIFIER); 
+    }
+  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
+    {   ch.copyNodeType($cons.tree, $INFERCONST, $IDENTIFIER); 
+        ch.declareConst($IDENTIFIER);
+    }
   ;
   
-valueDeclaration
-  : BECOMES ce=compoundExpression
+valueDeclaration //becomes bij het declareren van een variable
+  : BECOMES ce=compoundExpression { ch.copyNodeType($BECOMES, $ce.tree); }
   ;
  
 functionDef
@@ -95,19 +114,19 @@ closedCompoundExpression
 compoundExpression
   : expr=expression
   | dec=declaration
-  | ^(ret=RETURN expr=expression)
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression
-  : ^(op=BECOMES base=expression sec=expression)
-  | ^(op=OR base=expression sec=expression)
-  | ^(op=AND base=expression sec=expression)
-  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)
-  | ^(op=(PLUS|MINUS) base=expression sec=expression)
-  | ^(op=(MULT | DIV | MOD) base=expression sec=expression)
-  | ^(op=NOT base=expression)
+expression returns [Type type = Type.UNKNOWN;]
+  : ^(op=BECOMES base=expression sec=expression) { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=OR base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=AND base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=NOT base=expression) { ch.applyFunctionAndSetType($op, $base.tree); }
+  | ^(RETURN expr=expression) { $type = ch.copyNodeType($expr.tree, $RETURN); }
   | sim=simpleExpression
   ;
   
@@ -144,17 +163,17 @@ primitive
   ;
 
 atom
-  : INT_LITERAL           { $INT_LITERAL.tree.setNodeType(Type.INT);}
-  | NEGATIVE INT_LITERAL  { $NEGATIVE.tree.setNodeType(Type.INT); $INT_LITERAL.tree.setNodeType(Type.INT);}
-  | CHAR_LITERAL          { $CHAR_LITERAL.tree.setNodeType(Type.CHAR);}
-  | STRING_LITERAL        { $STRING_LITERAL.tree.setNodeType(Type.STRING);}
-  | TRUE                  { $TRUE.tree.setNodeType(Type.BOOL);}
-  | FALSE                 { $FALSE.tree.setNodeType(Type.BOOL);}
+  : INT_LITERAL           { ch.setNodeType(Type.INT, $INT_LITERAL.tree);}
+  | NEGATIVE INT_LITERAL  { ch.setNodeType(Type.INT, $NEGATIVE.tree, $INT_LITERAL.tree);}
+  | CHAR_LITERAL          { ch.setNodeType(Type.CHAR, $CHAR_LITERAL.tree);}
+  | STRING_LITERAL        { ch.setNodeType(Type.STRING, $STRING_LITERAL.tree);}
+  | TRUE                  { ch.setNodeType(Type.BOOL, $TRUE.tree);}
+  | FALSE                 { ch.setNodeType(Type.BOOL, $FALSE.tree);}
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
 paren
-  : ^(PAREN expression)           { $PAREN.tree.setNodeType($expression.tree.getNodeType()); }
+  : ^(PAREN expression)           { ch.copyNodeType($PAREN.tree,$expression.tree); }
   ;
   
 variable
