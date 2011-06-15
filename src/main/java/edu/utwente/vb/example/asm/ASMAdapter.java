@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 
+import edu.utwente.vb.tree.TypedNode;
+
 /**
  * Adapter voor de ASM library, scheelt code in de grammar & testbaarheid
  * 
@@ -98,5 +100,15 @@ public class ASMAdapter implements Opcodes {
 		//
 		log.debug(buffer.toString());
 		Files.write($__cw.toByteArray(), file);
+	}
+	
+	public void declVar(TypedNode node, String name){
+		//cv.visitField(arg0, arg1, arg2, arg3, arg4)
+	}
+	
+	public void varBody(TypedNode node){
+	}
+	
+	public void endVar(){
 	}
 }

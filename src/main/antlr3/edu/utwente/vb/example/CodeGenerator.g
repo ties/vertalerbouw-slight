@@ -32,7 +32,7 @@ options {
   import org.slf4j.LoggerFactory;
   
   
-  import static com.google.common.base.Preconditions.checkNotNull;
+  import static com.google.common.base.Preconditions.*;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -65,8 +65,11 @@ options {
   }
 }
 
+//Program regel w/ check van precondities, uitvoeren van goede visitEnd regel
 program 
-  : { checkNotNull(this.aa); checkNotNull(this.mode); } ^(PROGRAM content)
+  : { checkNotNull(aa); checkNotNull(mode); checkArgument(mode != OutputMode.FILE || target != null} 
+      ^(PROGRAM content) 
+    { mode == OutputMode.FILE ? aa.visitEnd(target) : aa.visitEnd(); }
   ;
 
 content
@@ -74,7 +77,7 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
+  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($primitive.tree, $identifier.text); } rvd=valueDeclaration?) { aa.varBody($rvd.tree); aa.endVar(); }  
   | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
   | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
   | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
