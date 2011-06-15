@@ -17,7 +17,7 @@ options {
 @header{ 
   package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
-  import edu.utwente.vb.tree.TypedNode;
+  import edu.utwente.vb.tree.*;
 }
 
 // Alter code generation so catch-clauses get replaced with this action. 
@@ -187,9 +187,9 @@ paren
   ;
   
 variable
-  : IDENTIFIER
+  : IDENTIFIER -> IDENTIFIER<AppliedOccurrenceNode>
   ;
   
 functionCall
-  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER expression*)
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL<AppliedOccurrenceNode> IDENTIFIER expression*)
   ;

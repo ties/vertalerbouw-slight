@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.antlr.runtime.Token;
 
+import com.google.common.base.Objects;
+
 import edu.utwente.vb.symbols.Type;
 
 /**
@@ -15,10 +17,27 @@ import edu.utwente.vb.symbols.Type;
 
 public class AppliedOccurrenceNode extends TypedNode{
 	private TypedNode bindingNode;
+	private int ttype;
 
+	/*
+	 * Extra constructor volgens
+	 * http://www.antlr.org/wiki/display/ANTLR3/Tree+construction
+	 */
+	public AppliedOccurrenceNode(int ttype, Token t) {
+		super(t);
+		this.ttype = ttype;
+	}
+	
+	public AppliedOccurrenceNode(int ttype) {
+		super();
+		this.ttype = ttype;
+	}
+
+	
 	public AppliedOccurrenceNode(AppliedOccurrenceNode node) {
 		super(node);
 		this.bindingNode = node.bindingNode;
+		this.ttype = node.ttype;
 	}
 
 	public AppliedOccurrenceNode(Token t) {
@@ -52,5 +71,11 @@ public class AppliedOccurrenceNode extends TypedNode{
 	@Override
 	public void setNodeType(Type nodeType) {
 		throw new IllegalStateException("Type of AppliedOccurrenceNode can not be set");
+	}
+	
+	
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(AppliedOccurrenceNode.class).add("ttype", ttype).add("binding", bindingNode).toString();
 	}
 }

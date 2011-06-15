@@ -238,8 +238,12 @@ public class CheckerHelper {
 		return symbolTable.apply(op, applied).getType();
 	}
 	
-	public TypedNode applyVariable(String name) throws SymbolTableException{
-		return symbolTable.apply(name).getNode();
+	public TypedNode applyVariable(TypedNode id) throws SymbolTableException{
+		return symbolTable.apply(id.getText()).getNode();
+	}
+	
+	public TypedNode applyFunction(TypedNode id, List<Type> types) throws SymbolTableException{
+		return symbolTable.apply(id.getText(), types).getNode();
 	}
 	
 	/**

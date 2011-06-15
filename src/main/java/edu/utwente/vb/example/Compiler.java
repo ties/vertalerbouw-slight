@@ -29,7 +29,8 @@ public class Compiler {
 	private static boolean opt_ast = false, opt_dot = false,
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
-			opt_debug_checker = false, opt_debug_parser = false, opt_debug_preparation = false, opt_debug_codegen = false;
+			opt_debug_checker = false, opt_debug_parser = false,
+			opt_debug_preparation = false, opt_debug_codegen = false;
 
 	private static String filename = null;
 
@@ -68,10 +69,12 @@ public class Compiler {
 				filename = args[i];
 				out.println("// using filename: " + filename);
 			} else {
-				System.err.println("// error: unknown option '" + args[i] + "'");
-				System.err.println("// valid options: -ast -dot "
-						+ "-no_checker -no_codegen -no_interpreter"
-						+ "-file_input <name> -debug_checker -debug_parser -debug_preparation -debug_codegen");
+				System.err
+						.println("// error: unknown option '" + args[i] + "'");
+				System.err
+						.println("// valid options: -ast -dot "
+								+ "-no_checker -no_codegen -no_interpreter"
+								+ "-file_input <name> -debug_checker -debug_parser -debug_preparation -debug_codegen");
 				throw new RuntimeException("Unknown options -- see readme");
 			}
 		}
@@ -106,8 +109,7 @@ public class Compiler {
 			Parser parser;
 
 			if (!opt_debug_parser) {
-				parser = new Parser(tokens,
-						new BlankDebugEventListener());
+				parser = new Parser(tokens, new BlankDebugEventListener());
 			} else {
 				parser = new Parser(tokens);
 			}
@@ -117,15 +119,15 @@ public class Compiler {
 			TypedNode tree = (TypedNode) result.getTree();
 
 			Checker checker;
-			
+
 			Checker.program_return checker_result = null;
-			//Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
+			// Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
 				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
-								
+
 				if (!opt_debug_checker) {
 					checker = new Checker(nodes, new BlankDebugEventListener());
-//					checker = new SlightChecker(nodes);
+					// checker = new SlightChecker(nodes);
 
 				} else {
 					checker = new Checker(nodes);
@@ -138,22 +140,39 @@ public class Compiler {
 				/* raar */
 				CheckerHelper ch = new CheckerHelper(symtab);
 				checker.setCheckerHelper(ch);
-				
+
 				checker.setTreeAdaptor(new TypedNodeAdaptor());
 				checker_result = checker.program();
 				symtab.closeScope();
 			}
-			
-			{
-				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
-				CodegenPreparation prepare;
-				if(!opt_debug_preparation){
-					prepare = new CodegenPreparation(nodes, new BlankDebugEventListener());
-				} else {
-					prepare = new CodegenPreparation(nodes);
+
+			if (!opt_no_codegen) { // run codegenerator
+				{
+					BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(
+							(TypedNode) checker_result.getTree());
+					CodegenPreparation prepare;
+					if (!opt_debug_preparation) {
+						prepare = new CodegenPreparation(nodes,
+								new BlankDebugEventListener());
+					} else {
+						prepare = new CodegenPreparation(nodes);
+					}
+					prepare.setTreeAdaptor(new TypedNodeAdaptor());
+					CodegenPreparation.program_return prepare_result = prepare
+							.program();
 				}
-				prepare.setTreeAdaptor(new TypedNodeAdaptor());
-				CodegenPreparation.program_return prepare_result = prepare.program();
+				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+				nodes.setTokenStream(tokens);
+				CodeGenerator codg;
+				if (opt_debug_codegen) {
+					codg = new CodeGenerator(nodes);
+				} else {
+					codg = new CodeGenerator(nodes,
+							new BlankDebugEventListener());
+				}
+				codg.setTreeAdaptor(new TypedNodeAdaptor());
+
+				CodeGenerator.program_return res = codg.program();
 			}
 
 			if (!opt_no_codegen) { // run codegenerator
@@ -191,7 +210,7 @@ public class Compiler {
             }*/
 
 			
-			
+
 			if (opt_ast) { // print the AST as string
 				System.out.println(tree.toStringTree());
 			} else if (opt_dot) { // print the AST as DOT specification
