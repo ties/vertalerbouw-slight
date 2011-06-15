@@ -68,11 +68,11 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
+  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) { ch.tbn($VAR, $prim.text); ch.declareVar($IDENTIFIER, $prim.text); }
   //Constanten kunnen alleen een simpele waarde krijgen
-  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
-  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
-  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
+  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) { ch.tbn($CONST, $prim.text); ch.declareConst($IDENTIFIER, $prim.text); } 
+  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) { ch.st($INFERVAR, $run.tree.getNodeType()); ch.declareVar($IDENTIFIER, $run.tree.getNodeType()); }
+  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) { ch.st($INFERCONST, $cons.tree.getNodeType()); ch.declareConst($IDENTIFIER, $cons.tree.getNodeType()); }
   ;
   
 valueDeclaration
