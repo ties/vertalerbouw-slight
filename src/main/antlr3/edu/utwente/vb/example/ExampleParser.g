@@ -25,7 +25,7 @@ options {
 @rulecatch { 
   catch (RecognitionException e) {
       if(debug_mode==true) 
-        throw e; 
+        throw e;
   }
 }
 
@@ -36,30 +36,28 @@ options {
   * In de sectie hieronder word de afhandeling van excepties geregeld.
   *
   */
-	public String getErrorMessage(RecognitionException e,
+	/*public String getErrorMessage(RecognitionException e,
 	                              String[] tokenNames)
 	{
 	    List stack = getRuleInvocationStack(e, this.getClass().getName());
 	    String msg = null;
+	    System.out.println("NU SCHRIJF IK MSG");
 	    if ( e instanceof NoViableAltException ) {
-	       NoViableAltException nvae = (NoViableAltException)e;
-	       msg = " No viable alternative, expected="+e.token+
-	          " (decision="+nvae.decisionNumber+
-	          " state "+nvae.stateNumber+")"+
-	          " decision=<<"+nvae.grammarDecisionDescription+">>";
-	          
-	    }else if ( e instanceof MismatchedTokenException ) {
-         MismatchedTokenException mte = (MismatchedTokenException)e;
-         msg = " Could not match token, expected="+e.token;            
-      }else {
-	       msg = super.getErrorMessage(e, tokenNames);
+	     NoViableAltException nvae = (NoViableAltException)e;
+	     msg = tokenNames[nvae.getUnexpectedType()]+ " unexpected";
+      }else if ( e instanceof MismatchedTokenException ) {
+        MismatchedTokenException mte = (MismatchedTokenException)e;
+        msg = " Expected:"+tokenNames[mte.expecting]+
+          ", but found: "+tokenNames[mte.getUnexpectedType()];
+      }else{
+	      msg = super.getErrorMessage(e, tokenNames);
 	    }
 	    return stack+" "+msg;
-	}
-	
-	public String getTokenErrorDisplay(Token t) {
-	    return t.toString();
-	}
+	}*/
+  
+  public String getTokenErrorDisplay(Token t) {
+    return t.toString();
+  }
 
   
   protected int nrErr = 0;
@@ -67,9 +65,20 @@ options {
   
   public void displayRecognitionError(String[] tokenNames, RecognitionException e){
     nrErr += 1;
-    if (e instanceof RecognitionException)
-      emitErrorMessage("[Example] error: " + e.getMessage());
-    else
+    if (e instanceof RecognitionException){
+        String msg = null;
+      if ( e instanceof NoViableAltException ) {
+        NoViableAltException nvae = (NoViableAltException)e;
+        msg = tokenNames[nvae.getUnexpectedType()]+ " was unexpected";
+      }else if ( e instanceof MismatchedTokenException ) {
+        MismatchedTokenException mte = (MismatchedTokenException)e;
+        msg = " Expected:"+tokenNames[mte.expecting]+
+          ", but found: "+tokenNames[mte.getUnexpectedType()];
+      }else{
+        msg = super.getErrorMessage(e, tokenNames);
+      }
+      emitErrorMessage("[Example] error [" +nrErr +"] - char " + e.charPositionInLine + " on line " +e.line + " | " + msg);
+    }else
       super.displayRecognitionError(tokenNames, e);
   }
 }
@@ -81,7 +90,7 @@ program
   ;
 
 content	
-  : (declaration | functionDef)* -> declaration* functionDef* 
+  : (compoundExpression | functionDef)* -> functionDef* compoundExpression* 
   ;
   
 declaration
