@@ -17,7 +17,8 @@ bin/**
 src/main/antlr3/edu/utwente/vb/example/output/
 src/test/java/edu/utwente/vb/TestParserWithExamples.java
 src/test/java/edu/utwente/vb/TestCheckerWithExamples.java
-src/text/java/edu/utwente/vb/TestCodegenPreparationWithExamples.java
+src/test/java/edu/utwente/vb/TestCodegenPreparationWithExamples.java
+
 #Wat hieronder staat is voor LaTeX
 *.aux
 *.bbl
