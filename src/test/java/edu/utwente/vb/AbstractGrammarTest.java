@@ -78,6 +78,8 @@ public abstract class AbstractGrammarTest{
 		
 		BufferedTreeNodeStream checker_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
 		CodegenPreparation prepare = new CodegenPreparation(checker_nodes, new BlankDebugEventListener());
+		prepare.setTreeAdaptor(new TypedNodeAdaptor());
+		
 		return prepare;
 	}
 

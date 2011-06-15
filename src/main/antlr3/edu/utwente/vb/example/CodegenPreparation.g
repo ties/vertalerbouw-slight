@@ -12,7 +12,7 @@ options {
   output = AST;
   ASTLabelType = TypedNode;
   rewrite = true;
-  tokenVocab = ExampleParser;
+  tokenVocab = ExampleChecker;
 }
 
 @header{ 
@@ -56,7 +56,7 @@ program
   ;
 
 content
-  : (functionDef | expr=expression | dec=declaration)* 
+  : functionDef* (expression | declaration)* -> functionDef* ^(GLOBAL declaration*) ^(FUNCTION VOID MAIN INDENT expression* DEDENT) 
   ;
   
 declaration
@@ -90,7 +90,6 @@ closedCompoundExpression
 compoundExpression
   : expr=expression
   | dec=declaration
-  | ^(ret=RETURN expr=expression)
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
@@ -103,6 +102,7 @@ expression
   | ^(op=(PLUS|MINUS) base=expression sec=expression)
   | ^(op=(MULT | DIV | MOD) base=expression sec=expression)
   | ^(op=NOT base=expression)
+  | ^(ret=RETURN expr=expression)
   | sim=simpleExpression
   ;
   

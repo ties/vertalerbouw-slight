@@ -36,7 +36,7 @@ program
   ;
 
 content	
-  : (compoundExpression | functionDef)* 
+  : (compoundExpression | functionDef)* -> functionDef* compoundExpression* 
   ;
   
 declaration

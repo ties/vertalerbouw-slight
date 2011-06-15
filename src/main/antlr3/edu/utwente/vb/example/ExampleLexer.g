@@ -23,6 +23,7 @@ tokens {
   INFERCONST;
   NEGATIVE;
   PAREN;
+  GLOBAL;
 }
 
 @header{
@@ -93,6 +94,7 @@ BOOLEAN : 'bool';
 CHAR    : 'char';
 INT     : 'int';
 STRING  : 'string';
+MAIN    : 'main';
 
 WS  
     @init{

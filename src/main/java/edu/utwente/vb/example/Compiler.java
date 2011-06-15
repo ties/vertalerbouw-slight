@@ -138,6 +138,7 @@ public class Compiler {
 			{
 				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
 				CodegenPreparation prepare = new CodegenPreparation(nodes);
+				prepare.setTreeAdaptor(new TypedNodeAdaptor());
 				CodegenPreparation.program_return prepare_result = prepare.program();
 			}
 			//

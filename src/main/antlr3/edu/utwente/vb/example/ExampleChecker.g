@@ -80,7 +80,7 @@ program
   ;
 
 content
-  : (functionDef | compoundExpression)* 
+  : functionDef* compoundExpression* 
   ;
   
 declaration returns [Type type]
