@@ -4,7 +4,7 @@
  *
  */
 
-tree grammar ExampleCodeGenerator;
+tree grammar CodeGenerator;
 
 options {
   k=1;
@@ -12,7 +12,7 @@ options {
   output = AST;
   ASTLabelType = TypedNode;
   rewrite = true;
-  tokenVocab = ExampleParser;
+  tokenVocab = Lexer;
 }
 
 @header{ 
@@ -46,7 +46,7 @@ options {
 
 @members{
   private ASMAdapter aa;
-  private Logger log = LoggerFactory.getLogger(ExampleCodeGenerator.class);
+  private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
   
   public void setASMAdapter(ASMAdapter adap){
     checkNotNull(adap);

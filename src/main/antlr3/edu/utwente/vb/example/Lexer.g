@@ -4,7 +4,7 @@
  *
  */
 
-lexer grammar ExampleLexer;
+lexer grammar Lexer;
 
 options {
   superClass = BaseOffSideLexer;

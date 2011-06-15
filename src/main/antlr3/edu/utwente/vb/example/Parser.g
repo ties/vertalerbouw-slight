@@ -4,13 +4,13 @@
  *
  */
 
-parser grammar ExampleParser;
+parser grammar Parser;
 
 options {
   k=1;
   language = Java;
   output = AST;
-  tokenVocab = ExampleLexer;
+  tokenVocab = Lexer;
   ASTLabelType = TypedNode;
 }
 

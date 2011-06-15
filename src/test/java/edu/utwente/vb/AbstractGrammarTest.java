@@ -22,9 +22,9 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 import edu.utwente.vb.example.CodegenPreparation;
-import edu.utwente.vb.example.ExampleChecker;
-import edu.utwente.vb.example.ExampleLexer;
-import edu.utwente.vb.example.ExampleParser;
+import edu.utwente.vb.example.Checker;
+import edu.utwente.vb.example.Lexer;
+import edu.utwente.vb.example.Parser;
 import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
@@ -40,25 +40,25 @@ public abstract class AbstractGrammarTest{
 	 * @return
 	 * @throws IOException
 	 */
-	protected ExampleParser createParser(String testString) throws IOException {
+	protected Parser createParser(String testString) throws IOException {
 		CharStream stream = new ANTLRStringStream(testString);
 		return createParser(stream);
 	}
 	
-	protected ExampleParser createParser(CharStream stream) throws IOException{
-		ExampleLexer lexer = new ExampleLexer(stream);
+	protected Parser createParser(CharStream stream) throws IOException{
+		Lexer lexer = new Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		ExampleParser parser = new ExampleParser(tokens,
+		Parser parser = new Parser(tokens,
 				new BlankDebugEventListener());
 		//*needed* :)
 		parser.setTreeAdaptor(new TypedNodeAdaptor());
 		return parser;
 	}
 	
-	protected ExampleChecker createChecker(CharStream stream, ExampleParser parser) throws IOException, RecognitionException{
+	protected Checker createChecker(CharStream stream, Parser parser) throws IOException, RecognitionException{
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(parser.program().getTree());
 		
-		ExampleChecker	checker = new ExampleChecker(nodes, new BlankDebugEventListener());
+		Checker	checker = new Checker(nodes, new BlankDebugEventListener());
 		/* Patch de symbol table met default functies */
 		SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 		Prelude pre = new Prelude();
@@ -72,9 +72,9 @@ public abstract class AbstractGrammarTest{
 		return checker;
 	}
 	
-	protected CodegenPreparation createCodegenPreparation(CharStream stream, ExampleParser parser) throws IOException, RecognitionException{
-		ExampleChecker checker = createChecker(stream, parser);
-		ExampleChecker.program_return checker_result = checker.program();
+	protected CodegenPreparation createCodegenPreparation(CharStream stream, Parser parser) throws IOException, RecognitionException{
+		Checker checker = createChecker(stream, parser);
+		Checker.program_return checker_result = checker.program();
 		
 		BufferedTreeNodeStream checker_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
 		CodegenPreparation prepare = new CodegenPreparation(checker_nodes, new BlankDebugEventListener());

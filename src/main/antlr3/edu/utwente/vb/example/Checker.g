@@ -4,7 +4,7 @@
  *
  */
 
-tree grammar ExampleChecker;
+tree grammar Checker;
 
 options {
   k=1;
@@ -12,7 +12,7 @@ options {
   output = AST;
   ASTLabelType = TypedNode;
   rewrite = true;
-  tokenVocab = ExampleParser;
+  tokenVocab = Lexer;
 }
 
 @header{ 
@@ -43,7 +43,7 @@ options {
 
 @members{
   private CheckerHelper ch;
-  private Logger log = LoggerFactory.getLogger(ExampleChecker.class);
+  private Logger log = LoggerFactory.getLogger(Checker.class);
 
   /** 
   * Compositie met hulp van een CheckerHelper. In members stoppen is onhandig;

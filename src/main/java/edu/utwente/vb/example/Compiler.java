@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import edu.utwente.vb.*;
-import edu.utwente.vb.example.ExampleChecker.program_return;
+import edu.utwente.vb.example.Checker.program_return;
 import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
@@ -94,35 +94,35 @@ public class Compiler {
 				stream = new ANTLRInputStream(System.in);
 			}
 
-			ExampleLexer lexer = new ExampleLexer(stream);
+			Lexer lexer = new Lexer(stream);
 
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			ExampleParser parser;
+			Parser parser;
 
 			if (!opt_debug_parser) {
-				parser = new ExampleParser(tokens,
+				parser = new Parser(tokens,
 						new BlankDebugEventListener());
 			} else {
-				parser = new ExampleParser(tokens);
+				parser = new Parser(tokens);
 			}
 			parser.setTreeAdaptor(new TypedNodeAdaptor());
 
-			ExampleParser.program_return result = parser.program();
+			Parser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
 
-			ExampleChecker checker;
+			Checker checker;
 			
-			ExampleChecker.program_return checker_result = null;
+			Checker.program_return checker_result = null;
 			//Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
 				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
 								
 				if (!opt_debug_checker) {
-					checker = new ExampleChecker(nodes, new BlankDebugEventListener());
+					checker = new Checker(nodes, new BlankDebugEventListener());
 //					checker = new SlightChecker(nodes);
 
 				} else {
-					checker = new ExampleChecker(nodes);
+					checker = new Checker(nodes);
 				}
 				/* TODO: Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();

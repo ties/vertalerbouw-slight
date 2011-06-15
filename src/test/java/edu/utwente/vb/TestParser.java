@@ -16,27 +16,27 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.junit.Test;
 
-import edu.utwente.vb.example.ExampleLexer;
-import edu.utwente.vb.example.ExampleParser;
-import edu.utwente.vb.example.ExampleParser.program_return;
+import edu.utwente.vb.example.Lexer;
+import edu.utwente.vb.example.Parser;
+import edu.utwente.vb.example.Parser.program_return;
 
 public class TestParser extends AbstractGrammarTest{
 	@Test
 	public void testComments() throws IOException{
-		ExampleParser parser = createParser("# Comment");
-		assert parser.getTokenStream().get(0).getType() == ExampleParser.SINGLELINE_COMMENT;
+		Parser parser = createParser("# Comment");
+		assert parser.getTokenStream().get(0).getType() == Parser.SINGLELINE_COMMENT;
 	}
 	
 	@Test
 	public void testMultilineComments() throws IOException{
-		ExampleParser parser = createParser("/#Dit is een string die over meerdere \n" +
+		Parser parser = createParser("/#Dit is een string die over meerdere \n" +
 											"regels heen wrapped #/");
-		assert parser.getTokenStream().get(0).getType() == ExampleParser.MULTILINE_COMMENT;
+		assert parser.getTokenStream().get(0).getType() == Parser.MULTILINE_COMMENT;
 	}
 	
 	@Test
 	public void testMath() throws IOException, RecognitionException{
-		ExampleParser parser = createParser("5 - 5 \n"
+		Parser parser = createParser("5 - 5 \n"
 											+ "a = -5 - -5\n");
 		parser.plusExpression();
 		
