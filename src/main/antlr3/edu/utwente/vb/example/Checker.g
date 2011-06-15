@@ -104,21 +104,21 @@ functionDef
   ;
   
 parameterDef
-  : ^(FORMAL primitive IDENTIFIER)
+  : ^(FORMAL primitive IDENTIFIER) { ch.copyNodeType($primitive.tree, $FORMAL); }
   ; 
 
 closedCompoundExpression
   : { ch.openScope(); } ^(SCOPE (ce=compoundExpression)*) { ch.closeScope(); }
   ;
 
-compoundExpression
-  : expr=expression
-  | dec=declaration
+compoundExpression returns [Type return_type = Type.UNKNOWN;]
+  : expr=expression { if($expr.return_type != null){ log.debug("Detected return type {}", $expr.return_type); $return_type = $expr.return_type; } }
+  | dec=declaration 
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression returns [Type type = Type.UNKNOWN;]
+expression returns [Type return_type = Type.UNKNOWN;]
   : ^(op=BECOMES base=expression sec=expression) { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=OR base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=AND base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
@@ -126,7 +126,7 @@ expression returns [Type type = Type.UNKNOWN;]
   | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=NOT base=expression) { ch.applyFunctionAndSetType($op, $base.tree); }
-  | ^(RETURN expr=expression) { $type = ch.copyNodeType($expr.tree, $RETURN); }
+  | ^(RETURN expr=expression) { $return_type = ch.copyNodeType($expr.tree, $RETURN); }
   | sim=simpleExpression
   ;
   
@@ -163,12 +163,12 @@ primitive
   ;
 
 atom
-  : INT_LITERAL           { ch.setNodeType(Type.INT, $INT_LITERAL.tree);}
-  | NEGATIVE INT_LITERAL  { ch.setNodeType(Type.INT, $NEGATIVE.tree, $INT_LITERAL.tree);}
-  | CHAR_LITERAL          { ch.setNodeType(Type.CHAR, $CHAR_LITERAL.tree);}
-  | STRING_LITERAL        { ch.setNodeType(Type.STRING, $STRING_LITERAL.tree);}
-  | TRUE                  { ch.setNodeType(Type.BOOL, $TRUE.tree);}
-  | FALSE                 { ch.setNodeType(Type.BOOL, $FALSE.tree);}
+  : INT_LITERAL           { ch.setNodeType(Type.INT, $INT_LITERAL);}
+  | NEGATIVE INT_LITERAL  { ch.setNodeType(Type.INT, $NEGATIVE, $INT_LITERAL);}
+  | CHAR_LITERAL          { ch.setNodeType(Type.CHAR, $CHAR_LITERAL);}
+  | STRING_LITERAL        { ch.setNodeType(Type.STRING, $STRING_LITERAL);}
+  | TRUE                  { ch.setNodeType(Type.BOOL, $TRUE);}
+  | FALSE                 { ch.setNodeType(Type.BOOL, $FALSE);}
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   

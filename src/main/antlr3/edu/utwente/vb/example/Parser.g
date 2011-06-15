@@ -187,9 +187,9 @@ paren
   ;
   
 variable
-  : IDENTIFIER -> IDENTIFIER<AppliedOccurrenceNode>
+  : IDENTIFIER -> IDENTIFIER<AppliedOccurrenceNode>[$IDENTIFIER]
   ;
   
 functionCall
-  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL<AppliedOccurrenceNode> IDENTIFIER expression*)
+  : IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN -> ^(CALL IDENTIFIER<AppliedOccurrenceNode>[$IDENTIFIER] expression*)
   ;
