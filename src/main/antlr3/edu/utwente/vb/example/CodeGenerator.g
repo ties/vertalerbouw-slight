@@ -25,7 +25,7 @@ options {
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
-
+  import java.io.File;
   
   /** Logger */
   import org.slf4j.Logger;
@@ -50,6 +50,7 @@ options {
   private ASMAdapter aa;
   private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
   private OutputMode mode;
+  private File target;
   
   public void setOutputMode(OutputMode mode){
     this.mode = checkNotNull(mode);
@@ -58,10 +59,14 @@ options {
   public void setASMAdapter(ASMAdapter adap){
     this.aa = checkNotNull(adap);
   }
+  
+  public void setFile(File tgt){
+    this.target = checkNotNull(tgt);
+  }
 }
 
 program 
-  : ^(PROGRAM content)
+  : { checkNotNull(this.aa); checkNotNull(this.mode); } ^(PROGRAM content)
   ;
 
 content

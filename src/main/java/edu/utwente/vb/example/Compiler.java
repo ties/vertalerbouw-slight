@@ -1,12 +1,15 @@
 package edu.utwente.vb.example;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
 import edu.utwente.vb.*;
 import edu.utwente.vb.example.Checker.program_return;
+import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import edu.utwente.vb.example.util.CheckerHelper;
+import edu.utwente.vb.example.util.Utils;
 import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
@@ -163,6 +166,9 @@ public class Compiler {
 					 codg = new CodeGenerator(nodes, new BlankDebugEventListener());
 				 }
 				 codg.setTreeAdaptor(new TypedNodeAdaptor());
+				 
+				 codg.setOutputMode(OutputMode.FILE);
+				 codg.setFile(new File(Utils.testName(new File(filename)) + ".class"));
 				
 				 CodeGenerator.program_return res = codg.program();
 			 }
