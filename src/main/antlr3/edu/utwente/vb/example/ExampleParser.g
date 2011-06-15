@@ -36,24 +36,6 @@ options {
   * In de sectie hieronder word de afhandeling van excepties geregeld.
   *
   */
-	/*public String getErrorMessage(RecognitionException e,
-	                              String[] tokenNames)
-	{
-	    List stack = getRuleInvocationStack(e, this.getClass().getName());
-	    String msg = null;
-	    System.out.println("NU SCHRIJF IK MSG");
-	    if ( e instanceof NoViableAltException ) {
-	     NoViableAltException nvae = (NoViableAltException)e;
-	     msg = tokenNames[nvae.getUnexpectedType()]+ " unexpected";
-      }else if ( e instanceof MismatchedTokenException ) {
-        MismatchedTokenException mte = (MismatchedTokenException)e;
-        msg = " Expected:"+tokenNames[mte.expecting]+
-          ", but found: "+tokenNames[mte.getUnexpectedType()];
-      }else{
-	      msg = super.getErrorMessage(e, tokenNames);
-	    }
-	    return stack+" "+msg;
-	}*/
   
   public String getTokenErrorDisplay(Token t) {
     return t.toString();
