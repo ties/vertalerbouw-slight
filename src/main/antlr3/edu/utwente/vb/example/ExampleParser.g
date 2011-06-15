@@ -81,7 +81,7 @@ program
   ;
 
 content	
-  : (declaration | functionDef)* -> declaration* functionDef* 
+  : (declaration | functionDef)*  
   ;
   
 declaration

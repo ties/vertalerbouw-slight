@@ -62,7 +62,7 @@ program
   ;
 
 content
-  : (functionDef | compoundExpression)* 
+  : (declaration | functionDef)*
   ;
   
 declaration

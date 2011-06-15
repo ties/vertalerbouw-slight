@@ -1,4 +1,4 @@
-# checkerexpected: SymbolTableException
+# checkerexpected: MismatchedTokenException
 const a
 const b
 

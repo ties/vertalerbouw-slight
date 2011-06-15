@@ -64,7 +64,7 @@ program
   ;
 
 content
-  : declaration* functionDef* 
+  : (declaration | functionDef)*
   ;
   
 declaration returns [Type type]

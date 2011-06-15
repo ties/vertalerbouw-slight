@@ -8,15 +8,13 @@ def hoger(int a, int b):
 		return(a)
 	return(b)
 
+#functie zonder parameter aanmaken
+def verlagen():
+	var c = 5 - 1
+
 def main():
 	print(hoger(1, 2))
 	#print = functie! Haakjes zijn mooi. Niet print 'statement'
 	#zie ook http://stackoverflow.com/questions/4413912/why-is-print-not-a-function-in-python
 	#functie zonder parameter aanroepen
 	verlagen()
-
-
-#functie zonder parameter aanmaken
-def verlagen():
-	var c = 5 - 1
-
