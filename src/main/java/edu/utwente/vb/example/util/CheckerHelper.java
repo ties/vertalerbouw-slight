@@ -108,9 +108,7 @@ public class CheckerHelper {
 	
 	public Type copyNodeType(TypedNode rhs, TypedNode... targets){
 		checkNotNull(rhs);
-		log.debug("src:" + rhs);
 		for(TypedNode target : targets){
-			log.debug("Target: " + target.toString());
 			target.setNodeType(rhs.getNodeType());//impliciet checkNotNull
 		}
 		return rhs.getNodeType();
@@ -366,14 +364,16 @@ public class CheckerHelper {
 	}
 	
 	public static FunctionId<TypedNode> createFunctionId(String token, Type type, VariableId<TypedNode>... p) throws IllegalFunctionDefinitionException{
-		return new FunctionId<TypedNode>(byToken(token), type, Lists.newArrayList(p));
+		return new FunctionId<TypedNode>(byToken(token, type), type, Lists.newArrayList(p));
 	}
 	
 	public static VariableId<TypedNode> createVariableId(String token, Type type){
-		return new VariableId<TypedNode>(byToken(token), type);
+		return new VariableId<TypedNode>(byToken(token, type), type);
 	}
 	
-	public static TypedNode byToken(String token){
-		return new TypedNode(new CommonToken(-1, token));
+	public static TypedNode byToken(String token, Type type){
+		TypedNode tmp = new TypedNode(new CommonToken(-1, token));
+		tmp.setNodeType(type);
+		return tmp;
 	}
 }

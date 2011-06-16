@@ -72,14 +72,14 @@ content
   
 declaration
   : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
-    { ch.setNodeType($prim.text, $VAR, $IDENTIFIER); //type op VAR, IDENTIFIER 
+    { ch.copyNodeType($prim.tree, $VAR, $IDENTIFIER); //type op VAR, IDENTIFIER 
       ch.declareVar($IDENTIFIER); //declare var met zijn huidige type
       if($rvd.tree != null){
         ch.checkTypes($IDENTIFIER, $rvd.tree); //kijk of typen overeen komen
       }
     }
   | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
-    { ch.setNodeType($prim.text, $CONST, $IDENTIFIER); 
+    { ch.copyNodeType($prim.tree, $CONST, $IDENTIFIER); 
       ch.declareConst($IDENTIFIER); 
       ch.checkTypes($IDENTIFIER, $cvd.tree);
     } 
@@ -98,7 +98,7 @@ declaration
   ;
   
 valueDeclaration //becomes bij het declareren van een variable
-  : BECOMES ce=compoundExpression { ch.copyNodeType($BECOMES, $ce.tree); }
+  : BECOMES ce=compoundExpression { ch.copyNodeType($ce.tree, $BECOMES); }
   ;
  /**
  * Definieer een functie. 
@@ -151,14 +151,15 @@ parameterDef returns [TypedNode id_node]
 
 closedCompoundExpression returns [Type return_type = null;]
   : { ch.openScope(); } ^(SCOPE
-                             (ce=compoundExpression { if($return_type != null && $ce.return_type != Type.UNKNOWN){//Check of er een return type is; Check of dit overeen komt met wat al gezien is
+                             (ce=compoundExpression { if($ce.return_type != null && $ce.return_type != Type.UNKNOWN){//Check of er een return type is; Check of dit overeen komt met wat al gezien is
                                                         log.debug("Detected return type {}", $ce.return_type);
-                                                        if($ce.return_type != $return_type)
+                                                        if($return_type != null && $ce.return_type != $return_type)
                                                           throw new IllegalFunctionDefinitionException("Incompatible return types; " + $return_type + " and " + $ce.return_type);
-                                                          $return_type = $ce.return_type;
+                                                        $return_type = $ce.return_type;
                                                       }
                                                     })*) 
-    { $return_type = $return_type == null ? Type.VOID : $return_type; //Als er nog geen return type is returnen we void
+    { if($return_type == null)
+        $return_type = Type.VOID;
       log.debug("Returning type {}", $return_type);
       ch.closeScope(); }
   ;
@@ -171,7 +172,7 @@ compoundExpression returns [Type return_type = Type.UNKNOWN;]
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression
+expression  returns [Type return_type = Type.UNKNOWN;]
   : ^(op=BECOMES base=expression sec=expression) { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=OR base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=AND base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
@@ -179,31 +180,40 @@ expression
   | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=NOT base=expression) { ch.applyFunctionAndSetType($op, $base.tree); }
-  | sim=simpleExpression
+  | sim=simpleExpression { $return_type = sim.return_type; }
   ;
   
-simpleExpression
+simpleExpression returns [Type return_type = Type.UNKNOWN;] 
   : atom
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | fc=functionCall
   | variable
-  | paren
-  | cce=closedCompoundExpression
-  | s=statements
+  | paren { $return_type = $paren.return_type; }
+  | cce=closedCompoundExpression { $return_type = cce.return_type; }
+  | s=statements { $return_type = $s.return_type; }
   ;
   
-statements
-  : ifState=ifStatement
-  | whileState=whileStatement
+statements returns [Type return_type = Type.UNKNOWN;]
+  : ifState=ifStatement { $return_type = $ifState.return_type; }
+  | whileState=whileStatement { $return_type = $whileState.return_type; }
   ;
 
-ifStatement
+ifStatement returns [Type return_type = Type.UNKNOWN;]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
+  {
+  ch.setNodeType(Type.VOID, $IF);
+  if($elseExpr.tree != null)
+    ch.checkTypes($ifExpr.return_type, $elseExpr.return_type); 
+  $return_type = $ifExpr.return_type; 
+  }
   ;  
     
-whileStatement
+whileStatement returns [Type return_type = Type.UNKNOWN;]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
+  {
+  ch.setNodeType(Type.VOID, $WHILE); 
+  $return_type = $loop.return_type; }
   ;    
     
 primitive
@@ -224,8 +234,8 @@ atom
   //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
-paren
-  : ^(PAREN expression)           { ch.copyNodeType($expression.tree, $PAREN); }
+paren returns [Type return_type = Type.UNKNOWN;]
+  : ^(PAREN expression)           { ch.copyNodeType($expression.tree, $PAREN); $return_type = $expression.return_type; }
   ;
   
 variable
@@ -241,6 +251,9 @@ functionCall
   }
   : ^(CALL id=IDENTIFIER (ex=expression {args.add($ex.tree.getNodeType());})*)
     { ((AppliedOccurrenceNode)$id).setBindingNode(ch.applyFunction($id, args));
+    log.debug("Set binding node to {}", $id);
+    log.debug("call node {} ", $CALL);
+    log.debug("id node {} ", $id);
       ch.copyNodeType($id, $CALL);
     }
   ; 

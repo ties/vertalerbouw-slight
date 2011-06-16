@@ -47,8 +47,7 @@ public class TestAppliedOccurrenceNode{
 	public void testCanShowReferencedType(){
 		assertNull(testNode.getNodeType());
 		
-		TypedNode other = CheckerHelper.byToken("AAAA");
-		other.setType(Type.CHAR);
+		TypedNode other = CheckerHelper.byToken("AAAA", Type.CHAR);
 		
 		testNode.setBindingNode(other);
 		
@@ -58,7 +57,7 @@ public class TestAppliedOccurrenceNode{
 	@Test
 	public void testBindingOccurrence(){
 		assertNull(testNode.getBindingNode());
-		TypedNode other = CheckerHelper.byToken("AAAA");
+		TypedNode other = CheckerHelper.byToken("AAAA", Type.CHAR);
 		
 		testNode.setBindingNode(other);
 		
