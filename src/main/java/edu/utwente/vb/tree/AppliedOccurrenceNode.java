@@ -76,6 +76,6 @@ public class AppliedOccurrenceNode extends TypedNode{
 	
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(AppliedOccurrenceNode.class).add("ttype", ttype).add("binding", bindingNode).toString();
+		return Objects.toStringHelper(AppliedOccurrenceNode.class).add("ttype", ttype).add("binding", bindingNode).add("returnType", getNodeType()).toString();
 	}
 }

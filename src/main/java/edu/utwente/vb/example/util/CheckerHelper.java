@@ -169,6 +169,9 @@ public class CheckerHelper {
 		for(TypedNode param : params)
 			ids.add(new VariableId(param, param.getNodeType()));
 		
+		//Update return type van Node
+		node.setNodeType(returnType);
+		
 		FunctionId funcId = new FunctionId(node, returnType, ids);
 		
 		log.debug("declareFunction {} ({}) -> {}", new Object[]{node, params.toString(), returnType});

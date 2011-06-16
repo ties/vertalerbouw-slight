@@ -100,17 +100,49 @@ declaration
 valueDeclaration //becomes bij het declareren van een variable
   : BECOMES ce=compoundExpression { ch.copyNodeType($BECOMES, $ce.tree); }
   ;
- 
+ /**
+ * Definieer een functie. 
+ * Eerste stap:
+ * - verzamel type van argumenten
+ * - declarareer functie met return type (als dat expliciet er staat)
+ *
+ * [scope]
+ * declareer de formele parameters
+ *
+ * ... parse body ...
+ * [/scope]
+ *
+ *
+ * Tweede:
+ * - check formele return type tegen effectieve return type
+ * - set return type als het geinferred moest worden. 
+ */
 functionDef
-  //Hack, voor closedcompoundexpression function declareren, anders wordt de function niet herkend in geval van recursion
   @init{
     List<TypedNode> formalArguments = Lists.newArrayList();
     FunctionId<TypedNode> functionId;
+    Type returnType = Type.UNKNOWN;
   }
-  : { ch.openScope(); } ^(FUNCTION (t=primitive?) IDENTIFIER 
-          (p=parameterDef { log.debug("Formal argument " + $p.id_node); formalArguments.add($p.id_node); })*  
-          returnTypeNode=closedCompoundExpression) 
-    { ch.closeScope();} 
+  : ^(FUNCTION (t=primitive {returnType = $t.tree.getNodeType(); })? IDENTIFIER 
+          (p=parameterDef { formalArguments.add($p.id_node); })*  
+          {
+            functionId = ch.declareFunction($IDENTIFIER, returnType, formalArguments);
+            ch.openScope();
+            //Nu de parameters definieren
+            for(TypedNode formalParam : formalArguments){
+              ch.declareVar(formalParam);
+            }
+          }
+    returnTypeNode=closedCompoundExpression) 
+    { ch.closeScope();
+      if(returnType == Type.UNKNOWN){//return type is unknown -> niet ingevuld. geen geldige content voor primitive namelijk
+        log.debug("inferred return type {} ", $returnTypeNode.return_type);
+        functionId.updateType($returnTypeNode.return_type);
+        ch.setNodeType($returnTypeNode.return_type, $IDENTIFIER);
+      } else if(!returnType.equals($returnTypeNode.return_type)){
+        throw new IllegalFunctionDefinitionException("Return types do not match; " + returnType + " and " + $returnTypeNode.return_type);
+      }
+    } 
   ;
   
 parameterDef returns [TypedNode id_node]
@@ -132,8 +164,8 @@ closedCompoundExpression returns [Type return_type = null;]
   ;
 
 compoundExpression returns [Type return_type = Type.UNKNOWN;]
-  : expr=expression 
-  | ^(RETURN expr=expression) { $return_type = ch.copyNodeType($expr.start, $RETURN); }
+  : expr=expression { $return_type = $expr.return_type; }
+  | ^(RETURN expr=expression) { $return_type = ch.copyNodeType($expr.tree, $RETURN); }
   | dec=declaration 
   ;
  
@@ -209,5 +241,6 @@ functionCall
   }
   : ^(CALL id=IDENTIFIER (ex=expression {args.add($ex.tree.getNodeType());})*)
     { ((AppliedOccurrenceNode)$id).setBindingNode(ch.applyFunction($id, args));
+      ch.copyNodeType($id, $CALL);
     }
   ; 
