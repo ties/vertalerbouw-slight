@@ -24,6 +24,9 @@ options {
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
   
+  import java.util.List;
+  import com.google.common.collect.Lists;
+  
   /** Logger */
   import org.slf4j.Logger;
   import org.slf4j.LoggerFactory;
@@ -100,14 +103,18 @@ valueDeclaration //becomes bij het declareren van een variable
  
 functionDef
   //Hack, voor closedcompoundexpression function declareren, anders wordt de function niet herkend in geval van recursion
+  @init{
+    List<TypedNode> formalArguments = Lists.newArrayList();
+    FunctionId<TypedNode> functionId;
+  }
   : { ch.openScope(); } ^(FUNCTION (t=primitive?) IDENTIFIER 
-          (p=parameterDef)*  
+          (p=parameterDef { log.debug("Formal argument " + $p.id_node); formalArguments.add($p.id_node); })*  
           returnTypeNode=closedCompoundExpression) 
     { ch.closeScope();} 
   ;
   
-parameterDef
-  : ^(FORMAL primitive IDENTIFIER) { ch.copyNodeType($primitive.tree, $IDENTIFIER); ch.declareVar($IDENTIFIER); }
+parameterDef returns [TypedNode id_node]
+  : ^(FORMAL primitive IDENTIFIER) { ch.copyNodeType($primitive.tree, $IDENTIFIER, $FORMAL); $id_node = $IDENTIFIER; }
   ; 
 
 closedCompoundExpression returns [Type return_type = null;]

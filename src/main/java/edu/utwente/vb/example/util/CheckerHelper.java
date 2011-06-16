@@ -156,7 +156,27 @@ public class CheckerHelper {
 		return var;
 	}
 	
-	
+	/**
+	 * Method to declare a function
+	 * @param node 			the node holding the binding occurrence of this function
+	 * @param returnType 	the return-type of this function
+	 * @param params		a list of parameters that this function needs
+	 * @throws IllegalFunctionDefinitionException when function conflicts with existing function in symboltable
+	 * @throws IllegalFunctionDefinitionException when one of the parameters has type VOID
+	 */
+	public FunctionId<TypedNode> declareFunction(TypedNode node, Type returnType, List<TypedNode> params) throws IllegalFunctionDefinitionException{
+		List<VariableId> ids = new ArrayList<VariableId>();
+		for(TypedNode param : params)
+			ids.add(new VariableId(param, param.getNodeType()));
+		
+		FunctionId funcId = new FunctionId(node, returnType, ids);
+		
+		log.debug("declareFunction {} ({}) -> {}", new Object[]{node, params.toString(), returnType});
+		
+		symbolTable.put(funcId);
+		
+		return funcId;
+	}
 	
 //	/**
 //	 * Set node type by type name
@@ -242,25 +262,6 @@ public class CheckerHelper {
 //		declareVar(node, constType);
 //	}
 //	
-//	/**
-//	 * Method to declare a function
-//	 * @param node 			the node holding the binding occurrence of this function
-//	 * @param returnType 	the return-type of this function
-//	 * @param params		a list of parameters that this function needs
-//	 * @throws IllegalFunctionDefinitionException when function conflicts with existing function in symboltable
-//	 * @throws IllegalFunctionDefinitionException when one of the parameters has type VOID
-//	 */
-//	public void declareFunction(TypedNode node, Type returnType, List<TypedNode> params) throws IllegalFunctionDefinitionException{
-//		List<VariableId> ids = new ArrayList<VariableId>();
-//		for(TypedNode param : params)
-//			ids.add(new VariableId(param, param.getNodeType()));
-//		
-//		FunctionId funcId = new FunctionId(node, returnType, ids);
-//		
-//		log.debug("declareFunction {} ({}) -> {}", new Object[]{node, params.toString(), returnType});
-//		
-//		symbolTable.put(funcId);
-//	}
 //	
 //	/**
 //	 * Changes the type of the given variable to the given type
