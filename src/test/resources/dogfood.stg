@@ -112,10 +112,10 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
     //Adapter
-    ASMAdapter adap = new ASMAdapter(TestUtilities.testName("<filename>");
+    ASMAdapter adap = new ASMAdapter("/<filename>");
     gen.setOutputMode(OutputMode.FILE);
     gen.setASMAdapter(adap);
-    codg.setFile(new File(TestUtilities.testName(new File(filename)) + ".class"));
+    //gen.setFile(new File(TestUtilities.testName(new File(filename)) + ".class"));
     gen.<rule>();
   }
   
@@ -129,10 +129,10 @@ testCodegenWithExpected(filename, testname, rule, expected, uitleg) ::= <<
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
     //Adapter
-    ASMAdapter adap = new ASMAdapter(TestUtilities.testName("<filename>");
+    ASMAdapter adap = new ASMAdapter("<filename>");
     gen.setOutputMode(OutputMode.FILE);
     gen.setASMAdapter(adap);
-    codg.setFile(new File(TestUtilities.testName(new File(filename)) + ".class"));
+    //gen.setFile(new File(TestUtilities.testName(new File(filename)) + ".class"));
     gen.<rule>();
   }
   
