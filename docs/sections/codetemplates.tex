@@ -1,0 +1,8 @@
+\section{Code Templates}
+In ASM zit de mogelijkheid om automatisch de java code te genereren die een bepaald stuk bytecode genereert.
+Dit doet http://asm.ow2.org/asm33/javadoc/user/org/objectweb/asm/util/ASMifierClassVisitor.html
+
+Wij hebben onze Code Templates gemaakt met deze tool; In de directory met PrintTemplate.class krijg je met de volgende aanroep een Java bestand dat de ASM aanroepen bevat waarmee je PrintTemplate.class zou genereren.
+\begin{verbatim}
+	java -cp ../target/dependency/asm-all-3.3.1.jar:. org.objectweb.asm.util.ASMifierClassVisitor PrintTemplate PrintTemplateAsm.java
+\end{verbatim}
