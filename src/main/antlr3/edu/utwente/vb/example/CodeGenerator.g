@@ -40,6 +40,7 @@ options {
 // This disables ANTLR error handling;
 @rulecatch { 
     catch (RecognitionException e) { 
+       log.error("RecognitionException in codegen; Illegal internal state?", e);
        throw e; 
     } 
     
@@ -50,25 +51,31 @@ options {
 
   private ASMAdapter aa;
   private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
-  private OutputMode mode;
+  private OutputMode mode = OutputMode.LOG;
   private File target;
   
   public void setOutputMode(OutputMode mode){
+    log.debug("setOutputMode {}", mode);
     this.mode = checkNotNull(mode);
   }
   
   public void setASMAdapter(ASMAdapter adap){
+    log.debug("setASMAdapter {}", adap);
     this.aa = checkNotNull(adap);
   }
   
   public void setFile(File tgt){
+    log.debug("setFile {}", tgt);
     this.target = checkNotNull(tgt);
   }
 }
 
 //Program regel w/ check van precondities, uitvoeren van goede visitEnd regel
 program 
-  : { checkNotNull(aa); checkNotNull(mode); checkArgument(mode != OutputMode.FILE || target != null); } 
+  : { 
+      log.debug("Program: {} {} target:{}", new Object[]{aa, mode, target});
+      checkNotNull(aa); checkNotNull(mode); checkArgument(mode == OutputMode.LOG || target != null); 
+    } 
       ^(PROGRAM content) 
     { if(mode == OutputMode.FILE){ aa.visitEnd(target); } else {aa.visitEnd(); }}
   ;

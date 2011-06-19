@@ -50,7 +50,7 @@ public class TestUtilities {
 		}
 		
 		values.put("uitleg", uitleg.toString());
-		values.put("testname", Utils.testName(f));
+		values.put("testname", Utils.camelCaseName(f.getName()));
 		
 		return values;
 	}

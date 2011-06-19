@@ -187,7 +187,7 @@ public class Compiler {
 				 codg.setTreeAdaptor(new TypedNodeAdaptor());
 				 
 				 codg.setOutputMode(OutputMode.FILE);
-				 codg.setFile(new File(Utils.testName(new File(filename)) + ".class"));
+				 codg.setFile(new File(Utils.camelCaseName(filename) + ".class"));
 				
 				 CodeGenerator.program_return res = codg.program();
 			 }

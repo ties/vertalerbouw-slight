@@ -7,11 +7,11 @@ import com.google.common.collect.Lists;
 
 public class Utils {
 
-	public static String testName(File f){
+	public static String camelCaseName(String fileName){
 		List<String> words = Lists.newArrayList();
 		StringBuffer word = new StringBuffer();
 		
-		for(Character c : Lists.charactersOf(f.getName())){
+		for(Character c : Lists.charactersOf(fileName)){
 			if(c.equals('_') || c.equals('-')){
 				words.add(word.toString());
 				word = new StringBuffer();
