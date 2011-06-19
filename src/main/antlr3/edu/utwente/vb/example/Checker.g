@@ -72,27 +72,28 @@ content
   
 declaration
   : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
-    { ch.copyNodeType($prim.tree, $VAR, $IDENTIFIER); //type op VAR, IDENTIFIER 
+    { 
+      ch.copyNodeType($prim.tree, $VAR, $IDENTIFIER); //type op VAR, IDENTIFIER 
       ch.declareVar($IDENTIFIER); //declare var met zijn huidige type
       if($rvd.tree != null){
         ch.checkTypes($IDENTIFIER, $rvd.tree); //kijk of typen overeen komen
       }
     }
   | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
-    { ch.copyNodeType($prim.tree, $CONST, $IDENTIFIER); 
+    { 
+      ch.copyNodeType($prim.tree, $CONST, $IDENTIFIER); 
       ch.declareConst($IDENTIFIER); 
       ch.checkTypes($IDENTIFIER, $cvd.tree);
     } 
   | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
-    {   Type inferredType = Type.UNKNOWN; 
-        if($run.tree != null){
-          inferredType = $run.tree.getNodeType();
-        } 
-        ch.setNodeType(inferredType, $INFERVAR, $IDENTIFIER);
-        ch.declareVar($IDENTIFIER); 
+    {   
+      Type inferredType = $run.tree != null ? $run.tree.getNodeType() : Type.UNKNOWN;//Als run niet leeg is, type van de run, anders UNKNOWN. Bij Type.UNKNOWN kan hij later bij BECOMES geinferred worden 
+      ch.setNodeType(inferredType, $INFERVAR, $IDENTIFIER);
+      ch.declareVar($IDENTIFIER); 
     }
   | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
-    {   ch.copyNodeType($cons.tree, $INFERCONST, $IDENTIFIER); 
+    {   
+        ch.copyNodeType($cons.tree, $INFERCONST, $IDENTIFIER); 
         ch.declareConst($IDENTIFIER);
     }
   ;
@@ -128,40 +129,43 @@ functionDef
           {
             functionId = ch.declareFunction($IDENTIFIER, returnType, formalArguments);
             ch.openScope();
-            //Nu de parameters definieren
-            for(TypedNode formalParam : formalArguments){
-              ch.declareVar(formalParam);
-            }
+            ch.declareVariables(formalArguments);//Nu de parameters definieren in de scope van de functie
           }
     returnTypeNode=closedCompoundExpression) 
-    { ch.closeScope();
+    { //Na functie body -> close scope
+      ch.closeScope();
       if(returnType == Type.UNKNOWN){//return type is unknown -> niet ingevuld. geen geldige content voor primitive namelijk
-        log.debug("inferred return type {} ", $returnTypeNode.return_type);
-        functionId.updateType($returnTypeNode.return_type);
-        ch.setNodeType($returnTypeNode.return_type, $IDENTIFIER);
-      } else if(!returnType.equals($returnTypeNode.return_type)){
+        functionId.updateType(ch.setNodeType($returnTypeNode.return_type, $IDENTIFIER));
+      } else if(!returnType.equals($returnTypeNode.return_type)){//typen ongelijk van definitie & body -> error.
         throw new IllegalFunctionDefinitionException("Return types do not match; " + returnType + " and " + $returnTypeNode.return_type);
       }
     } 
   ;
   
-parameterDef returns [TypedNode id_node]
+/**
+ * Een applied occurrence
+ */
+parameterDef returns [TypedNode id_node]//kopieer de node van de applied occurrence
   : ^(FORMAL primitive IDENTIFIER) { ch.copyNodeType($primitive.tree, $IDENTIFIER, $FORMAL); $id_node = $IDENTIFIER; }
   ; 
 
 closedCompoundExpression returns [Type return_type = null;]
-  : { ch.openScope(); } ^(SCOPE
-                             (ce=compoundExpression { if($ce.return_type != null && $ce.return_type != Type.UNKNOWN){//Check of er een return type is; Check of dit overeen komt met wat al gezien is
-                                                        log.debug("Detected return type {}", $ce.return_type);
-                                                        if($return_type != null && $ce.return_type != $return_type)
-                                                          throw new IllegalFunctionDefinitionException("Incompatible return types; " + $return_type + " and " + $ce.return_type);
-                                                        $return_type = $ce.return_type;
-                                                      }
-                                                    })*) 
-    { if($return_type == null)
+  : { ch.openScope(); } ^(SCOPE (ce=compoundExpression { 
+          if($ce.return_type != Type.UNKNOWN){
+            log.debug("Detected return type {}", $ce.return_type);
+            if($return_type != null && $ce.return_type != $return_type){
+              throw new IllegalFunctionDefinitionException("Incompatible return types; " + $return_type + " and " + $ce.return_type);
+            }
+            $return_type = $ce.return_type;
+          }
+      })*)//voor alle compound expressies: Kijk of er al een return type is. Is dit er, dan kijk je of dit overeen komt met het nieuwe type. Anders wordt het geziene type het return type
+    { 
+      if($return_type == null){//Als je geen return type ziet is het return type van de close compound void.
         $return_type = Type.VOID;
+      }
       log.debug("Returning type {}", $return_type);
-      ch.closeScope(); }
+      ch.closeScope(); 
+    }
   ;
 
 compoundExpression returns [Type return_type = Type.UNKNOWN;]
@@ -173,14 +177,22 @@ compoundExpression returns [Type return_type = Type.UNKNOWN;]
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression  returns [Type return_type = Type.UNKNOWN;]
-  : ^(op=BECOMES base=expression sec=expression) { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }
-  | ^(op=OR base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
-  | ^(op=AND base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
-  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
-  | ^(op=(PLUS|MINUS) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
-  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
-  | ^(op=NOT base=expression) { ch.applyFunctionAndSetType($op, $base.tree); }
-  | sim=simpleExpression { $return_type = sim.return_type; }
+  : ^(op=BECOMES base=expression sec=expression) 
+          { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }//infer van type zit in CheckerHelper 
+  | ^(op=OR base=expression sec=expression) 
+          { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=AND base=expression sec=expression) 
+          { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression) 
+          { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=(PLUS|MINUS) base=expression sec=expression) 
+          { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) 
+          { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
+  | ^(op=NOT base=expression) 
+          { ch.applyFunctionAndSetType($op, $base.tree); }
+  | sim=simpleExpression 
+          { $return_type = sim.return_type; }
   ;
   
 simpleExpression returns [Type return_type = Type.UNKNOWN;] 
@@ -239,10 +251,7 @@ paren returns [Type return_type = Type.UNKNOWN;]
   ;
   
 variable
-  : id=IDENTIFIER
-    { /* get the type of variable and set it on the node */
-      ((AppliedOccurrenceNode)$id).setBindingNode(ch.applyVariable($id));
-    }
+  : id=IDENTIFIER { ch.setBindingNode($id, ch.applyVariable($id)); }
   ;
   
 functionCall
@@ -250,10 +259,7 @@ functionCall
     List<Type> args = new ArrayList<Type>();
   }
   : ^(CALL id=IDENTIFIER (ex=expression {args.add($ex.tree.getNodeType());})*)
-    { ((AppliedOccurrenceNode)$id).setBindingNode(ch.applyFunction($id, args));
-    log.debug("Set binding node to {}", $id);
-    log.debug("call node {} ", $CALL);
-    log.debug("id node {} ", $id);
+    { ch.setBindingNode($id, ch.applyFunction($id, args));
       ch.copyNodeType($id, $CALL);
     }
   ; 

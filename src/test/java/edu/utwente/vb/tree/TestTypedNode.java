@@ -34,14 +34,14 @@ public class TestTypedNode{
 	
 	@Test(expected=NullPointerException.class)
 	public void testTypeNotNull(){
-		testNode.setType(null);
+		testNode.setNodeType(null);
 	}
 	
 	@Test
 	public void testRemembersType(){
 		assertNull(testNode.getNodeType());
 		
-		testNode.setType(Type.CHAR);
+		testNode.setNodeType(Type.CHAR);
 		
 		assertEquals(testNode.getNodeType(), Type.CHAR);
 	}

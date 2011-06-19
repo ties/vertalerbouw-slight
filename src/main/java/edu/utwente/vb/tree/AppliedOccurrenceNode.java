@@ -63,14 +63,15 @@ public class AppliedOccurrenceNode extends TypedNode{
 		return bindingNode != null ? bindingNode.getNodeType() : null;
 	}
 	
-	@Override
-	public void setType(Type nodeType) {
-		throw new IllegalStateException("Type of AppliedOccurrenceNode can not be set");
-	}
-	
+	/**
+	 * Set het node type.
+	 * Het node type van een Applied Occurrence kan alleen geset worden als de binding occurrence nog geen type heeft.
+	 */
 	@Override
 	public void setNodeType(Type nodeType) {
-		throw new IllegalStateException("Type of AppliedOccurrenceNode can not be set");
+		if(bindingNode == null || (bindingNode.getNodeType() != Type.UNKNOWN && bindingNode.getNodeType() != null))
+			throw new IllegalStateException("Type of AppliedOccurrenceNode can not be set");
+		bindingNode.setNodeType(nodeType);
 	}
 	
 	

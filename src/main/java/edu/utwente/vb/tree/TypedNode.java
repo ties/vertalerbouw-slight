@@ -54,13 +54,9 @@ public class TypedNode extends CommonTree {
 	 * @param type type of the node
 	 * @require type != null
 	 */
-	public void setType(Type type) {
+	public void setNodeType(Type type) {
 		checkNotNull(type);
 		this.type = type;
-	}
-
-	public void setNodeType(Type nodeType) {
-		this.type = checkNotNull(nodeType);
 	}
 	
 	/**
