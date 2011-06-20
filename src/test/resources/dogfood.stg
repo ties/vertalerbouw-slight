@@ -11,6 +11,7 @@ import static junit.framework.Assert.*;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.MissingTokenException;
+import org.antlr.runtime.FailedPredicateException;
 
 import org.antlr.runtime.tree.RewriteEmptyStreamException;
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
@@ -28,11 +29,14 @@ import org.slf4j.LoggerFactory;
 
 import antlr.Utils;
 
+import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.symbols.ExampleType;
+import edu.utwente.vb.symbols.LocalsMap;
+import edu.utwente.vb.symbols.LocalsMap.LocalVariable;
 
 /**
  * Adapter voor de ASM library, scheelt code in de grammar & testbaarheid
@@ -52,10 +56,21 @@ public class ASMAdapter implements Opcodes {
 	private MethodVisitor mv;
 	private AnnotationVisitor av0;
 	
-	// Label voor return van functie
+	/** Label voor return van functie */
 	private Label 	funcDefReturn;
-	// Type voor return van functie
+	/** Type voor return van functie */
 	private Type 	funcDefReturnType;
+	/** Are we in a function */
+	private boolean inFunction = false;
+	/** The constructor */
+	private MethodVisitor constructorVisitor;
+	/** The current variable */
+	private TypedNode currentVar;
+	/** The locals map */
+	private LocalsMap localsMap;
+	/** The class name */
+	private final String internalClassName;
+	
 	
 	/**
 	 * De classVisitor, hier roep je alles op aan. Delegeert het door
@@ -78,8 +93,9 @@ public class ASMAdapter implements Opcodes {
 		cv.visitSource(sourceName, null);
 	}
 	
-	public ASMAdapter(String className) {
-		log.debug("instantiating ASMAdapter for {}", className);
+	public ASMAdapter(String cn) {
+		this.internalClassName = cn.replace('.', '/');
+		log.debug("instantiating ASMAdapter for {}", internalClassName);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		
@@ -100,24 +116,27 @@ public class ASMAdapter implements Opcodes {
 		 * be null, but only for the Object class. interfaces - the internal
 		 * names of the class's interfaces (see getInternalName). May be null.
 		 */
-		cv.visit(V1_5, ACC_PUBLIC, className.replace('.', '/'), null,
+		cv.visit(V1_5, ACC_PUBLIC, internalClassName, null,
 				"java/lang/Object", null);
 		// Constructor stub
-		MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "<init>", "()V", null,
+		constructorVisitor = cv.visitMethod(ACC_PUBLIC, "<init>", "()V", null,
 				null);
-		mv.visitCode();
-		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
-		mv.visitInsn(RETURN);
-		mv.visitMaxs(1, 1);
-		mv.visitEnd();
+		constructorVisitor.visitCode();
+		constructorVisitor.visitVarInsn(ALOAD, 0);
+		constructorVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+		
 	}
 	
 	/**
-	 * Einde van de visit
-	 */
+	 * Einde van de visit - Debug bytecode + sluit constructor af
+	 */ 
 	public void visitEnd() {
 		log.debug("visitEnd(), bytecode:");
+		/* Sluit de constructor af */
+		constructorVisitor.visitInsn(RETURN);
+		constructorVisitor.visitMaxs(1, 1);
+		constructorVisitor.visitEnd();
+		/* Sluit nu de klasse af */
 		cv.visitEnd();
 		//
 		log.debug(buffer.toString());
@@ -125,9 +144,7 @@ public class ASMAdapter implements Opcodes {
 
 	public void visitEnd(File file){
 		log.debug("visitEnd({})", file.getName());
-		cv.visitEnd();
-		//
-		log.debug(buffer.toString());
+		visitEnd();
 		try{
 			Files.write($__cw.toByteArray(), file);
 		} catch(IOException e){
@@ -183,20 +200,53 @@ public class ASMAdapter implements Opcodes {
 	}
 	
 	public void declVar(TypedNode node){
+		assert mv == null || inFunction;
+		
 		log.debug("declVar {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
 		cv.visitField(ACC_PUBLIC, node.getText(), node.getNodeType().toASM().getDescriptor(), null, null).visitEnd();
+		
+		currentVar = node;		
+		if(!inFunction){//Initialisatie van variabele in constructor
+			mv = constructorVisitor;
+		} else {//Local var
+			localsMap.put(currentVar);
+		}
 	}
 	
 	public void declConst(TypedNode node){
+		assert mv == null || inFunction; 
+		
 		String name = node.getText();
 		
 		log.debug("declConst {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
 		
-		fv = cv.visitField(ACC_PRIVATE + ACC_FINAL, name, node.getNodeType().toASM().getDescriptor(), null, null);
+		cv.visitField(ACC_PRIVATE + ACC_FINAL, name, node.getNodeType().toASM().getDescriptor(), null, null).visitEnd();
 		
-		toInstantiate.add(name);
-		
-		fv.visitEnd();
+		currentVar = node;		
+		if(!inFunction){//Initialisatie van variabele in constructor
+			mv = constructorVisitor;
+		} else {//Local var
+			localsMap.put(mv, currentVar);
+		}
+	}
+	
+	/**
+	 * Omdat wij constanten niet statisch definieren is er geen verschil tussen einde van var & const definitie
+	 */
+	public void endDecl(){
+		if(!inFunction){
+			log.debug("FieldInsn PUTFIELD {} {}", currentVar.getText(), currentVar.getNodeType().toASM().getDescriptor());
+			mv.visitFieldInsn(PUTFIELD, internalClassName, currentVar.getText(), currentVar.getNodeType().toASM().getDescriptor());
+		} else {
+			log.debug("VarInsn {} {}", currentVar.getNodeType().toASM().getOpcode(ISTORE), localsMap.get(currentVar));
+			
+			mv.visitVarInsn(currentVar.getNodeType().toASM().getOpcode(ISTORE), localsMap.get(currentVar).getIndex());
+			//LocalVariable ref
+			LocalVariable lv = localsMap.get(currentVar);
+			mv.visitLabel(lv.getEnd());
+			mv.visitLocalVariable(lv.getNode().getText(), lv.getNode().getNodeType().toASM().getDescriptor(), null, lv.getStart(), lv.getEnd(), lv.getIndex());
+		}
+		currentVar = null;
 	}
 	
 	public void instantiate(){
@@ -240,6 +290,15 @@ public class ASMAdapter implements Opcodes {
 	
 	public void visitEndWhile(){
 		
+	}
+	
+	public void setInFunction(boolean inFunction) {
+		log.debug("inFunction: {}", inFunction);
+		this.inFunction = inFunction;
+	}
+	
+	public boolean isInFunction() {
+		return inFunction;
 	}
 }
 	

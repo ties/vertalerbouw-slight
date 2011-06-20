@@ -47,7 +47,7 @@ options {
 @members{
   private CheckerHelper ch;
   private Logger log = LoggerFactory.getLogger(Checker.class);
-
+  
   /** 
   * Compositie met hulp van een CheckerHelper. In members stoppen is onhandig;
   * inheritance kan niet omdat hij wisselt tussen DebugTreeParser en TreeParser als super type

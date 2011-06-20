@@ -32,6 +32,11 @@ options {
 @members {
   //TODO: In Compiler.java integreren: als deze op debug mode, dan ook Checker op debug mode. 
   private static boolean debug_mode = true;
+  
+  /** Binnen een assignment mag geen return meer staan aan de RHS */
+  private boolean inAssignment = false;
+
+  
   /**
   * In de sectie hieronder word de afhandeling van excepties geregeld.
   *
@@ -91,7 +96,7 @@ declaration
   ;
   
 valueDeclaration
-  : BECOMES compoundExpression
+  : { inAssignment = true; } BECOMES compoundExpression { inAssignment = false; }
   ;
  
 functionDef
@@ -108,12 +113,12 @@ closedCompoundExpression
 
 compoundExpression
   : expression
-  | RETURN expression -> ^(RETURN expression)
+  | {!inAssignment}? RETURN expression -> ^(RETURN expression)
   | declaration
   ;
  
 expression
-  : orExpression (BECOMES^ expression)?
+  : orExpression (BECOMES^ { inAssignment = true; } expression { inAssignment = false; })?
   ;
   
 orExpression 

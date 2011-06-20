@@ -83,14 +83,14 @@ program
   ;
 
 content
-  : (declaration | functionDef)*
+  : (declaration | {aa.setInFunction(true);}functionDef {aa.setInFunction(false);})*
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } rvd=valueDeclaration?)
-  | ^(CONST prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } cvd=valueDeclaration) 
-  | ^(INFERVAR IDENTIFIER { aa.declVar($IDENTIFIER); } run=valueDeclaration? ) 
-  | ^(INFERCONST IDENTIFIER { aa.declConst($IDENTIFIER); } cons=valueDeclaration)
+  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } rvd=valueDeclaration? {aa.endDecl();})
+  | ^(CONST prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } cvd=valueDeclaration {aa.endDecl();}) 
+  | ^(INFERVAR IDENTIFIER { aa.declVar($IDENTIFIER); } run=valueDeclaration? {aa.endDecl();}) 
+  | ^(INFERCONST IDENTIFIER { aa.declConst($IDENTIFIER); } cons=valueDeclaration {aa.endDecl();})
   ;
   
 valueDeclaration 
