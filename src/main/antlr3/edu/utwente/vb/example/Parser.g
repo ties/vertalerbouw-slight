@@ -58,10 +58,15 @@ options {
         NoViableAltException nvae = (NoViableAltException)e;
         msg = tokenNames[nvae.getUnexpectedType()]+ " was unexpected";
       }else if ( e instanceof MismatchedTokenException ) {
-            MismatchedTokenException mte = (MismatchedTokenException)e;
-            String expectedToken = (mte.expecting > 0 && mte.expecting < tokenNames.length) ? tokenNames[mte.expecting] : "unknown";
-            String foundToken = (mte.getUnexpectedType() > 0 && mte.getUnexpectedType() < tokenNames.length) ? tokenNames[mte.getUnexpectedType()] : "unknown";
-            msg = " Expected:"+expectedToken+ ", but found: "+foundToken;
+          MismatchedTokenException mte = (MismatchedTokenException)e;
+          String expectedToken = (mte.expecting > 0 && mte.expecting < tokenNames.length) ? tokenNames[mte.expecting] : "unknown";
+          String foundToken = (mte.getUnexpectedType() > 0 && mte.getUnexpectedType() < tokenNames.length) ? tokenNames[mte.getUnexpectedType()] : "unknown";
+          msg = " Expected:"+expectedToken+ ", but found: "+foundToken;
+      }else if ( e instanceof FailedPredicateException) {
+          FailedPredicateException fpe = (FailedPredicateException)e;
+          String foundToken = (fpe.getUnexpectedType() > 0 && fpe.getUnexpectedType() < tokenNames.length) ? tokenNames[fpe.getUnexpectedType()] : "unknown";
+          String predicate = fpe.predicateText;
+          msg = " Did not match predicate: " +predicate+ ", token found: "+foundToken;
       }else{
         msg = super.getErrorMessage(e, tokenNames);
       }

@@ -3,23 +3,72 @@
 Syntax
 
 De topnode in de hierarchy is de node Program. Een Program bestaat uit nul of meer declaraties van globale variabelen gevolgd door nul of meer functies die in het programma gebruikt kunnen worden en uiteindelijk een Main functie.
-
-  Program               ::=     Declarations Functions
-  
-  Declarations          ::=     Declaration*
-
-  Declarations          ::=
- .
-  Functions             ::=     Function Functions                             
-                        |       Main                                         
-                                                                             
-  Main                  ::=     Primitive main ( ) Block                     
-                                                                             
-  Function              ::=     Primitive Identifier ( ParameterDef ) Block  
-                                                                             
-  ParameterDef            ::=                                                  
-                        |       SingleParameterDef                           
-                                                                             
-  SingleParameterDef    ::=     (const) Primitive Identifier                 
-
-
+\newline 
+{\bf program}                     ::= (declaration | functionDef)*
+\newline 
+{\bf declaration}                 ::= primitive id=IDENTIFIER valueDeclaration?
+                                    | CONST primitive IDENTIFIER valueDeclaration
+                                    | VAR IDENTIFIER valueDeclaration?
+                                    | CONST IDENTIFIER valueDeclaration
+\newline   
+{\bf valueDeclaration}            ::= BECOMES compoundExpression
+\newline  
+{\bf functionDef}                 ::= FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression
+\newline   
+{\bf parameterDef}                ::= primitive IDENTIFIER 
+\newline 
+{\bf closedCompoundExpression}    ::= INDENT compoundExpression* DEDENT
+\newline 
+{\bf compoundExpression}          ::= expression
+                                    | RETURN expression
+                                    | declaration
+\newline 
+{\bf expression}                  ::= orExpression (BECOMES expression)?
+\newline   
+{\bf orExpression}                ::= andExpression (OR andExpression)*
+\newline   
+{\bf andExpression}               ::= equationExpression (AND equationExpression)*
+\newline 
+{\bf equationExpression}          ::= plusExpression ((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) plusExpression)*
+\newline 
+{\bf plusExpression}              ::= multiplyExpression (       (PLUS multiplyExpression)
+                                                           |(MINUS multiplyExpression)
+                                                   )*
+\newline 
+{\bf multiplyExpression}          ::= unaryExpression ((MULT | DIV | MOD) unaryExpression)*
+\newline 
+{\bf unaryExpression}             ::= (NOT)? simpleExpression
+\newline   
+{\bf simpleExpression}            ::= atom
+                                    | functionCall
+                                    | variable
+                                    | paren
+                                    | closedCompoundExpression
+                                    | statements
+\newline 
+{\bf statements}                  ::= ifStatement
+                                    | whileStatement
+\newline 
+{\bf ifStatement}                 ::= IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? 
+                                    | IF expression COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)?
+\newline     
+{\bf whileStatement}              ::= WHILE LPAREN expression RPAREN COLON closedCompoundExpression
+                                    | WHILE expression COLON closedCompoundExpression
+\newline    
+{\bf primitive}                   ::= VOID
+                                    | BOOLEAN
+                                    | CHAR
+                                    | INT
+                                    | STRING
+\newline 
+{\bf atom}                        ::= INT-LITERAL
+                                    | CHAR-LITERAL
+                                    | STRING-LITERAL
+                                    | TRUE 
+                                    | FALSE
+\newline 
+{\bf paren}                       ::= LPAREN expression RPAREN
+\newline   
+{\bf variable}                    ::= IDENTIFIER 
+\newline   
+{\bf functionCall}                ::= IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN 
