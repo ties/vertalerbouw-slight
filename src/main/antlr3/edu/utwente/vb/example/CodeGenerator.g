@@ -96,7 +96,13 @@ valueDeclaration
   ;
  
 functionDef
-  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)* returnTypeNode=closedCompoundExpression) 
+  @init{
+    List<TypedNode> params = Lists.newArrayList();
+  }
+  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef {params.add(p);})* returnTypeNode=closedCompoundExpression)
+    {
+      visitFuncDef($IDENTIFIER, params);
+    } 
   ;
   
 parameterDef

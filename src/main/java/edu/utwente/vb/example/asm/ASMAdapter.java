@@ -4,21 +4,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 
+import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
+import edu.utwente.vb.symbols.ExampleType;
 
 /**
  * Adapter voor de ASM library, scheelt code in de grammar & testbaarheid
@@ -32,6 +38,12 @@ import edu.utwente.vb.tree.TypedNode;
 public class ASMAdapter implements Opcodes {	
 	/** ClassWriter. Nodig voor toByteArray, maar liever niet aan zitten */
 	private ClassWriter $__cw;
+	
+	// Nodig om methodes en instantievariabelen te passeren 
+	private FieldVisitor fv;
+	private MethodVisitor mv;
+	private AnnotationVisitor av0;
+	
 	/**
 	 * De classVisitor, hier roep je alles op aan. Delegeert het door
 	 * TraceClassVisitor en CheckClassAdaptor naar ClassWriter
@@ -54,6 +66,7 @@ public class ASMAdapter implements Opcodes {
 		log.debug("instantiating ASMAdapter for {}", className);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+		
 		// Instantieer de classVisitor die delegeert naar de classwriter
 		TraceClassVisitor tcv = new TraceClassVisitor($__cw, new PrintWriter(
 				buffer));
@@ -115,4 +128,25 @@ public class ASMAdapter implements Opcodes {
 	
 	public void endVar(){
 	}
+	
+	////////////////////////////////////////////////////
+	
+	public void visitFuncDef(AppliedOccurrenceNode node, List<TypedNode> params){
+		String name = node.getText();
+		
+		String descriptor = "(";
+		
+		for(TypedNode param : params){
+			ExampleType type = param.getNodeType();
+			descriptor += type.toASM();
+		}
+		
+		descriptor += ")";
+		
+		ExampleType returnType = node.getNodeType();
+		descriptor += returnType.toASM();
+		
+		mv = cv.visitMethod(ACC_PRIVATE, name, descriptor, null, null);
+	}
+
 }
