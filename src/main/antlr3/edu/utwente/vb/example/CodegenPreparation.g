@@ -133,7 +133,6 @@ atom
   | STRING_LITERAL
   | TRUE
   | FALSE
-  //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
 paren

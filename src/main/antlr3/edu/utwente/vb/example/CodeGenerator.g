@@ -85,22 +85,25 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($primitive.tree, $IDENTIFIER.text); } rvd=valueDeclaration?) { aa.varBody($rvd.tree); aa.endVar(); }  
-  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
-  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
-  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
+  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } rvd=valueDeclaration?)
+  | ^(CONST prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } cvd=valueDeclaration) 
+  | ^(INFERVAR IDENTIFIER run=valueDeclaration? { aa.declVar($IDENTIFIER); }) 
+  | ^(INFERCONST IDENTIFIER cons=valueDeclaration { aa.declConst($IDENTIFIER); })
   ;
   
-valueDeclaration
+valueDeclaration 
   : BECOMES ce=compoundExpression
   ;
  
 functionDef
-  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)* returnTypeNode=closedCompoundExpression) 
+  @init{
+    List<TypedNode> params = Lists.newArrayList();
+  }
+  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef {params.add($p.id_node);})* { aa.visitFuncDef($IDENTIFIER, params); } returnTypeNode=closedCompoundExpression { aa.visitEndFuncDef(); })
   ;
   
-parameterDef
-  : ^(FORMAL primitive IDENTIFIER)
+parameterDef returns [TypedNode id_node]
+  : ^(FORMAL primitive IDENTIFIER){ $id_node = $IDENTIFIER; }
   ; 
 
 closedCompoundExpression
@@ -113,7 +116,7 @@ compoundExpression
   ;
   
 expression
-  : ^(op=BECOMES base=expression sec=expression) 
+  : ^(op=BECOMES base=expression sec=expression) { visitBecomes(); }
   | ^(op=OR base=expression sec=expression) 
   | ^(op=AND base=expression sec=expression) 
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)
