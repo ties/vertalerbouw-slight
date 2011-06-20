@@ -133,7 +133,7 @@ public class ASMAdapter implements Opcodes {
 	//            Visit methods for codeGenerator.g        //
 	/////////////////////////////////////////////////////////
 	
-	public void visitFuncDef(AppliedOccurrenceNode node, List<TypedNode> params){
+	public void visitFuncDef(TypedNode node, List<TypedNode> params){
 		String name = node.getText();
 		
 		String descriptor = "(";
@@ -201,7 +201,19 @@ public class ASMAdapter implements Opcodes {
 		
 	}
 	
+	public void visitIfElse(){
+		
+	}
+	
 	public void visitWhile(){
+		
+	}
+	
+	public void visitWhile(TypedNode node){
+		
+	}
+	
+	public void visitEndWhile(){
 		
 	}
 }

@@ -32,6 +32,8 @@ options {
   import org.slf4j.Logger;
   import org.slf4j.LoggerFactory;
   
+  import com.google.common.collect.Lists;
+  
   
   import static com.google.common.base.Preconditions.*;
 }
@@ -116,7 +118,7 @@ compoundExpression
   ;
   
 expression
-  : ^(op=BECOMES base=expression sec=expression) { visitBecomes(); }
+  : ^(op=BECOMES base=expression sec=expression)
   | ^(op=OR base=expression sec=expression) 
   | ^(op=AND base=expression sec=expression) 
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)
@@ -143,17 +145,16 @@ statements
 
 ifStatement
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
-    { if(elseExpr==null)
-        visitIf($cond, $ifExpr);
+    {/* if($elseExpr.tree==null)
+        aa.visitIf($cond.tree, $ifExpr.tree);
       else
-        visitIfElse($cond, $ifExpr, $elseExpr); 
-    }
+        aa.visitIfElse($cond.tree, $ifExpr.tree, $elseExpr.tree); 
+    */}
   
   ;  
     
 whileStatement
-  : ^(WHILE cond=expression loop=closedCompoundExpression)
-    { visitWhile($cond, $loop); }   
+  : ^(WHILE { aa.visitWhile(); } cond=expression {aa.visitWhile($cond.tree);} loop=closedCompoundExpression { aa.visitEndWhile(); })
   ;    
     
 primitive
@@ -185,7 +186,7 @@ functionCall
   @init{
     List<TypedNode> params = Lists.newArrayList();
   }
-  : ^(CALL id=IDENTIFIER (ex=expression {params.add(ex);})*)
+  : ^(CALL id=IDENTIFIER (ex=expression {params.add($ex.tree);})*)
     { if($id.text=="main")
         aa.instantiate();
       else
