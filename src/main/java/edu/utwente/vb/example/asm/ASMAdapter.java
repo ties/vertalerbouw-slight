@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.AnnotationVisitor;
@@ -57,6 +58,9 @@ public class ASMAdapter implements Opcodes {
 	/** De logger */
 	private final Logger log = LoggerFactory.getLogger(ASMAdapter.class);
 
+	private List<String> toInstantiate = new ArrayList<String>();
+	
+	
 	public ASMAdapter(String className, String sourceName){
 		this(className);
 		cv.visitSource(sourceName, null);
@@ -164,7 +168,35 @@ public class ASMAdapter implements Opcodes {
 	}
 	
 	public void declConst(TypedNode node){
+		String name = node.getText();
 		String descriptor = ""+node.getNodeType().toASM();
-		cv.visitField(ACC_PUBLIC, node.getText(), descriptor, null, null).visitEnd();
+		fv = cv.visitField(ACC_PRIVATE + ACC_FINAL, name, descriptor, null, null);
+		toInstantiate.add(name);
+		
+		fv.visitEnd();
+	}
+	
+	public void instantiate(){
+		for (String id: toInstantiate){
+			//variabele setten.
+		}
+	}
+	
+	public void visitFuncCall(TypedNode node, List<TypedNode> params){
+		String name = node.getText();
+		
+		String descriptor = "(";
+				for(TypedNode param : params){
+			ExampleType type = param.getNodeType();
+			descriptor += type.toASM();
+		}		
+		descriptor += ")";
+		
+		ExampleType returnType = node.getNodeType();
+		descriptor += returnType.toASM();
+		
+		mv.visitMethodInsn(INVOKESPECIAL, null, name, descriptor);
 	}
 }
+	
+

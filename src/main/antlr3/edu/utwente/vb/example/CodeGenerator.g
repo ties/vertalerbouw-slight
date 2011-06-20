@@ -87,8 +87,8 @@ content
 declaration
   : ^(VAR prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } rvd=valueDeclaration?)
   | ^(CONST prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } cvd=valueDeclaration) 
-  | ^(INFERVAR IDENTIFIER run=valueDeclaration? { aa.declVar($IDENTIFIER); }) 
-  | ^(INFERCONST IDENTIFIER cons=valueDeclaration { aa.declConst($IDENTIFIER); })
+  | ^(INFERVAR IDENTIFIER { aa.declVar($IDENTIFIER); } run=valueDeclaration? ) 
+  | ^(INFERCONST IDENTIFIER { aa.declConst($IDENTIFIER); } cons=valueDeclaration)
   ;
   
 valueDeclaration 
@@ -164,7 +164,6 @@ atom
   | STRING_LITERAL
   | TRUE
   | FALSE
-  //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
 paren
@@ -176,5 +175,13 @@ variable
   ;
   
 functionCall
-  : ^(CALL id=IDENTIFIER (ex=expression)*)
+  @init{
+    List<TypedNode> params = Lists.newArrayList();
+  }
+  : ^(CALL id=IDENTIFIER (ex=expression {params.add(ex);})*)
+    { if($id.text=="main")
+        aa.instantiate();
+      else
+        aa.visitFuncCall($id, params);
+    }
   ; 
