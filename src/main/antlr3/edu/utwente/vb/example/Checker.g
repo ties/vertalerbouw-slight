@@ -216,6 +216,7 @@ ifStatement returns [ExampleType return_type = ExampleType.UNKNOWN;]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
   {
   ch.setNodeType(ExampleType.VOID, $IF);
+  ch.checkTypes(ExampleType.BOOL, $cond.start.getNodeType());
   if($elseExpr.tree != null)
     ch.checkTypes($ifExpr.return_type, $elseExpr.return_type); 
   $return_type = $ifExpr.return_type; 
@@ -225,6 +226,7 @@ ifStatement returns [ExampleType return_type = ExampleType.UNKNOWN;]
 whileStatement returns [ExampleType return_type = ExampleType.UNKNOWN;]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
   {
+  ch.checkTypes(ExampleType.BOOL, $cond.start.getNodeType());
   ch.setNodeType(ExampleType.VOID, $WHILE); 
   $return_type = $loop.return_type; }
   ;    
