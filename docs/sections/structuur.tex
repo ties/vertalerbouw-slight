@@ -10,9 +10,11 @@ De lexer specificeerd alle soorten tokens die bestaan binnen de Example programm
 \section{Parser}
 \section{Checker}
 De verantwoordelijkheden van de lexer zijn drieledig:
-• Controleren of alle applied occurrences van variabelen een binding occurence hebben op dezelfde of een lagere scope waarbij type overeenkomt.
-• Controleren of alle aanroepen van functies een functiedefinitie op dezelfde of een lagere scope hebben waarbij zowel return type als alle argument-typen overeen komen.
-• Het toekennen van een type aan alle noden in de AST.
+\begin{itemize}
+	\item Controleren of alle applied occurrences van variabelen een binding occurence hebben op dezelfde of een lagere scope waarbij type overeenkomt.
+	\item Controleren of alle aanroepen van functies een functiedefinitie op dezelfde of een lagere scope hebben waarbij zowel return type als alle argument-typen overeen komen.
+	\item Het toekennen van een type aan alle noden in de AST.
+\end{itemize}
 \section{Code Generator}
 \section{Interpreter}
 Example maakt gebruik van de Java Virtual Machine. Dit is een interpreter die de JVM-code die de Code Generator heeft geproduceert kan uitvoeren en zorgt dat het systeem uiteindelijk dat doet wat de programmeur heeft gespecificeerd in zijn Example-code. 
