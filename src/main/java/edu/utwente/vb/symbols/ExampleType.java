@@ -6,6 +6,11 @@ import java.util.List;
 
 import org.objectweb.asm.Type;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+
+import edu.utwente.vb.tree.TypedNode;
+
 /**
  * Type names. Enum for iterateability/they are not dynamically created anyway.
  * @author Ties
@@ -66,5 +71,18 @@ public enum ExampleType{
 		if(asmType == null)
 			throw new IllegalStateException("Can not convert " + this + " to ASM Type");
 		return asmType;
+	}
+	
+	public static Type[] listToASM(List<ExampleType> input){
+		return Lists.transform(input, new Function<ExampleType, Type>() {
+			@Override
+			public Type apply(ExampleType input) {
+				return input.toASM();
+			}
+		}).toArray(new Type[0]);
+	}
+	
+	public static Type[] nodeListToASM(List<TypedNode> nodes){
+		return listToASM(TypedNode.extractTypes(nodes));
 	}
 }

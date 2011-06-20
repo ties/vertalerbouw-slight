@@ -41,17 +41,20 @@
 			<version>r09</version>
 		</dependency>
 		<!-- ASM (bytecode library) -->
+		<!-- 
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-all</artifactId>
 			<version>3.3.1</version>
 		</dependency>
 		<!-- en utilities voor bij ASM - beetje brakke POM, java.lang.NoClassDefFoundError: org/objectweb/asm/tree/analysis/Interpreter-->
+		<!-- 
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-commons</artifactId>
@@ -62,6 +65,7 @@
 			<artifactId>asm-util</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+		 -->
 	</dependencies>
 
 	<build>

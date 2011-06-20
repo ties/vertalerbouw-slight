@@ -3,7 +3,13 @@ package edu.utwente.vb.example.util;
 import java.io.File;
 import java.util.List;
 
+import org.objectweb.asm.Type;
+
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+
+import edu.utwente.vb.symbols.ExampleType;
+import edu.utwente.vb.tree.TypedNode;
 
 public class Utils {
 
@@ -35,5 +41,4 @@ public class Utils {
 		
 		return camelCase.toString();
 	}
-
 }
