@@ -119,17 +119,15 @@ public class ASMAdapter implements Opcodes {
 		}
 	}
 	
-	public void declVar(TypedNode node, String name){
-		//cv.visitField(arg0, arg1, arg2, arg3, arg4)
-	}
-	
 	public void varBody(TypedNode node){
 	}
 	
 	public void endVar(){
 	}
 	
-	////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
+	//            Visit methods for codeGenerator.g        //
+	/////////////////////////////////////////////////////////
 	
 	public void visitFuncDef(AppliedOccurrenceNode node, List<TypedNode> params){
 		String name = node.getText();
@@ -147,6 +145,26 @@ public class ASMAdapter implements Opcodes {
 		descriptor += returnType.toASM();
 		
 		mv = cv.visitMethod(ACC_PRIVATE, name, descriptor, null, null);
+		
 	}
-
+	
+	public void visitEndFuncDef(){
+		mv.visitEnd();
+	}
+	
+	public void visitBecomes(TypedNode node){
+		fv = cv.visitField(0, "input", "Ljava/io/BufferedReader;", null,
+				null);
+		fv.visitEnd();
+	}
+	
+	public void declVar(TypedNode node){
+		String descriptor = ""+node.getNodeType().toASM();
+		cv.visitField(ACC_PUBLIC, node.getText(), descriptor, null, null).visitEnd();
+	}
+	
+	public void declConst(TypedNode node){
+		String descriptor = ""+node.getNodeType().toASM();
+		cv.visitField(ACC_PUBLIC, node.getText(), descriptor, null, null).visitEnd();
+	}
 }
