@@ -16,11 +16,10 @@ import com.google.common.io.Files;
 
 import edu.utwente.vb.example.util.Utils;
 
-@Ignore
-public class TestUtilities {
+public class GeneratedTestUtilities {
 	
 	public static List<File> getTestFiles() {
-		URL testLoc = TestUtilities.class.getResource("/const.ex");
+		URL testLoc = GeneratedTestUtilities.class.getResource("/const.ex");
 		File testDir = new File(testLoc.getFile()).getParentFile();
 		assert testDir.isDirectory();
 		return Lists.newArrayList(testDir.listFiles(new FileFilter() {

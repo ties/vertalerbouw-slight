@@ -34,7 +34,7 @@ public class CheckerTestGenerator{
 		for(File f : FileUtilities.getTestFiles()){
 			StringTemplate functionTemplate;
 			
-			Map<String, String> values = TestUtilities.getParameters(f);
+			Map<String, String> values = GeneratedTestUtilities.getParameters(f);
 			values.put("rule", "program");
 			values.put("filename", f.getName());
 			//

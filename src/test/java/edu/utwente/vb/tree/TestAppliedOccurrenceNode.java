@@ -10,7 +10,7 @@ import org.antlr.runtime.Token;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.utwente.vb.TestUtilities;
+import edu.utwente.vb.GeneratedTestUtilities;
 import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.symbols.Type;
 
