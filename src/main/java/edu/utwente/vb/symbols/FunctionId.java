@@ -38,7 +38,6 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 		this.node = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		
-		System.out.println("node: " + t+ ", type: "+r+", p: "+p);
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
 		if(formalParameters.contains(Type.VOID))
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
@@ -48,7 +47,6 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 		this.node = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		
-		System.out.println("node: " + t+ ", type: "+r+", p: "+p);
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
 		if(extractTypes(formalParameters).contains(Type.VOID))
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
