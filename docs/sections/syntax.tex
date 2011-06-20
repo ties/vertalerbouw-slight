@@ -4,71 +4,71 @@ Syntax
 
 De topnode in de hierarchy is de node Program. Een Program bestaat uit nul of meer declaraties van globale variabelen gevolgd door nul of meer functies die in het programma gebruikt kunnen worden en uiteindelijk een Main functie.
 \newline 
-program                     ::= (declaration | functionDef)*
+{\bf program}                     ::= (declaration | functionDef)*
 \newline 
-declaration                 ::= primitive id=IDENTIFIER valueDeclaration?
-                              | CONST primitive IDENTIFIER valueDeclaration
-                              | VAR IDENTIFIER valueDeclaration?
-                              | CONST IDENTIFIER valueDeclaration
+{\bf declaration}                 ::= primitive id=IDENTIFIER valueDeclaration?
+                                    | CONST primitive IDENTIFIER valueDeclaration
+                                    | VAR IDENTIFIER valueDeclaration?
+                                    | CONST IDENTIFIER valueDeclaration
 \newline   
-valueDeclaration            ::= BECOMES compoundExpression
+{\bf valueDeclaration}            ::= BECOMES compoundExpression
 \newline  
-functionDef                 ::= FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression
+{\bf functionDef}                 ::= FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression
 \newline   
-parameterDef                ::= primitive IDENTIFIER 
+{\bf parameterDef}                ::= primitive IDENTIFIER 
 \newline 
-closedCompoundExpression    ::= INDENT compoundExpression* DEDENT
+{\bf closedCompoundExpression}    ::= INDENT compoundExpression* DEDENT
 \newline 
-compoundExpression          ::= expression
-                              | RETURN expression
-                              | declaration
+{\bf compoundExpression}          ::= expression
+                                    | RETURN expression
+                                    | declaration
 \newline 
-expression                  ::= orExpression (BECOMES expression)?
+{\bf expression}                  ::= orExpression (BECOMES expression)?
 \newline   
-orExpression                ::= andExpression (OR andExpression)*
+{\bf orExpression}                ::= andExpression (OR andExpression)*
 \newline   
-andExpression               ::= equationExpression (AND equationExpression)*
+{\bf andExpression}               ::= equationExpression (AND equationExpression)*
 \newline 
-equationExpression          ::= plusExpression ((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) plusExpression)*
+{\bf equationExpression}          ::= plusExpression ((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) plusExpression)*
 \newline 
-plusExpression              ::= multiplyExpression (       (PLUS multiplyExpression)
+{\bf plusExpression}              ::= multiplyExpression (       (PLUS multiplyExpression)
                                                            |(MINUS multiplyExpression)
                                                    )*
 \newline 
-multiplyExpression          ::= unaryExpression ((MULT | DIV | MOD) unaryExpression)*
+{\bf multiplyExpression}          ::= unaryExpression ((MULT | DIV | MOD) unaryExpression)*
 \newline 
-unaryExpression             ::= (NOT)? simpleExpression
+{\bf unaryExpression}             ::= (NOT)? simpleExpression
 \newline   
-simpleExpression            ::= atom
-                              | functionCall
-                              | variable
-                              | paren
-                              | closedCompoundExpression
-                              | statements
+{\bf simpleExpression}            ::= atom
+                                    | functionCall
+                                    | variable
+                                    | paren
+                                    | closedCompoundExpression
+                                    | statements
 \newline 
-statements                  ::= ifStatement
-                              | whileStatement
+{\bf statements}                  ::= ifStatement
+                                    | whileStatement
 \newline 
-ifStatement                 ::= IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? 
-                              | IF expression COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)?
+{\bf ifStatement}                 ::= IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)? 
+                                    | IF expression COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)?
 \newline     
-whileStatement              ::= WHILE LPAREN expression RPAREN COLON closedCompoundExpression
-                              | WHILE expression COLON closedCompoundExpression
+{\bf whileStatement}              ::= WHILE LPAREN expression RPAREN COLON closedCompoundExpression
+                                    | WHILE expression COLON closedCompoundExpression
 \newline    
-primitive                   ::= VOID
-                              | BOOLEAN
-                              | CHAR
-                              | INT
-                              | STRING
+{\bf primitive}                   ::= VOID
+                                    | BOOLEAN
+                                    | CHAR
+                                    | INT
+                                    | STRING
 \newline 
-atom                        ::= INT-LITERAL
-                              | CHAR-LITERAL
-                              | STRING-LITERAL
-                              | TRUE 
-                              | FALSE
+{\bf atom}                        ::= INT-LITERAL
+                                    | CHAR-LITERAL
+                                    | STRING-LITERAL
+                                    | TRUE 
+                                    | FALSE
 \newline 
-paren                       ::= LPAREN expression RPAREN
+{\bf paren}                       ::= LPAREN expression RPAREN
 \newline   
-variable                    ::= IDENTIFIER 
+{\bf variable}                    ::= IDENTIFIER 
 \newline   
-functionCall                ::= IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN 
+{\bf functionCall}                ::= IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN 
