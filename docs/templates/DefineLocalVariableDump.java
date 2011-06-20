@@ -18,7 +18,8 @@ public class DefineLocalVariableDump implements Opcodes {
 			mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/String;)V",
 					null, null);
 			mv.visitCode();
-			mv.visitVarInsn(ALOAD, 0);
+			mv.visitVarInsn(ALOAD, 0);//On instance method invocation, local variable 0 is always used to pass a reference to the object on which the instance method is being invoked (this in the Java programming language). Any parameters are subsequently passed in consecutive local variables starting from local variable 1.
+			//http://java.sun.com/docs/books/jvms/second_edition/html/Overview.doc.html
 			mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>",
 					"()V");
 			mv.visitIntInsn(BIPUSH, 106);

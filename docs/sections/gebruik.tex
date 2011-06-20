@@ -14,17 +14,19 @@ java -jar target\example-compiler-0.1-jar-with-dependencies.jar
 \end{verbatim}
 
 Wanneer je de compiler stat probeert hij in principe code te lezen vanaf de stdin. Handige opties zijn:
-\begin{tabular*}{0.75\textwidth}{|l | p{5cm} |}
+\begin{tabular*}{0.75\textwidth}{@{\extracolsep{\fill}} |l | p{5cm} |}
 	\hline
 	Argument		&	Uitleg \\
 	\hline
 	-debug\_parser	& Zet de parser in debug mode, voor debug met antlrworks\footnote{In antlrworks moet je de target-classes directory van de compiler op je classpath toevoegen} \\
 	-debug\_checker	& Zet de checker in debug mode, voor debug met antlrworks \\
 	-file\_input \verb+[filenaam]+ & lees invoer vanuit \verb+[filenaam]+ \\
+	\hline
 \end{tabular*}
 
 Grafieken maken:
 \begin{verbatim}
-ties@flight:~/Dev/workspace.studie/vertalerbouw$ java -jar target/example-compiler-0.1-jar-with-dependencies.jar -dot -no_checker -file_input src/test/resources/fibonacci.ex  > fibonacci.dot
-ties@flight:~/Dev/workspace.studie/vertalerbouw$ dot -Tps fibonacci.dot -o fibonacci.ps
+ties@flight:~$java -jar target/example-compiler-0.1-jar-with-dependencies.jar \
+-dot -no_checker -file_input src/test/resources/fibonacci.ex  > fibonacci.dot
+ties@flight:~$ dot -Tps fibonacci.dot -o fibonacci.ps
 \end{verbatim}
