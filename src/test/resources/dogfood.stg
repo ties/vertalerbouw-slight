@@ -34,6 +34,7 @@ testParser(filename, testname, rule, uitleg) ::= <<
   */
 	@Test
 	public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+	 log.debug("test<testname>");
 		File f = new File(getClass().getResource("/<filename>").toURI());
 		Parser parser = createParser(asCharStream(f));
 		parser.<rule>();
@@ -46,6 +47,7 @@ testParser(filename, testname, rule, uitleg) ::= <<
 testParserWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname> expected: <expected>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     Parser parser = createParser(asCharStream(f));
     parser.<rule>();
@@ -59,6 +61,7 @@ testChecker(filename, testname, rule, uitleg) ::= <<
   */
   @Test
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     Checker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
     checker.<rule>();
@@ -71,6 +74,7 @@ testChecker(filename, testname, rule, uitleg) ::= <<
 testCheckerWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname> expected: <expected>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     Checker checker = createChecker(asCharStream(f), createParser(asCharStream(f)));
     checker.<rule>();
@@ -84,6 +88,7 @@ testCodegenPreparation(filename, testname, rule, uitleg) ::= <<
   */
   @Test
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodegenPreparation prepare = createCodegenPreparation(asCharStream(f), createParser(asCharStream(f)));
     prepare.<rule>();
@@ -96,6 +101,7 @@ testCodegenPreparation(filename, testname, rule, uitleg) ::= <<
 testCodegenPreparationWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname> expected: <expected>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodegenPreparation prepare = createCodegenPreparation(asCharStream(f), createParser(asCharStream(f)));
     prepare.<rule>();
@@ -110,6 +116,7 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
   */
   @Test
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
     //Adapter
@@ -127,6 +134,7 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
 testCodegenWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
   public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname> expected: <expected>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
     //Adapter

@@ -24,6 +24,7 @@ tokens {
   NEGATIVE;
   PAREN;
   GLOBAL;
+  SYNTHETIC;
 }
 
 @header{

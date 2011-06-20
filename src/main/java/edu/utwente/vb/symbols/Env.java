@@ -118,6 +118,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 					return id;
 			}
 		}
+		log.debug("Function not found for {} ({})", n, applied);
 		throw new SymbolTableException("No matching entry for " + n + " ("  + Arrays.toString(applied) + ")");
 	}
 	

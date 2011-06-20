@@ -16,6 +16,8 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.debug.BlankDebugEventListener;
 import org.antlr.runtime.tree.BufferedTreeNodeStream;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -35,6 +37,7 @@ import edu.utwente.vb.tree.TypedNodeAdaptor;
 import junit.framework.TestCase;
 
 public abstract class AbstractGrammarTest{
+	protected Logger log = LoggerFactory.getLogger(AbstractGrammarTest.class);
 	/**
 	 * Maak een Parser instantie met de gegeven string als input.
 	 * 

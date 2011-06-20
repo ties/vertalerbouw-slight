@@ -53,9 +53,10 @@ options {
         NoViableAltException nvae = (NoViableAltException)e;
         msg = tokenNames[nvae.getUnexpectedType()]+ " was unexpected";
       }else if ( e instanceof MismatchedTokenException ) {
-        MismatchedTokenException mte = (MismatchedTokenException)e;
-        msg = " Expected:"+tokenNames[mte.expecting]+
-          ", but found: "+tokenNames[mte.getUnexpectedType()];
+            MismatchedTokenException mte = (MismatchedTokenException)e;
+            String expectedToken = (mte.expecting > 0 && mte.expecting < tokenNames.length) ? tokenNames[mte.expecting] : "unknown";
+            String foundToken = (mte.getUnexpectedType() > 0 && mte.getUnexpectedType() < tokenNames.length) ? tokenNames[mte.getUnexpectedType()] : "unknown";
+            msg = " Expected:"+expectedToken+ ", but found: "+foundToken;
       }else{
         msg = super.getErrorMessage(e, tokenNames);
       }

@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.exceptions.IncompatibleTypesException;
@@ -92,14 +93,17 @@ public class CheckerHelper {
 	 * @throws SymbolTableException
 	 */
 	public TypedNode applyBecomesAndSetType(TypedNode id, TypedNode lhs, TypedNode rhs) throws SymbolTableException{
+		log.debug("applyBecomesAndSetType ID: {} LHS: {} RHS: {}", new Object[]{id, lhs, rhs});
 		// variabele:
 		VariableId<TypedNode> lhvar = symbolTable.apply(lhs.getText()); 
 		if(lhvar.isConstant()){
 			throw new IllegalFunctionDefinitionException("Trying to assign to the constant " + lhs.toString());
 		}
 		// inferren van becomes
-		if(lhs.getNodeType() == Type.UNKNOWN)
+		if(lhs.getNodeType() == Type.UNKNOWN){
+			log.debug("LHS UNKNOWN -> Kopieer type");
 			lhs.setNodeType(rhs.getNodeType());
+		}
 		return applyFunctionAndSetType(id, lhs, rhs);
 	}
 	
@@ -250,7 +254,7 @@ public class CheckerHelper {
 	}
 	
 	public static TypedNode byToken(String token, Type type){
-		TypedNode tmp = new TypedNode(new CommonToken(-1, token));
+		TypedNode tmp = new TypedNode(new CommonToken(Lexer.SYNTHETIC, token));//Create token with given content and "SYNTHETIC" token type.
 		tmp.setNodeType(type);
 		return tmp;
 	}
