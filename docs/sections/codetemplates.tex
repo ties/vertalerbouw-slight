@@ -6,3 +6,15 @@ Wij hebben onze Code Templates gemaakt met deze tool; In de directory met PrintT
 \begin{verbatim}
 	java -cp ../target/dependency/asm-all-3.3.1.jar:. org.objectweb.asm.util.ASMifierClassVisitor PrintTemplate PrintTemplateAsm.java
 \end{verbatim}
+
+\subsection{Opcodes}
+\begin{tabular*}{0.75 \textwidth}{|l| r | p|}
+	\hline
+	\textbf{Opcode}	&	\textbf{Argument}	& \textbf{Explanation}	\\
+	ALOAD		&	0			& On instance method invocation, local variable \verb+0+ is always used to pass a reference to the object on which the instance method is being invoked (this in the Java programming language).	\\
+	BIPUSH		&	[byte]			& The immediate \verb+byte+ is sign-extended to an \verb+int+ value. That value is pushed onto the operand stack. \\
+	ISTORE		&	[index]			& The index is an unsigned \verb+byte+ that must be an index into the local variable array of the current frame. \\
+	RETURN		&	-			& Return \verb+void+ from method. \\
+	ARETURN		&	-			& Return \verb+reference+ from method. \\
+	IRETURN		&	-			& Return \verb+int+ from method. \\
+\end{tabular*}
