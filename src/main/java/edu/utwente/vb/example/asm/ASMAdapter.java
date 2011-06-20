@@ -157,9 +157,8 @@ public class ASMAdapter implements Opcodes {
 	}
 	
 	public void visitBecomes(TypedNode node){
-		fv = cv.visitField(0, "input", "Ljava/io/BufferedReader;", null,
-				null);
-		fv.visitEnd();
+		
+		//fv.visitEnd();
 	}
 	
 	public void declVar(TypedNode node){
@@ -196,6 +195,14 @@ public class ASMAdapter implements Opcodes {
 		descriptor += returnType.toASM();
 		
 		mv.visitMethodInsn(INVOKESPECIAL, null, name, descriptor);
+	}
+	
+	public void visitIf(){
+		
+	}
+	
+	public void visitWhile(){
+		
 	}
 }
 	

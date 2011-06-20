@@ -138,15 +138,22 @@ simpleExpression
   
 statements
   : ifState=ifStatement
-  | whileState=whileStatement    
+  | whileState=whileStatement 
   ;
 
 ifStatement
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
+    { if(elseExpr==null)
+        visitIf($cond, $ifExpr);
+      else
+        visitIfElse($cond, $ifExpr, $elseExpr); 
+    }
+  
   ;  
     
 whileStatement
   : ^(WHILE cond=expression loop=closedCompoundExpression)
+    { visitWhile($cond, $loop); }   
   ;    
     
 primitive
