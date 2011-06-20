@@ -101,7 +101,13 @@ functionDef
   @init{
     List<TypedNode> params = Lists.newArrayList();
   }
-  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef {params.add($p.id_node);})* { aa.visitFuncDef($IDENTIFIER, params); } returnTypeNode=closedCompoundExpression { aa.visitEndFuncDef(); })
+  : ^(FUNCTION (t=primitive?) IDENTIFIER 
+      (p=parameterDef {params.add($p.id_node);})* 
+      { 
+        aa.visitFuncDef($IDENTIFIER, params);
+      } 
+      returnTypeNode=closedCompoundExpression 
+      { aa.visitEndFuncDef(); })
   ;
   
 parameterDef returns [TypedNode id_node]
@@ -187,9 +193,7 @@ functionCall
     List<TypedNode> params = Lists.newArrayList();
   }
   : ^(CALL id=IDENTIFIER (ex=expression {params.add($ex.tree);})*)
-    { if($id.text=="main")
-        aa.instantiate();
-      else
-        aa.visitFuncCall($id, params);
+    { 
+      aa.visitFuncCall($id, params);
     }
   ; 

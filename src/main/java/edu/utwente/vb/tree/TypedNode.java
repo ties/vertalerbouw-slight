@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class TypedNode extends CommonTree {
 	private ExampleType type;
+	private boolean constantExpression = false;
 	
 	public TypedNode() { }
 	
@@ -47,6 +48,14 @@ public class TypedNode extends CommonTree {
 	 */
 	public ExampleType getNodeType(){
 		return type;
+	}
+	
+	public boolean isConstantExpression() {
+		return constantExpression;
+	}
+	
+	public void setConstantExpression(boolean constantExpression) {
+		this.constantExpression = constantExpression;
 	}
 	
 	/**

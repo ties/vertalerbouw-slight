@@ -11,15 +11,22 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 
+import org.objectweb.asm.*;
+import org.objectweb.asm.commons.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import antlr.Utils;
 
 import com.google.common.io.Files;
 
@@ -44,6 +51,11 @@ public class ASMAdapter implements Opcodes {
 	private FieldVisitor fv;
 	private MethodVisitor mv;
 	private AnnotationVisitor av0;
+	
+	// Label voor return van functie
+	private Label 	funcDefReturn;
+	// Type voor return van functie
+	private Type 	funcDefReturnType;
 	
 	/**
 	 * De classVisitor, hier roep je alles op aan. Delegeert het door
@@ -136,24 +148,33 @@ public class ASMAdapter implements Opcodes {
 	public void visitFuncDef(TypedNode node, List<TypedNode> params){
 		String name = node.getText();
 		
-		String descriptor = "(";
+		log.debug("visitFuncDef {} {}", name, Type.getMethodDescriptor(node.getNodeType().toASM(), ExampleType.nodeListToASM(params)));
 		
-		for(TypedNode param : params){
-			ExampleType type = param.getNodeType();
-			descriptor += type.toASM();
+		mv = cv.visitMethod(ACC_PUBLIC, name, Type.getMethodDescriptor(node.getNodeType().toASM(), ExampleType.nodeListToASM(params)), null, null);
+		//Label voor einde methode-jump
+		funcDefReturn = new Label();
+		funcDefReturnType = node.getNodeType().toASM();
+		//begin code
+		mv.visitCode();
+		if("main".equals(name)){
+			instantiate();
 		}
-		
-		descriptor += ")";
-		
-		ExampleType returnType = node.getNodeType();
-		descriptor += returnType.toASM();
-		
-		mv = cv.visitMethod(ACC_PRIVATE, name, descriptor, null, null);
-		
 	}
 	
 	public void visitEndFuncDef(){
+		log.debug("visitEndFuncDef");
+		mv.visitLabel(funcDefReturn);
+		if(Type.VOID_TYPE.equals(funcDefReturnType)){
+			mv.visitInsn(RETURN);
+		} else {
+			//Goede type return
+			mv.visitInsn(funcDefReturnType.getOpcode(IRETURN));
+		}
+		//Max stack -> wordt uitgerekend
+		mv.visitMaxs(1,1);
+		//End van method body
 		mv.visitEnd();
+		mv = null;
 	}
 	
 	public void visitBecomes(TypedNode node){
@@ -162,20 +183,24 @@ public class ASMAdapter implements Opcodes {
 	}
 	
 	public void declVar(TypedNode node){
-		String descriptor = ""+node.getNodeType().toASM();
-		cv.visitField(ACC_PUBLIC, node.getText(), descriptor, null, null).visitEnd();
+		log.debug("declVar {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
+		cv.visitField(ACC_PUBLIC, node.getText(), node.getNodeType().toASM().getDescriptor(), null, null).visitEnd();
 	}
 	
 	public void declConst(TypedNode node){
 		String name = node.getText();
-		String descriptor = ""+node.getNodeType().toASM();
-		fv = cv.visitField(ACC_PRIVATE + ACC_FINAL, name, descriptor, null, null);
+		
+		log.debug("declConst {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
+		
+		fv = cv.visitField(ACC_PRIVATE + ACC_FINAL, name, node.getNodeType().toASM().getDescriptor(), null, null);
+		
 		toInstantiate.add(name);
 		
 		fv.visitEnd();
 	}
 	
 	public void instantiate(){
+		log.debug("instantiate()");
 		for (String id: toInstantiate){
 			//variabele setten.
 		}

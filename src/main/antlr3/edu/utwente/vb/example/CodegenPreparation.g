@@ -127,12 +127,12 @@ primitive
   ;
 
 atom
-  : INT_LITERAL
-  | NEGATIVE INT_LITERAL
-  | CHAR_LITERAL
-  | STRING_LITERAL
-  | TRUE
-  | FALSE
+  : INT_LITERAL { $INT_LITERAL.setConstantExpression(true); }
+  | NEGATIVE INT_LITERAL { $NEGATIVE.setConstantExpression(true); }
+  | CHAR_LITERAL { $CHAR_LITERAL.setConstantExpression(true); }
+  | STRING_LITERAL { $STRING_LITERAL.setConstantExpression(true); }
+  | TRUE { $TRUE.setConstantExpression(true); }
+  | FALSE { $FALSE.setConstantExpression(true); }
   ;
   
 paren
