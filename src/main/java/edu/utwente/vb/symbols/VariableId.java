@@ -11,12 +11,12 @@ import org.antlr.runtime.tree.BaseTree;
 import com.google.common.base.Objects;
 
 public class VariableId<T extends BaseTree> implements Id<T>{
-	private Type type;
+	private ExampleType type;
 	private final T node;
 	/** Variable is a constant (ie: not assignable) */
 	private boolean constant = false;
 	
-	public VariableId(T n, Type t){
+	public VariableId(T n, ExampleType t){
 		this.type =	checkNotNull(t);
 		this.node = checkNotNull(n);
 	}
@@ -31,7 +31,7 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 		return node;
 	}
 	
-	public Type getType() {
+	public ExampleType getType() {
 		return type;
 	}
 	
@@ -55,7 +55,7 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	}
 	
 	@Override
-	public boolean equalsSignature(String name, Type... params) {
+	public boolean equalsSignature(String name, ExampleType... params) {
 		return Objects.equal(this.node.getText(), name) && (params == null || params.length == 0);
 	}
 	
@@ -68,10 +68,10 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	}
 	
 	@Override
-	public void updateType(Type t) {
+	public void updateType(ExampleType t) {
 		checkArgument(!constant, "Trying to update the type of a constant");
-		checkArgument(Type.UNKNOWN.equals(this.type), "Trying to update the type of a variable which is not Type.UNKNOWN");
-		checkArgument(!Type.UNKNOWN.equals(t), "Can not update to Type.UNKNOWN");
+		checkArgument(ExampleType.UNKNOWN.equals(this.type), "Trying to update the type of a variable which is not Type.UNKNOWN");
+		checkArgument(!ExampleType.UNKNOWN.equals(t), "Can not update to Type.UNKNOWN");
 		this.type = t;
 	}
 }

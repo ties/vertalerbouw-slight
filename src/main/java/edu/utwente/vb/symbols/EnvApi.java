@@ -49,5 +49,5 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param applied types of the parameters
 	 * @return
 	 */
-	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException;
+	public FunctionId<T> apply(final String n, final ExampleType... applied) throws SymbolTableException;
 }

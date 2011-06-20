@@ -7,7 +7,7 @@ import org.antlr.runtime.Token;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.utwente.vb.symbols.Type;
+import edu.utwente.vb.symbols.ExampleType;
 
 
 import junit.framework.TestCase;
@@ -41,8 +41,8 @@ public class TestTypedNode{
 	public void testRemembersType(){
 		assertNull(testNode.getNodeType());
 		
-		testNode.setNodeType(Type.CHAR);
+		testNode.setNodeType(ExampleType.CHAR);
 		
-		assertEquals(testNode.getNodeType(), Type.CHAR);
+		assertEquals(testNode.getNodeType(), ExampleType.CHAR);
 	}
 }

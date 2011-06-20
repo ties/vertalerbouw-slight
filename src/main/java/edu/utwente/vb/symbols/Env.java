@@ -76,7 +76,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 		checkNotNull(i); checkNotNull(i.getText());
 		if(functions.containsKey(i.getText())){//duplicate definition in this scope level
 			for(FunctionId<T> potential : functions.get(i.getText())){
-				if(potential.equalsSignature(i.getText(), Type.asArray(i.getTypeParameters())))
+				if(potential.equalsSignature(i.getText(), ExampleType.asArray(i.getTypeParameters())))
 					throw new IllegalFunctionDefinitionException("Function " + i.getText() + " with signature " + i.getTypeParameters().toString() + " is already defined in the current scope");		
 			}
 		}
@@ -109,7 +109,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 * daarnaast is dit efficienter, hij springt er eerder uit
 	 */
 	@Override
-	public FunctionId<T> apply(final String n, final Type... applied) throws SymbolTableException {
+	public FunctionId<T> apply(final String n, final ExampleType... applied) throws SymbolTableException {
 		log.debug("applyFunction {} ({})", n, Arrays.toString(applied));
 		//zie (*)
 		for(Env e = this; e != null; e = e.prev){

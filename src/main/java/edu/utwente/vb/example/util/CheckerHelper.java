@@ -22,7 +22,7 @@ import edu.utwente.vb.exceptions.SymbolTableException;
 import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.Id;
 import edu.utwente.vb.symbols.SymbolTable;
-import edu.utwente.vb.symbols.Type;
+import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.VariableId;
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
@@ -80,7 +80,7 @@ public class CheckerHelper {
 		return variables;
 	}
 	
-	public TypedNode applyFunction(TypedNode id, List<Type> types) throws SymbolTableException{
+	public TypedNode applyFunction(TypedNode id, List<ExampleType> types) throws SymbolTableException{
 		return symbolTable.apply(id.getText(), types).getNode();
 	}
 	
@@ -100,7 +100,7 @@ public class CheckerHelper {
 			throw new IllegalFunctionDefinitionException("Trying to assign to the constant " + lhs.toString());
 		}
 		// inferren van becomes
-		if(lhs.getNodeType() == Type.UNKNOWN){
+		if(lhs.getNodeType() == ExampleType.UNKNOWN){
 			log.debug("LHS UNKNOWN -> Kopieer type");
 			lhs.setNodeType(rhs.getNodeType());
 		}
@@ -120,7 +120,7 @@ public class CheckerHelper {
 		return id;
 	}
 	
-	public Type copyNodeType(TypedNode rhs, TypedNode... targets){
+	public ExampleType copyNodeType(TypedNode rhs, TypedNode... targets){
 		checkNotNull(rhs);
 		for(TypedNode target : targets){
 			target.setNodeType(rhs.getNodeType());//impliciet checkNotNull
@@ -128,15 +128,15 @@ public class CheckerHelper {
 		return rhs.getNodeType();
 	}
 	
-	public Type setNodeType(final Type type, TypedNode... nodes){
+	public ExampleType setNodeType(final ExampleType type, TypedNode... nodes){
 		for(TypedNode n : nodes){
 			n.setNodeType(type);//impliciete null check door de-reference van object
 		}
 		return type;
 	}
 	
-	public Type setNodeType(final String type, TypedNode... nodes){
-		return setNodeType(Type.byName(type), nodes);
+	public ExampleType setNodeType(final String type, TypedNode... nodes){
+		return setNodeType(ExampleType.byName(type), nodes);
 	}
 	
 	/**
@@ -149,9 +149,9 @@ public class CheckerHelper {
 	public VariableId<TypedNode> declareVar(TypedNode node) throws IllegalVariableDefinitionException{
 		checkNotNull(node);
 		
-		Type type = checkNotNull(node.getNodeType());
+		ExampleType type = checkNotNull(node.getNodeType());
 		
-		if(type==Type.VOID)
+		if(type==ExampleType.VOID)
 			throw new IllegalVariableDefinitionException("variale cannot be declared as type void");
 		
 		VariableId varId = new VariableId(node, type);
@@ -176,7 +176,7 @@ public class CheckerHelper {
 	 * @throws IllegalFunctionDefinitionException when function conflicts with existing function in symboltable
 	 * @throws IllegalFunctionDefinitionException when one of the parameters has type VOID
 	 */
-	public FunctionId<TypedNode> declareFunction(TypedNode node, Type returnType, List<TypedNode> params) throws IllegalFunctionDefinitionException{
+	public FunctionId<TypedNode> declareFunction(TypedNode node, ExampleType returnType, List<TypedNode> params) throws IllegalFunctionDefinitionException{
 		List<VariableId> ids = new ArrayList<VariableId>();
 		for(TypedNode param : params)
 			ids.add(new VariableId(param, param.getNodeType()));
@@ -204,7 +204,7 @@ public class CheckerHelper {
 	 * @param type1
 	 * @param type2
 	 */
-	public Type checkTypes(Type... types) throws IncompatibleTypesException{
+	public ExampleType checkTypes(ExampleType... types) throws IncompatibleTypesException{
 		for(int i = 0; i < checkNotNull(types).length; i++){
 			if(!checkNotNull(types[i]).equals(checkNotNull(types[(i + 1) % types.length])))
 				throw new IncompatibleTypesException("type " + types[i] + " ander type dan RHS " + types[i+1]);
@@ -212,12 +212,12 @@ public class CheckerHelper {
 		return types[0];
 	}
 	
-	public Type checkTypes(List<TypedNode> nodes) throws IncompatibleTypesException{
-		return checkTypes(TypedNode.extractTypes(nodes).toArray(new Type[0]));
+	public ExampleType checkTypes(List<TypedNode> nodes) throws IncompatibleTypesException{
+		return checkTypes(TypedNode.extractTypes(nodes).toArray(new ExampleType[0]));
 	}
 	
-	public Type checkTypes(TypedNode... nodes) throws IncompatibleTypesException{
-		return checkTypes(TypedNode.extractTypes(nodes).toArray(new Type[0]));
+	public ExampleType checkTypes(TypedNode... nodes) throws IncompatibleTypesException{
+		return checkTypes(TypedNode.extractTypes(nodes).toArray(new ExampleType[0]));
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public class CheckerHelper {
 	 * @param type1
 	 * @param type2
 	 */
-	public Type checkNotType(Type... types) throws IncompatibleTypesException{
+	public ExampleType checkNotType(ExampleType... types) throws IncompatibleTypesException{
 		for(int i = 0; i < checkNotNull(types).length; i++){
 			if(checkNotNull(types[i]).equals(types[(i + 1) % types.length]))
 				throw new IncompatibleTypesException("type " + types[i] + " is gelijk aan " + types[i+1]);
@@ -241,19 +241,19 @@ public class CheckerHelper {
 	 * @return new functionId
 	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public static FunctionId<TypedNode> createBuiltin(String token, Type ret, Type lhs, Type rhs) throws IllegalFunctionDefinitionException{
+	public static FunctionId<TypedNode> createBuiltin(String token, ExampleType ret, ExampleType lhs, ExampleType rhs) throws IllegalFunctionDefinitionException{
 		return createFunctionId(token, ret, createVariableId("lhs", lhs), createVariableId("rhs", rhs));
 	}
 	
-	public static FunctionId<TypedNode> createFunctionId(String token, Type type, VariableId<TypedNode>... p) throws IllegalFunctionDefinitionException{
+	public static FunctionId<TypedNode> createFunctionId(String token, ExampleType type, VariableId<TypedNode>... p) throws IllegalFunctionDefinitionException{
 		return new FunctionId<TypedNode>(byToken(token, type), type, Lists.newArrayList(p));
 	}
 	
-	public static VariableId<TypedNode> createVariableId(String token, Type type){
+	public static VariableId<TypedNode> createVariableId(String token, ExampleType type){
 		return new VariableId<TypedNode>(byToken(token, type), type);
 	}
 	
-	public static TypedNode byToken(String token, Type type){
+	public static TypedNode byToken(String token, ExampleType type){
 		TypedNode tmp = new TypedNode(new CommonToken(Lexer.SYNTHETIC, token));//Create token with given content and "SYNTHETIC" token type.
 		tmp.setNodeType(type);
 		return tmp;

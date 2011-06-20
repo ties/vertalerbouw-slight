@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import static edu.utwente.vb.symbols.Type.*;
+import static edu.utwente.vb.symbols.ExampleType.*;
 import static edu.utwente.vb.example.util.CheckerHelper.*;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
@@ -32,7 +32,7 @@ public class Prelude {
 		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("and", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("or", BOOL, BOOL, BOOL));
-		builder.add(createFunctionId("!", Type.BOOL, createVariableId("rhs", Type.BOOL)));
+		builder.add(createFunctionId("!", ExampleType.BOOL, createVariableId("rhs", ExampleType.BOOL)));
 		// int
 		builder.add(createBuiltin("+", INT, INT, INT));
 		builder.add(createBuiltin("-", INT, INT, INT));
@@ -60,12 +60,12 @@ public class Prelude {
 		builder.add(createBuiltin(">", BOOL, CHAR, CHAR));
 		builder.add(createBuiltin(">=", BOOL, CHAR, CHAR));
 		//Builting functions
-		builder.add(createFunctionId("print", Type.VOID, 	createVariableId("str", Type.STRING)));
-		builder.add(createFunctionId("print", Type.VOID, 	createVariableId("str", Type.INT)));
-		builder.add(createFunctionId("print", Type.VOID, 	createVariableId("str", Type.CHAR)));
-		builder.add(createFunctionId("read", Type.STRING, 	createVariableId("str", Type.STRING)));
-		builder.add(createFunctionId("read", Type.INT, 		createVariableId("num", Type.INT)));
-		builder.add(createFunctionId("read", Type.CHAR, 	createVariableId("chr", Type.CHAR)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
+		builder.add(createFunctionId("read", ExampleType.STRING, 	createVariableId("str", ExampleType.STRING)));
+		builder.add(createFunctionId("read", ExampleType.INT, 		createVariableId("num", ExampleType.INT)));
+		builder.add(createFunctionId("read", ExampleType.CHAR, 	createVariableId("chr", ExampleType.CHAR)));
 		//Sla op
 		builtins = builder.build();
 	}

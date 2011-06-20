@@ -55,11 +55,11 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		return inner.get(w);
 	}
 	
-	public FunctionId<T> apply(String w, List<Type> applied) throws SymbolTableException{
-		return apply(w, Type.asArray(applied));
+	public FunctionId<T> apply(String w, List<ExampleType> applied) throws SymbolTableException{
+		return apply(w, ExampleType.asArray(applied));
 	}
 	
-	public FunctionId<T> apply(String w, Type... applied) throws SymbolTableException{
+	public FunctionId<T> apply(String w, ExampleType... applied) throws SymbolTableException{
 		return inner.apply(w, applied);
 	}
 	

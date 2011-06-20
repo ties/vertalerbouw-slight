@@ -6,7 +6,7 @@ import org.antlr.runtime.Token;
 
 import com.google.common.base.Objects;
 
-import edu.utwente.vb.symbols.Type;
+import edu.utwente.vb.symbols.ExampleType;
 
 /**
  * Node type used for applied occurences of variables. Can hold a reference to the node which binds this variable.
@@ -59,7 +59,7 @@ public class AppliedOccurrenceNode extends TypedNode{
 	}
 	
 	@Override
-	public Type getNodeType() {
+	public ExampleType getNodeType() {
 		return bindingNode != null ? bindingNode.getNodeType() : null;
 	}
 	
@@ -68,8 +68,8 @@ public class AppliedOccurrenceNode extends TypedNode{
 	 * Het node type van een Applied Occurrence kan alleen geset worden als de binding occurrence nog geen type heeft.
 	 */
 	@Override
-	public void setNodeType(Type nodeType) {
-		if(bindingNode == null || (bindingNode.getNodeType() != Type.UNKNOWN && bindingNode.getNodeType() != null))
+	public void setNodeType(ExampleType nodeType) {
+		if(bindingNode == null || (bindingNode.getNodeType() != ExampleType.UNKNOWN && bindingNode.getNodeType() != null))
 			throw new IllegalStateException("Type of AppliedOccurrenceNode can not be set");
 		bindingNode.setNodeType(nodeType);
 	}

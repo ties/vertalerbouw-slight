@@ -18,7 +18,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FunctionId<T extends BaseTree> implements Id<T>{
-	private Type returnType;
+	private ExampleType returnType;
 	private T node;
 	private List<VariableId<T>> formalParameters;
 	
@@ -34,27 +34,27 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * @param p formal parameters.
 	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public FunctionId(T t, Type r, VariableId<T>... p) throws IllegalFunctionDefinitionException{
+	public FunctionId(T t, ExampleType r, VariableId<T>... p) throws IllegalFunctionDefinitionException{
 		this.node = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
-		if(formalParameters.contains(Type.VOID))
+		if(formalParameters.contains(ExampleType.VOID))
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
-	public FunctionId(T t, Type r, List<VariableId<T>> p) throws IllegalFunctionDefinitionException{
+	public FunctionId(T t, ExampleType r, List<VariableId<T>> p) throws IllegalFunctionDefinitionException{
 		this.node = checkNotNull(t);
 		this.returnType = checkNotNull(r);
 		
 		formalParameters = ImmutableList.copyOf(checkNotNull(p));
-		if(extractTypes(formalParameters).contains(Type.VOID))
+		if(extractTypes(formalParameters).contains(ExampleType.VOID))
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
 	
 	@Override
-	public Type getType() {
+	public ExampleType getType() {
 		return returnType;
 	}
 	
@@ -73,7 +73,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 		return Objects.hashCode(node, returnType);
 	}
 	
-	public List<Type> getTypeParameters() {
+	public List<ExampleType> getTypeParameters() {
 		return extractTypes(formalParameters);
 	}
 	
@@ -93,8 +93,8 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	
 	@Override
-	public boolean equalsSignature(String name, Type... applied) {
-		return Objects.equal(this.node.getText(), name) && Arrays.deepEquals(applied, Type.asArray(extractTypes(formalParameters)));
+	public boolean equalsSignature(String name, ExampleType... applied) {
+		return Objects.equal(this.node.getText(), name) && Arrays.deepEquals(applied, ExampleType.asArray(extractTypes(formalParameters)));
 	}
 	
 	/**
@@ -102,10 +102,10 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * @param params 
 	 * @return
 	 */
-	private static <Q extends BaseTree> List<Type> extractTypes(List<VariableId<Q>> params){
-		return Lists.transform(params, new Function<VariableId<Q>, Type>() {
+	private static <Q extends BaseTree> List<ExampleType> extractTypes(List<VariableId<Q>> params){
+		return Lists.transform(params, new Function<VariableId<Q>, ExampleType>() {
 			@Override
-			public Type apply(VariableId<Q> input) {
+			public ExampleType apply(VariableId<Q> input) {
 				return input.getType();
 			}
 		});
@@ -115,9 +115,9 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * Update het return type van deze methode 
 	 */
 	@Override
-	public void updateType(Type t) {
-		checkArgument(Type.UNKNOWN.equals(this.returnType), "Return type is not unknown");
-		checkArgument(!Type.UNKNOWN.equals(t), "Can not update to type UNKNOWN");
+	public void updateType(ExampleType t) {
+		checkArgument(ExampleType.UNKNOWN.equals(this.returnType), "Return type is not unknown");
+		checkArgument(!ExampleType.UNKNOWN.equals(t), "Can not update to type UNKNOWN");
 		this.returnType = t;
 	}
 }

@@ -18,8 +18,8 @@ public class TestSymbolTableOverloading {
 	
 	@Test
 	public void testVariableAndFunction() throws IllegalFunctionDefinitionException, IllegalVariableDefinitionException{
-		VariableId<TypedNode> t1 = createVariableId("a", Type.INT);
-		FunctionId<TypedNode> f1 = createBuiltin("a", Type.INT, Type.INT, Type.INT);
+		VariableId<TypedNode> t1 = createVariableId("a", ExampleType.INT);
+		FunctionId<TypedNode> f1 = createBuiltin("a", ExampleType.INT, ExampleType.INT, ExampleType.INT);
 		
 		symtab.put(t1);
 		symtab.put(f1);
@@ -27,8 +27,8 @@ public class TestSymbolTableOverloading {
 	
 	@Test
 	public void testVariableFunctions() throws IllegalFunctionDefinitionException{
-		FunctionId<TypedNode> f1 = createBuiltin("a", Type.INT, Type.INT, Type.INT);
-		FunctionId<TypedNode> f2 = createBuiltin("a", Type.INT, Type.INT, Type.CHAR);
+		FunctionId<TypedNode> f1 = createBuiltin("a", ExampleType.INT, ExampleType.INT, ExampleType.INT);
+		FunctionId<TypedNode> f2 = createBuiltin("a", ExampleType.INT, ExampleType.INT, ExampleType.CHAR);
 		
 		symtab.put(f1);
 		symtab.put(f2);
@@ -36,8 +36,8 @@ public class TestSymbolTableOverloading {
 	
 	@Test(expected=IllegalVariableDefinitionException.class)
 	public void testOverlappingVariables() throws IllegalVariableDefinitionException{
-		VariableId<TypedNode> v1 = createVariableId("a", Type.INT);
-		VariableId<TypedNode> v2 = createVariableId("a", Type.CHAR);
+		VariableId<TypedNode> v1 = createVariableId("a", ExampleType.INT);
+		VariableId<TypedNode> v2 = createVariableId("a", ExampleType.CHAR);
 		
 		symtab.put(v1);
 		symtab.put(v2);

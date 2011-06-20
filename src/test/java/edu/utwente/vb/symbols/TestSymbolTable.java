@@ -44,16 +44,16 @@ public class TestSymbolTable{
 			Token token1 = new CommonToken(0, varNaam);
 			BaseTree tree = new CommonTree(token1);
 			
-			variables1.add(new VariableId<BaseTree>(tree, Type.values()[(1 + i) % Type.values().length]));
-			variables2.add(new VariableId<BaseTree>(tree, Type.values()[i % Type.values().length]));
+			variables1.add(new VariableId<BaseTree>(tree, ExampleType.values()[(1 + i) % ExampleType.values().length]));
+			variables2.add(new VariableId<BaseTree>(tree, ExampleType.values()[i % ExampleType.values().length]));
 			
 			try{
-				functions1.add(createBuiltin(varNaam, Type.values()[i % Type.values().length], Type.values()[(i) % Type.values().length], Type.values()[(i) % Type.values().length]));
+				functions1.add(createBuiltin(varNaam, ExampleType.values()[i % ExampleType.values().length], ExampleType.values()[(i) % ExampleType.values().length], ExampleType.values()[(i) % ExampleType.values().length]));
 			} catch(IllegalFunctionDefinitionException e){
 				//Een van de argumenten van de functie was void
 			}
 			try{
-				functions2.add(createBuiltin(varNaam, Type.values()[i+1 % Type.values().length], Type.values()[(i+1) % Type.values().length], Type.values()[(i+1) % Type.values().length]));
+				functions2.add(createBuiltin(varNaam, ExampleType.values()[i+1 % ExampleType.values().length], ExampleType.values()[(i+1) % ExampleType.values().length], ExampleType.values()[(i+1) % ExampleType.values().length]));
 			} catch(IllegalFunctionDefinitionException e){
 				//Een van de argumenten van de functie was void
 			}

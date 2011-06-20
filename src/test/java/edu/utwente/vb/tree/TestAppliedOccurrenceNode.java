@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import edu.utwente.vb.GeneratedTestUtilities;
 import edu.utwente.vb.example.util.CheckerHelper;
-import edu.utwente.vb.symbols.Type;
+import edu.utwente.vb.symbols.ExampleType;
 
 public class TestAppliedOccurrenceNode{
 	private Token testToken;
@@ -41,23 +41,23 @@ public class TestAppliedOccurrenceNode{
 	public void testCanNotSetType(){
 		assertNull(testNode.getNodeType());
 		
-		testNode.setNodeType(Type.CHAR);
+		testNode.setNodeType(ExampleType.CHAR);
 	}
 	
 	public void testCanShowReferencedType(){
 		assertNull(testNode.getNodeType());
 		
-		TypedNode other = CheckerHelper.byToken("AAAA", Type.CHAR);
+		TypedNode other = CheckerHelper.byToken("AAAA", ExampleType.CHAR);
 		
 		testNode.setBindingNode(other);
 		
-		assertEquals(testNode.getNodeType(), Type.CHAR);
+		assertEquals(testNode.getNodeType(), ExampleType.CHAR);
 	}
 	
 	@Test
 	public void testBindingOccurrence(){
 		assertNull(testNode.getBindingNode());
-		TypedNode other = CheckerHelper.byToken("AAAA", Type.CHAR);
+		TypedNode other = CheckerHelper.byToken("AAAA", ExampleType.CHAR);
 		
 		testNode.setBindingNode(other);
 		

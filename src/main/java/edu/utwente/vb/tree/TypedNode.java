@@ -12,7 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import edu.utwente.vb.symbols.Type;
+import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.VariableId;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public class TypedNode extends CommonTree {
-	private Type type;
+	private ExampleType type;
 	
 	public TypedNode() { }
 	
@@ -45,7 +45,7 @@ public class TypedNode extends CommonTree {
 	 * Get the node type
 	 * @return Type of this node (or null)
 	 */
-	public Type getNodeType(){
+	public ExampleType getNodeType(){
 		return type;
 	}
 	
@@ -54,7 +54,7 @@ public class TypedNode extends CommonTree {
 	 * @param type type of the node
 	 * @require type != null
 	 */
-	public void setNodeType(Type type) {
+	public void setNodeType(ExampleType type) {
 		checkNotNull(type);
 		this.type = type;
 	}
@@ -65,10 +65,10 @@ public class TypedNode extends CommonTree {
 	 * @param params
 	 * @return
 	 */
-	public static List<Type> extractTypes(List<TypedNode> params){
-		return Lists.transform(params, new Function<TypedNode, Type>() {
+	public static List<ExampleType> extractTypes(List<TypedNode> params){
+		return Lists.transform(params, new Function<TypedNode, ExampleType>() {
 			@Override
-			public Type apply(TypedNode input) {
+			public ExampleType apply(TypedNode input) {
 				return input.getNodeType();
 			}
 		});
@@ -80,7 +80,7 @@ public class TypedNode extends CommonTree {
 	 * @param params
 	 * @return
 	 */
-	public static List<Type> extractTypes(TypedNode... params){
+	public static List<ExampleType> extractTypes(TypedNode... params){
 		return extractTypes(ImmutableList.copyOf(params));
 	}
 }

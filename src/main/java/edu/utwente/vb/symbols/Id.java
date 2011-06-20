@@ -8,7 +8,7 @@ import org.antlr.runtime.tree.BaseTree;
 import com.google.common.collect.Lists;
 
 public interface Id<T extends BaseTree> {
-	public Type getType();
+	public ExampleType getType();
 	
 	public T getNode();
 	
@@ -20,7 +20,7 @@ public interface Id<T extends BaseTree> {
 	@Override
 	public boolean equals(Object obj);
 	
-	public boolean equalsSignature(String name, Type... params);
+	public boolean equalsSignature(String name, ExampleType... params);
 	
-	public void updateType(Type t);
+	public void updateType(ExampleType t);
 }

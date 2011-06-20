@@ -11,30 +11,30 @@ import static junit.framework.Assert.*;
 public class TestType {
 	@Test
 	public void testTypeByName(){
-		assertEquals(Type.VOID, Type.byName("void"));
-		assertEquals(Type.INT, Type.byName("int"));
-		assertEquals(Type.CHAR, Type.byName("char"));
-		assertEquals(Type.STRING, Type.byName("string"));
+		assertEquals(ExampleType.VOID, ExampleType.byName("void"));
+		assertEquals(ExampleType.INT, ExampleType.byName("int"));
+		assertEquals(ExampleType.CHAR, ExampleType.byName("char"));
+		assertEquals(ExampleType.STRING, ExampleType.byName("string"));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void testUnknownType(){
-		Type.byName("UNKNOWN_ERROR");
+		ExampleType.byName("UNKNOWN_ERROR");
 	}
 	
 	@Test
 	public void testIsInteger(){
-		assertTrue(Type.isNumeric(Type.INT));
-		assertFalse(Type.isNumeric(Type.BOOL));
-		assertFalse(Type.isNumeric(Type.CHAR));
-		assertFalse(Type.isNumeric(Type.STRING));
-		assertFalse(Type.isNumeric(Type.UNKNOWN));
+		assertTrue(ExampleType.isNumeric(ExampleType.INT));
+		assertFalse(ExampleType.isNumeric(ExampleType.BOOL));
+		assertFalse(ExampleType.isNumeric(ExampleType.CHAR));
+		assertFalse(ExampleType.isNumeric(ExampleType.STRING));
+		assertFalse(ExampleType.isNumeric(ExampleType.UNKNOWN));
 	}
 	
 	@Test
 	public void testTypeAsArray(){
-		Type[] asArray = Type.asArray(Type.VOID, Type.INT, Type.STRING, Type.UNKNOWN, Type.CHAR, Type.BOOL);
-		Type[] asArrayFromList = Type.asArray(Lists.newArrayList(Type.VOID, Type.INT, Type.STRING, Type.UNKNOWN, Type.CHAR, Type.BOOL));
+		ExampleType[] asArray = ExampleType.asArray(ExampleType.VOID, ExampleType.INT, ExampleType.STRING, ExampleType.UNKNOWN, ExampleType.CHAR, ExampleType.BOOL);
+		ExampleType[] asArrayFromList = ExampleType.asArray(Lists.newArrayList(ExampleType.VOID, ExampleType.INT, ExampleType.STRING, ExampleType.UNKNOWN, ExampleType.CHAR, ExampleType.BOOL));
 		assertTrue(Arrays.deepEquals(asArray, asArrayFromList));
 	}
 }
