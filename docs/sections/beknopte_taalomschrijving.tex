@@ -1,0 +1,31 @@
+\section{Beknopte taalomschrijving}
+De Example programmeertaal is een taal welke qua sytax vele elementen uit de Python-programmeertaal bevat. Om u globaal overzicht van het gebruik van de Example programmeertaal te geven is hieronder de Example code afgebeeld welke de eerste tien getallen van de fibonacci-getallenreeks afdrukt op het scherm.
+\begin{lstlisting}[language=Python]
+def fibonacci(int n) -> int:
+	if n == 0:
+		return 0
+	if n == 1:
+		return 1
+	return fibonacci(n - 1) + fibonacci(n - 2)
+
+def main():
+	int i = 1
+	while(i <= 10):
+		print("Fibonacci(" + i + ")" + fibonacci(i))
+		i = i-1
+
+\end{lstlisting}
+
+In tegenstelling tot python worden in Example bij uitvoer van een programma die programmaregels uitgevoerd welke in de functie main() staan, zoals ook in Java opgenomen.\\
+
+Example ondersteund de controlestructuren \textbf{if}, \textbf{while} en \textbf{for}, waarvan de precieze contextbeperkingen en semantiek verderop in dit verslag zullen worden toegelicht. Example bevat ondersteuning \underline{geen} voor pointers, arrays, records en procedures. Wel bevat Example ondersteuning voor definitie en gebruik van functies, zoals in het fibonacci-codevoorbeeld is terug te zien.\\
+
+Om onderscheid te maken tussen scopes en om nieuwe regels te herkennen hanteert Example whitespace afhandeling zoals dit ook in Python bestaat. Dit betekend dat zinnen niet met \textbf{;} of enig ander symbool afgesloten hoeven te worden, Example herkend zelf wanneer over wordt gegaan op een nieuwe regel. Ook in het geval een nieuwe scope wordt geopend (bijv. door een functiedefinitie, if-statement of while-statement) is het niet nodig dit aan de compiler kenbaar te maken aan de hand van een haak-structuur, Example herkend de mate van inspringing middels tabs.\\
+
+Een verschil tussen de basic expression language en Example zit in de manier van evalueren van return-waarden. Waar de basic expression language standaard de laatste regel van een block returned, maakt Example gebruik van expliciete returns. Expliciete returns geven de gebruiker van de taal meer controle over datgene wat gereturnd wordt.\\
+
+Een grote kracht van Example is de automatische afleiding van datatypen die in de taal is ingebouwd. Gebruikers kunnen een een variabele aanmaken op de volgende manier:\\ 
+\begin{lstlisting}[language=Python]
+var i = "this is a String"
+\end{lstlisting}
+Vervolgens is Example in staat het datatype van de rechterzijde van deze toekenning af te leiden. De variabele i zal na evaluatie van bovenstaande expressie als variabele van type String en toekenning van een ander type aan deze variabele zal een IncompatibleTypeException opleveren. Ook in het geval van functiedefinities (mits het een definitie van een niet-recursieve functie betreft) is het voor de gebruiker van de taal niet nodig het datatype van de returnwaarden op te geven, Example is immers zelf in staat datatypen van de return-statements te evalueren en aan de hand hiervan het datatype van de returnwaarde van deze functie te bepalen. Deze functionaliteit brengt de contextbeperking met zich mee dat alle returnwaarden van een functiedefinitie van hetzelfde datatype zijn. Definities van recursieve functies vormen hierop een uitzondering, in het hoofdstuk over contextbeperkingen zal worden ingegaan waarom het nodig is het returntype van recursieve functies expliciet te maken.
