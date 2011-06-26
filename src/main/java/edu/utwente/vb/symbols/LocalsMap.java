@@ -10,23 +10,25 @@ import com.google.common.collect.Maps;
 import edu.utwente.vb.tree.TypedNode;
 
 public class LocalsMap{
-	private Map<TypedNode, LocalVariable> indexMap = Maps.newHashMap();
+	private Map<String, LocalVariable> indexMap = Maps.newHashMap();
 	private int i = 0;
 	
-	public LocalVariable put(MethodVisitor mv, TypedNode node){
-		Label before = new Label();
-		mv.visitLabel(before);
-		Label after = new Label();
-		
-		LocalVariable res = new LocalVariable(before, after, node, ++i);
-		indexMap.put(node, res);
+	public LocalVariable put(TypedNode node, int index){
+		LocalVariable res = new LocalVariable(node, index);
+		indexMap.put(node.getText(), res);
 		
 		return res;
 	}
 	
 	public LocalVariable get(TypedNode node){
-		return indexMap.get(node);
+		return indexMap.get(node.getText());
 	}
+	
+	public int getIndex(String name){
+		return indexMap.get(name).index;
+	}
+	
+	
 	
 	public void reset(){
 		indexMap = Maps.newHashMap();
@@ -34,32 +36,12 @@ public class LocalsMap{
 	}
 	
 	public class LocalVariable{
-		private Label start;
-		private Label end;
-		private TypedNode node;
-		private int index;
+		private final TypedNode node;
+		private final int index;
 		
-		public LocalVariable(Label start, Label end, TypedNode node, int index) {
-			this.start = start;
-			this.end = end;
+		public LocalVariable(TypedNode node, int index) {
 			this.node = node;
 			this.index = index;
-		}
-		
-		public Label getStart() {
-			return start;
-		}
-		
-		public Label getEnd() {
-			return end;
-		}
-		
-		public TypedNode getNode() {
-			return node;
-		}
-		
-		public int getIndex() {
-			return index;
 		}
 	}
 }

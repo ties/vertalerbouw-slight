@@ -57,7 +57,6 @@ public class ASMAdapter implements Opcodes {
 	
 	// Nodig om methodes en instantievariabelen te passeren 
 	private FieldVisitor fv;
-	private MethodVisitor mv;
 	private AnnotationVisitor av0;
 	
 	/** Label voor return van functie */
@@ -67,7 +66,7 @@ public class ASMAdapter implements Opcodes {
 	/** Are we in a function */
 	private boolean inFunction = false;
 	/** The constructor */
-	private MethodVisitor constructorVisitor;
+	private GeneratorAdapter constructorMethodGenerator;
 	/** The current variable */
 	private TypedNode currentVar;
 	/** The locals map */
@@ -125,12 +124,11 @@ public class ASMAdapter implements Opcodes {
 		cv.visit(V1_5, ACC_PUBLIC, internalClassName, null,
 				"java/lang/Object", null);
 		// Constructor stub
-		constructorVisitor = cv.visitMethod(ACC_PUBLIC, "<init>", "()V", null,
-				null);
-		constructorVisitor.visitCode();
-		constructorVisitor.visitVarInsn(ALOAD, 0);
-		constructorVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
-		
+		// Code hieronder komt uit javadoc van ASM GeneratorAdapter
+		Method m = Method.getMethod("void <init> ()");
+		constructorMethodGenerator = new GeneratorAdapter(ACC_PUBLIC, m, null, null, cv);
+		constructorMethodGenerator.loadThis();
+		constructorMethodGenerator.invokeConstructor(Type.getType(Object.class), m);
 	}
 	
 	/**
@@ -139,9 +137,9 @@ public class ASMAdapter implements Opcodes {
 	public void visitEnd() {
 		log.debug("visitEnd(), bytecode:");
 		/* Sluit de constructor af */
-		constructorVisitor.visitInsn(RETURN);
-		constructorVisitor.visitMaxs(1, 1);
-		constructorVisitor.visitEnd();
+		constructorMethodGenerator.visitMaxs(1, 1);
+		constructorMethodGenerator.returnValue();
+		constructorMethodGenerator.endMethod();
 		/* Sluit nu de klasse af */
 		cv.visitEnd();
 		//
@@ -190,33 +188,17 @@ public class ASMAdapter implements Opcodes {
 	}
 	
 	public void declVar(TypedNode node){
-		assert mv == null || inFunction;
+		checkArgument(mg == null || inFunction);
 		
-		log.debug("declVar {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
-		cv.visitField(ACC_PUBLIC, node.getText(), node.getNodeType().toASM().getDescriptor(), null, null).visitEnd();
-		
-		currentVar = node;		
 		if(!inFunction){//Initialisatie van variabele in constructor
-			mv = constructorVisitor;
-		} else {//Local var
-			localsMap.put(mv, currentVar);
-		}
-	}
-	
-	public void declConst(TypedNode node){
-		assert mv == null || inFunction; 
-		
-		String name = node.getText();
-		
-		log.debug("declConst {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
-		
-		cv.visitField(ACC_PRIVATE + ACC_FINAL, name, node.getNodeType().toASM().getDescriptor(), null, null).visitEnd();
-		
-		currentVar = node;		
-		if(!inFunction){//Initialisatie van variabele in constructor
-			mv = constructorVisitor;
-		} else {//Local var
-			localsMap.put(mv, currentVar);
+			log.debug("declVar {} {}", node.getText(), node.getNodeType().toASM().getDescriptor());
+			cv.visitField(ACC_PUBLIC, node.getText(), node.getNodeType().toASM().getDescriptor(), null, null).visitEnd();
+			mg = constructorMethodGenerator;
+		} else {
+			/* Maak lokale variabele aan en store zijn index. Index management (tov argumenten bijvoorbeeld) 
+			 * wordt gedaan door ASM magie */
+			int i = mg.newLocal(node.getNodeType().toASM());
+			localsMap.put(currentVar, i);
 		}
 	}
 	
@@ -226,15 +208,15 @@ public class ASMAdapter implements Opcodes {
 	public void endDecl(){
 		if(!inFunction){
 			log.debug("FieldInsn PUTFIELD {} {}", currentVar.getText(), currentVar.getNodeType().toASM().getDescriptor());
-			mv.visitFieldInsn(PUTFIELD, internalClassName, currentVar.getText(), currentVar.getNodeType().toASM().getDescriptor());
+			mg.visitFieldInsn(PUTFIELD, internalClassName, currentVar.getText(), currentVar.getNodeType().toASM().getDescriptor());
 		} else {
 			log.debug("VarInsn {} {}", currentVar.getNodeType().toASM().getOpcode(ISTORE), localsMap.get(currentVar));
 			
-			mv.visitVarInsn(currentVar.getNodeType().toASM().getOpcode(ISTORE), localsMap.get(currentVar).getIndex());
+			mg.visitVarInsn(currentVar.getNodeType().toASM().getOpcode(ISTORE), localsMap.get(currentVar).getIndex());
 			//LocalVariable ref
 			LocalVariable lv = localsMap.get(currentVar);
-			mv.visitLabel(lv.getEnd());
-			mv.visitLocalVariable(lv.getNode().getText(), lv.getNode().getNodeType().toASM().getDescriptor(), null, lv.getStart(), lv.getEnd(), lv.getIndex());
+			mg.visitLabel(lv.getEnd());
+			mg.visitLocalVariable(lv.getNode().getText(), lv.getNode().getNodeType().toASM().getDescriptor(), null, lv.getStart(), lv.getEnd(), lv.getIndex());
 		}
 		currentVar = null;
 	}
@@ -259,7 +241,7 @@ public class ASMAdapter implements Opcodes {
 		ExampleType returnType = node.getNodeType();
 		descriptor += returnType.toASM();
 		
-		mv.visitMethodInsn(INVOKESPECIAL, null, name, descriptor);
+		mg.visitMethodInsn(INVOKESPECIAL, null, name, descriptor);
 	}
 	
 	public void visitIf(){
