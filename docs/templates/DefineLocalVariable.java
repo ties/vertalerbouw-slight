@@ -5,10 +5,12 @@ public class DefineLocalVariable {
 		String b;
 		char c;
 		String d;
+		boolean e;
 		c = 'j';
 		b = "Foobar";
-		a = 42;
+		a = 422382727;
 		d = arg;
+		e = true;
 	}
 	
 	public static void main(String[] args) {

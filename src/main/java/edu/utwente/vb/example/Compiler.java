@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import edu.utwente.vb.*;
 import edu.utwente.vb.example.Checker.program_return;
 import edu.utwente.vb.example.CodeGenerator.OutputMode;
+import edu.utwente.vb.example.asm.ASMAdapter;
 import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.example.util.Utils;
 import edu.utwente.vb.symbols.Prelude;
@@ -170,8 +171,13 @@ public class Compiler {
 					codg = new CodeGenerator(nodes,
 							new BlankDebugEventListener());
 				}
+				String className = filename.replace(".ex", ".class");
+				
 				codg.setTreeAdaptor(new TypedNodeAdaptor());
-
+				codg.setOutputMode(OutputMode.FILE);
+				codg.setFile(new File(className));
+				codg.setASMAdapter(new ASMAdapter(className, filename));
+				
 				CodeGenerator.program_return res = codg.program();
 			}
 

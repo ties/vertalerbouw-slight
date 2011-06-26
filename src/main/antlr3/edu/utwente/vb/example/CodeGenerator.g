@@ -87,10 +87,10 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } rvd=valueDeclaration? {aa.endDecl();})
-  | ^(CONST prim=primitive IDENTIFIER { aa.declVar($IDENTIFIER); } cvd=valueDeclaration {aa.endDecl();}) 
-  | ^(INFERVAR IDENTIFIER { aa.declVar($IDENTIFIER); } run=valueDeclaration? {aa.endDecl();}) 
-  | ^(INFERCONST IDENTIFIER { aa.declConst($IDENTIFIER); } cons=valueDeclaration {aa.endDecl();})
+  : ^(VAR prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } rvd=valueDeclaration? {aa.visitDeclEnd($rvd.tree);})
+  | ^(CONST prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } cvd=valueDeclaration {aa.visitDeclEnd($cvd.tree);}) 
+  | ^(INFERVAR IDENTIFIER { aa.visitDecl($IDENTIFIER); } run=valueDeclaration? {aa.visitDeclEnd($run.tree);}) 
+  | ^(INFERCONST IDENTIFIER { aa.visitDecl($IDENTIFIER); } cons=valueDeclaration {aa.visitDeclEnd($cons.tree);})
   ;
   
 valueDeclaration 
@@ -172,12 +172,12 @@ primitive
   ;
 
 atom
-  : INT_LITERAL
-  | NEGATIVE INT_LITERAL
-  | CHAR_LITERAL
-  | STRING_LITERAL
-  | TRUE
-  | FALSE
+  : INT_LITERAL { aa.visitIntegerAtom($INT_LITERAL, true); }
+  | NEGATIVE INT_LITERAL { aa.visitIntegerAtom($INT_LITERAL, true); }
+  | CHAR_LITERAL { aa.visitCharAtom($CHAR_LITERAL); }
+  | STRING_LITERAL { aa.visitStringAtom($STRING_LITERAL); }
+  | TRUE { aa.visitBooleanAtom($TRUE); }
+  | FALSE { aa.visitBooleanAtom($FALSE); }
   ;
   
 paren
