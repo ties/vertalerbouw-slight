@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
+import org.objectweb.asm.commons.Method;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
@@ -95,6 +96,14 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	@Override
 	public boolean equalsSignature(String name, ExampleType... applied) {
 		return Objects.equal(this.node.getText(), name) && Arrays.deepEquals(applied, ExampleType.asArray(extractTypes(formalParameters)));
+	}
+
+	/**
+	 * Converteer deze FunctionId naar een ASM-stijl Method descriptor.
+	 * @return
+	 */
+	public Method asMethod(){
+		return new Method(getText(), returnType.toASM(), ExampleType.listToASM(extractTypes(formalParameters)));
 	}
 	
 	/**

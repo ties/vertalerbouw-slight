@@ -31,10 +31,14 @@ import antlr.Utils;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
+import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.symbols.ExampleType;
+import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.LocalsMap;
 import edu.utwente.vb.symbols.LocalsMap.LocalVariable;
 
@@ -70,6 +74,8 @@ public class ASMAdapter implements Opcodes {
 	private LocalsMap localsMap;
 	/** The class name */
 	private final String internalClassName;
+	/** The method adapter */
+	private GeneratorAdapter mg;
 	
 	
 	/**
@@ -163,35 +169,19 @@ public class ASMAdapter implements Opcodes {
 	/////////////////////////////////////////////////////////
 	
 	public void visitFuncDef(TypedNode node, List<TypedNode> params){
+		checkArgument(node instanceof FunctionNode);
+		FunctionNode funcNode = (FunctionNode)node;
+		FunctionId<TypedNode> funcId = funcNode.getBoundMethod();
 		String name = node.getText();
 		
-		log.debug("visitFuncDef {} {}", name, Type.getMethodDescriptor(node.getNodeType().toASM(), ExampleType.nodeListToASM(params)));
+		mg = new GeneratorAdapter(ACC_PUBLIC, funcId.asMethod(), null, null, cv);
 		
-		mv = cv.visitMethod(ACC_PUBLIC, name, Type.getMethodDescriptor(node.getNodeType().toASM(), ExampleType.nodeListToASM(params)), null, null);
-		//Label voor einde methode-jump
-		funcDefReturn = new Label();
-		funcDefReturnType = node.getNodeType().toASM();
-		//begin code
-		mv.visitCode();
-		if("main".equals(name)){
-			instantiate();
-		}
+		log.debug("visitFuncDef {} {}", name, Type.getMethodDescriptor(node.getNodeType().toASM(), ExampleType.nodeListToASM(params)));
 	}
 	
 	public void visitEndFuncDef(){
 		log.debug("visitEndFuncDef");
-		mv.visitLabel(funcDefReturn);
-		if(Type.VOID_TYPE.equals(funcDefReturnType)){
-			mv.visitInsn(RETURN);
-		} else {
-			//Goede type return
-			mv.visitInsn(funcDefReturnType.getOpcode(IRETURN));
-		}
-		//Max stack -> wordt uitgerekend
-		mv.visitMaxs(1,1);
-		//End van method body
-		mv.visitEnd();
-		mv = null;
+		mg.endMethod();
 	}
 	
 	public void visitBecomes(TypedNode node){
@@ -209,7 +199,7 @@ public class ASMAdapter implements Opcodes {
 		if(!inFunction){//Initialisatie van variabele in constructor
 			mv = constructorVisitor;
 		} else {//Local var
-			localsMap.put(currentVar);
+			localsMap.put(mv, currentVar);
 		}
 	}
 	

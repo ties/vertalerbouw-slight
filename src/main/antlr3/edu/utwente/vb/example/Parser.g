@@ -100,7 +100,7 @@ valueDeclaration
   ;
  
 functionDef
-  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression -> ^(FUNCTION primitive? IDENTIFIER parameterDef*  closedCompoundExpression)
+  : FUNCTION IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)? RPAREN (ARROW primitive)? COLON closedCompoundExpression -> ^(FUNCTION primitive? IDENTIFIER<FunctionNode> parameterDef*  closedCompoundExpression)
   ;
   
 parameterDef
