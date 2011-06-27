@@ -166,7 +166,11 @@ ifStatement
   ;  
     
 whileStatement
-  : ^(WHILE { aa.visitWhile(); } cond=expression {aa.visitWhile($cond.tree); } loop=closedCompoundExpression { aa.visitEndWhile(); })
+  @init{
+    Label loopBegin = new Label();
+    Label loopEnd   = new Label();
+  }
+  : ^(WHILE cond=expression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); } loop=closedCompoundExpression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); })
   ;    
     
 primitive

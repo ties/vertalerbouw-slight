@@ -308,20 +308,22 @@ public class ASMAdapter implements Opcodes {
 		mg.mark(elseEnd);
 	}
 
-	public void visitIfElse() {
-
+	public void visitWhileBegin(TypedNode node, Label loopBegin, Label loopEnd) {
+		//Backpatchen
+		mg.mark(loopBegin);
+		//0 (false) op de stack
+		mg.visitInsn(ICONST_0);
+		//Jumpen naar loopEnd als gelijk, later backpatchen
+		mg.ifICmp(IFEQ, loopEnd);
 	}
 
-	public void visitWhile() {
-
-	}
-
-	public void visitWhile(TypedNode node) {
-
-	}
-
-	public void visitEndWhile() {
-
+	public void visitWhileEnd(TypedNode node, Label loopBegin, Label loopEnd) {
+		//Backpatchen
+		mg.mark(loopEnd);
+		//1 (true) op de stack
+		mg.visitInsn(ICONST_1);
+		//Jumpen naar loopBegin als gelijk, later backpatchen
+		mg.ifICmp(IFEQ, loopBegin);
 	}
 
 	public void visitCharAtom(TypedNode node) {
