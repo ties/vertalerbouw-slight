@@ -1,19 +1,20 @@
 
 public class DefineLocalVariable {
-	public DefineLocalVariable(String arg){
-		int a;
-		String b;
-		char c;
-		String d;
-		boolean e;
-		c = 'j';
-		b = "Foobar";
-		a = -422282828;
-		d = arg;
-		e = true;
+//	var global = 21
+//
+//			def main():
+//				var local = 2
+	int global = 21;
+	
+	
+	public DefineLocalVariable(){
+	}
+	
+	public void main() {
+		int local = 2;
 	}
 	
 	public static void main(String[] args) {
-		new DefineLocalVariable("arg");
+		new DefineLocalVariable();
 	}
 }

@@ -98,7 +98,7 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public ASMAdapter(String cn) {
-		this.internalClassName = cn.replace('.', '/').replace(".class", "");
+		this.internalClassName = cn.replace('.', '/');
 		log.debug("instantiating ASMAdapter for {}", internalClassName);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -106,7 +106,9 @@ public class ASMAdapter implements Opcodes {
 		// Instantieer de classVisitor die delegeert naar de classwriter
 		TraceClassVisitor tcv = new TraceClassVisitor($__cw, new PrintWriter(
 				buffer));
-		cv = tcv;
+		// En een CheckClassAdapter die controleert of de bytecode geldig is.
+		CheckClassAdapter checkAdapter = new CheckClassAdapter(tcv);
+		cv = checkAdapter;
 
 		localsMap = new LocalsMap();
 
@@ -132,6 +134,16 @@ public class ASMAdapter implements Opcodes {
 		constructorMethodGenerator.loadThis();
 		constructorMethodGenerator.invokeConstructor(
 				Type.getType(Object.class), m);
+		constructorMethodGenerator.loadThis();
+		
+		Method mainMethod = Method.getMethod("void main(String[])");
+		GeneratorAdapter main = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
+		main.visitCode();
+		main.newInstance(Type.getObjectType(internalClassName));
+		main.invokeConstructor(Type.getObjectType(internalClassName), m);
+		main.returnValue();
+		main.visitMaxs(2, 1);
+		main.visitEnd();
 	}
 
 	/**

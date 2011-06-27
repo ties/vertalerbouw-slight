@@ -15,24 +15,29 @@ public class DefineLocalVariableDump implements Opcodes {
 				"java/lang/Object", null);
 
 		{
-			mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/String;)V",
-					null, null);
+			fv = cw.visitField(0, "global", "I", null, null);
+			fv.visitEnd();
+		}
+		{
+			mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
 			mv.visitCode();
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>",
 					"()V");
-			mv.visitIntInsn(BIPUSH, 106);
-			mv.visitVarInsn(ISTORE, 4);
-			mv.visitLdcInsn("Foobar");
-			mv.visitVarInsn(ASTORE, 3);
-			mv.visitLdcInsn(new Integer(-422282828));
-			mv.visitVarInsn(ISTORE, 2);
-			mv.visitVarInsn(ALOAD, 1);
-			mv.visitVarInsn(ASTORE, 5);
-			mv.visitInsn(ICONST_1);
-			mv.visitVarInsn(ISTORE, 6);
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitIntInsn(BIPUSH, 21);
+			mv.visitFieldInsn(PUTFIELD, "DefineLocalVariable", "global", "I");
 			mv.visitInsn(RETURN);
-			mv.visitMaxs(1, 7);
+			mv.visitMaxs(2, 1);
+			mv.visitEnd();
+		}
+		{
+			mv = cw.visitMethod(ACC_PUBLIC, "main", "()V", null, null);
+			mv.visitCode();
+			mv.visitInsn(ICONST_2);
+			mv.visitVarInsn(ISTORE, 1);
+			mv.visitInsn(RETURN);
+			mv.visitMaxs(1, 2);
 			mv.visitEnd();
 		}
 		{
@@ -41,12 +46,11 @@ public class DefineLocalVariableDump implements Opcodes {
 			mv.visitCode();
 			mv.visitTypeInsn(NEW, "DefineLocalVariable");
 			mv.visitInsn(DUP);
-			mv.visitLdcInsn("arg");
 			mv.visitMethodInsn(INVOKESPECIAL, "DefineLocalVariable", "<init>",
-					"(Ljava/lang/String;)V");
+					"()V");
 			mv.visitInsn(POP);
 			mv.visitInsn(RETURN);
-			mv.visitMaxs(3, 1);
+			mv.visitMaxs(2, 1);
 			mv.visitEnd();
 		}
 		cw.visitEnd();

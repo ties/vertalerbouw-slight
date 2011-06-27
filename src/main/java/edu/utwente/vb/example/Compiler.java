@@ -171,51 +171,15 @@ public class Compiler {
 					codg = new CodeGenerator(nodes,
 							new BlankDebugEventListener());
 				}
-				String className = new File(filename.replace(".ex", ".class")).getName();
+				String className = Utils.camelCaseName(new File(filename).getName());
 				
 				codg.setTreeAdaptor(new TypedNodeAdaptor());
 				codg.setOutputMode(OutputMode.FILE);
-				codg.setFile(new File(className));
+				codg.setFile(new File(className.concat(".class")));
 				codg.setASMAdapter(new ASMAdapter(className, filename));
 				
 				CodeGenerator.program_return res = codg.program();
 			}
-
-			/*if (!opt_no_codegen) { // run codegenerator
-				 CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-				 nodes.setTokenStream(tokens);
-				 CodeGenerator codg;
-				 if(opt_debug_codegen){
-					 codg= new CodeGenerator(nodes);
-				 } else {
-					 codg = new CodeGenerator(nodes, new BlankDebugEventListener());
-				 }
-				 codg.setTreeAdaptor(new TypedNodeAdaptor());
-				 
-				 codg.setOutputMode(OutputMode.FILE);
-				 codg.setFile(new File(Utils.camelCaseName(filename) + ".class"));
-				
-				 CodeGenerator.program_return res = codg.program();
-			 }*/
-            
-			/* HIERONDER CODE VOOR CODEGENERATOR, LATER WEER AANZETTEN
-			if (!opt_no_codegen) {
-                // generate JVM assembler code using string template
-
-                // read templates (src of code: [Parr 2007, p. 216])
-                FileReader groupFiler = new FileReader("jvm.stg");
-                StringTemplateGroup templates = new StringTemplateGroup(groupFiler);
-                groupFiler.close();
-                
-                CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
-                ExampleGenerator codegenerator = new ExampleGenerator(nodes);
-                codegenerator.setTemplateLib(templates);
-                ExampleGenerator.program_return r = codegenerator.program();
-                StringTemplate output = (StringTemplate) r.getTemplate();
-                System.out.println(output.toString());
-            }*/
-
-			
 
 			if (opt_ast) { // print the AST as string
 				System.out.println(tree.toStringTree());
