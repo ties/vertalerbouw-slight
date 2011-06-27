@@ -142,7 +142,7 @@ public class ASMAdapter implements Opcodes {
 		main.newInstance(Type.getObjectType(internalClassName));
 		main.invokeConstructor(Type.getObjectType(internalClassName), m);
 		main.returnValue();
-		main.visitMaxs(2, 1);
+		main.visitMaxs(1, 1);
 		main.visitEnd();
 	}
 
