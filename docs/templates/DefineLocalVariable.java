@@ -8,7 +8,7 @@ public class DefineLocalVariable {
 		boolean e;
 		c = 'j';
 		b = "Foobar";
-		a = 422382727;
+		a = -422282828;
 		d = arg;
 		e = true;
 	}

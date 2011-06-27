@@ -98,7 +98,7 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public ASMAdapter(String cn) {
-		this.internalClassName = cn.replace('.', '/');
+		this.internalClassName = cn.replace('.', '/').replace(".class", "");
 		log.debug("instantiating ASMAdapter for {}", internalClassName);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -106,9 +106,7 @@ public class ASMAdapter implements Opcodes {
 		// Instantieer de classVisitor die delegeert naar de classwriter
 		TraceClassVisitor tcv = new TraceClassVisitor($__cw, new PrintWriter(
 				buffer));
-		// En een CheckClassAdapter die controleert of de bytecode geldig is.
-		CheckClassAdapter checkAdapter = new CheckClassAdapter(tcv);
-		cv = checkAdapter;
+		cv = tcv;
 
 		localsMap = new LocalsMap();
 
@@ -238,8 +236,7 @@ public class ASMAdapter implements Opcodes {
 		boolean hasValue = node != null;
 
 		if (!inFunction) {
-			log.debug("FieldInsn PUTFIELD {} {}", currentVar.getText(),
-					currentVar.getNodeType().toASM().getDescriptor());
+			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(), localsMap.get(currentVar));
 
 			if (hasValue) {
 				mg.visitFieldInsn(PUTFIELD, internalClassName,
@@ -350,7 +347,7 @@ public class ASMAdapter implements Opcodes {
 			mg.visitInsn(ICONST_5);
 			break;
 		default:
-			if (value >= 0 && value < Byte.MAX_VALUE) {
+			if (value > Byte.MIN_VALUE && value < Byte.MAX_VALUE) {
 				mg.visitIntInsn(BIPUSH, value);
 			} else {
 				mg.visitLdcInsn(new Integer(value));

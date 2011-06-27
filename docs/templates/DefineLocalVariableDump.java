@@ -25,7 +25,7 @@ public class DefineLocalVariableDump implements Opcodes {
 			mv.visitVarInsn(ISTORE, 4);
 			mv.visitLdcInsn("Foobar");
 			mv.visitVarInsn(ASTORE, 3);
-			mv.visitLdcInsn(new Integer(422382727));
+			mv.visitLdcInsn(new Integer(-422282828));
 			mv.visitVarInsn(ISTORE, 2);
 			mv.visitVarInsn(ALOAD, 1);
 			mv.visitVarInsn(ASTORE, 5);

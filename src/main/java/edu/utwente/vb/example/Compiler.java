@@ -181,7 +181,7 @@ public class Compiler {
 				CodeGenerator.program_return res = codg.program();
 			}
 
-			if (!opt_no_codegen) { // run codegenerator
+			/*if (!opt_no_codegen) { // run codegenerator
 				 CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
 				 nodes.setTokenStream(tokens);
 				 CodeGenerator codg;
@@ -196,7 +196,7 @@ public class Compiler {
 				 codg.setFile(new File(Utils.camelCaseName(filename) + ".class"));
 				
 				 CodeGenerator.program_return res = codg.program();
-			 }
+			 }*/
             
 			/* HIERONDER CODE VOOR CODEGENERATOR, LATER WEER AANZETTEN
 			if (!opt_no_codegen) {
