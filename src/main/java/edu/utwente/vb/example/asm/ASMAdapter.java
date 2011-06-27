@@ -302,7 +302,7 @@ public class ASMAdapter implements Opcodes {
 		//0 (false) op de stack
 		mg.visitInsn(ICONST_1);
 		//Jumpen naar elseEnd als gelijk, later backpatchen
-		mg.ifICmp(IFEQ, elseEnd);
+		mg.ifICmp(IFEQ, elseEnd); 
 	}
 	public void visitIfEnd(TypedNode node, Label elseEnd){
 		mg.mark(elseEnd);
