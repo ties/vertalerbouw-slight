@@ -91,7 +91,7 @@ public class ASMAdapter implements Opcodes {
 	private final Logger log = LoggerFactory.getLogger(ASMAdapter.class);
 
 	private List<String> toInstantiate = new ArrayList<String>();
-
+	
 	public ASMAdapter(String className, String sourceName) {
 		this(className);
 		cv.visitSource(sourceName, null);
@@ -286,27 +286,44 @@ public class ASMAdapter implements Opcodes {
 		ExampleType returnType = node.getNodeType();
 		descriptor += returnType.toASM();
 
-		mg.visitMethodInsn(INVOKESPECIAL, null, name, descriptor);
+		mg.visitMethodInsn(INVOKESPECIAL, internalClassName, name, descriptor);
+	}
+	
+	public void visitIfBegin(TypedNode node, Label ifEnd){
+		//0 (false) op de stack
+		mg.visitInsn(ICONST_0);
+		//Jumpen naar ifEnd als niet gelijk, later backpatchen
+		mg.ifICmp(IFEQ, ifEnd);
+	}
+	
+	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd){
+		//Backpatchen
+		mg.mark(ifEnd);
+		//0 (false) op de stack
+		mg.visitInsn(ICONST_1);
+		//Jumpen naar elseEnd als gelijk, later backpatchen
+		mg.ifICmp(IFEQ, elseEnd); 
+	}
+	public void visitIfEnd(TypedNode node, Label elseEnd){
+		mg.mark(elseEnd);
 	}
 
-	public void visitIf() {
-
+	public void visitWhileBegin(TypedNode node, Label loopBegin, Label loopEnd) {
+		//Backpatchen
+		mg.mark(loopBegin);
+		//0 (false) op de stack
+		mg.visitInsn(ICONST_0);
+		//Jumpen naar loopEnd als gelijk, later backpatchen
+		mg.ifICmp(IFEQ, loopEnd);
 	}
 
-	public void visitIfElse() {
-
-	}
-
-	public void visitWhile() {
-
-	}
-
-	public void visitWhile(TypedNode node) {
-
-	}
-
-	public void visitEndWhile() {
-
+	public void visitWhileEnd(TypedNode node, Label loopBegin, Label loopEnd) {
+		//Backpatchen
+		mg.mark(loopEnd);
+		//1 (true) op de stack
+		mg.visitInsn(ICONST_1);
+		//Jumpen naar loopBegin als gelijk, later backpatchen
+		mg.ifICmp(IFEQ, loopBegin);
 	}
 
 	public void visitCharAtom(TypedNode node) {
