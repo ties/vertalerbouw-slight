@@ -143,8 +143,8 @@ public class ASMAdapter implements Opcodes {
 		log.debug("visitEnd(), bytecode:");
 		/* Sluit de constructor af */
 		constructorMethodGenerator.returnValue();
-		constructorMethodGenerator.visitMaxs(1000, 1000);
-		constructorMethodGenerator.endMethod();
+		constructorMethodGenerator.visitMaxs(1000, 1000); // maxStack door classWriter
+		constructorMethodGenerator.visitEnd();
 				
 		/* Sluit nu de klasse af */
 		cv.visitEnd();

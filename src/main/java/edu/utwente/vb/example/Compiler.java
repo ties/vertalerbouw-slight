@@ -171,7 +171,7 @@ public class Compiler {
 					codg = new CodeGenerator(nodes,
 							new BlankDebugEventListener());
 				}
-				String className = filename.replace(".ex", ".class");
+				String className = new File(filename.replace(".ex", ".class")).getName();
 				
 				codg.setTreeAdaptor(new TypedNodeAdaptor());
 				codg.setOutputMode(OutputMode.FILE);
