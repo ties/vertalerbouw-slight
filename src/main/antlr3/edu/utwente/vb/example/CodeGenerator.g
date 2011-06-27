@@ -28,6 +28,9 @@ options {
   import edu.utwente.vb.exceptions.*;
   import java.io.File;
   
+  import org.objectweb.asm.Opcodes;
+  
+  
   import org.objectweb.asm.Label;
   
   /** Logger */
@@ -127,12 +130,20 @@ compoundExpression
   
 expression
   : ^(op=BECOMES base=expression sec=expression { aa.visitBecomes($base.tree); })
-  | ^(op=OR base=expression sec=expression) 
-  | ^(op=AND base=expression sec=expression) 
-  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)
-  | ^(op=(PLUS|MINUS) base=expression sec=expression) 
-  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) 
-  | ^(op=NOT base=expression)
+  | ^(op=OR base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IOR, $base.tree, $sec.tree; }) 
+  | ^(op=AND base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IAND, $base.tree, $sec.tree; }) 
+  | ^(op=LTEQ base=expression sec=expression {aa.visitBinaryOperator(Opcodes.IFLE, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+    ^(op=GTEQ base=expression sec=expression {aa.visitBinaryOperator(Opcodes.IFGE, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+    ^(op=GT base=expression sec=expression {aa.visitBinaryOperator(Opcodes.IFGT, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+    ^(op=LT base=expression sec=expression {aa.visitBinaryOperator(Opcodes.IFLT, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+    ^(op=EQ base=expression sec=expression {aa.visitBinaryOperator(Opcodes.IFEQ, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+    ^(op=NOTEQ base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IFNE, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+  | ^(op=PLUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IADD, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+  | ^(op=MINUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.ISUB, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+  | ^(op=MULT base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMUL, aa.visitCompare($op.tree, $base.tree,$sec.tree; }) 
+  | ^(op=DIV base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IDIV, aa.visitCompare($op.tree, $base.tree,$sec.tree; })
+  | ^(op=MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMOD, aa.visitCompare($op.tree, $base.tree,$sec.tree; }) 
+  | ^(op=NOT base=expression { aa.visitNot(); })
   | ^(ret=RETURN expr=expression)
   | sim=simpleExpression
   ;

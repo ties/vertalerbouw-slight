@@ -350,6 +350,16 @@ public class ASMAdapter implements Opcodes {
 		
 	}
 	
+	public void visitBinaryOperator(/* Opcode */ int opcode, TypedNode lhs, TypedNode rhs){
+		if(ExampleType.STRING.equals(lhs.getNodeType()))
+			throw new UnsupportedOperationException("Todo");
+		mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));	
+	}
+	
+	public void visitNot(){
+		mg.not();
+	}
+	
 	public void visitCharAtom(TypedNode node) {
 		visitAtom(node.getNodeType().toASM(), (int) node.getText().charAt(0));
 	}
