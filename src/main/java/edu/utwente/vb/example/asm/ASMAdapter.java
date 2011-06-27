@@ -134,6 +134,9 @@ public class ASMAdapter implements Opcodes {
 				Type.getType(Object.class), m);
 		constructorMethodGenerator.loadThis();
 		
+		builtinFunctions();
+		
+		
 		Method mainMethod = Method.getMethod("void main(String[])");
 		GeneratorAdapter main = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
 		main.visitCode();
@@ -143,7 +146,26 @@ public class ASMAdapter implements Opcodes {
 		main.visitMaxs(1, 1);
 		main.visitEnd();
 	}
-
+	
+	/**
+	 * Initialises Example builtin-functions like print() and read()
+	 */
+	private void builtinFunctions(){
+		{	//print(String)
+			mg = (GeneratorAdapter) cv.visitMethod(ACC_PUBLIC, "print", "(Ljava/lang/String;)V", null, null);
+			mg.visitCode();
+			mg.visitFieldInsn(GETSTATIC, "java/lang/System", "out",
+					"Ljava/io/PrintStream;");
+			mg.visitVarInsn(ALOAD, 1);
+			mg.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println",
+					"(Ljava/lang/String;)V");
+			mg.visitInsn(RETURN);
+			mg.visitMaxs(2, 2);
+			mg.visitEnd();
+		}
+	}
+	
+	
 	/**
 	 * Einde van de visit - Debug bytecode + sluit constructor af
 	 */
@@ -288,7 +310,7 @@ public class ASMAdapter implements Opcodes {
 
 	public void visitFuncCall(TypedNode node, List<TypedNode> params) {
 		String name = node.getText();
-
+		
 		String descriptor = "(";
 		for (TypedNode param : params) {
 			ExampleType type = param.getNodeType();
@@ -299,6 +321,7 @@ public class ASMAdapter implements Opcodes {
 		ExampleType returnType = node.getNodeType();
 		descriptor += returnType.toASM();
 
+		if(name.equals("print") )
 		mg.visitMethodInsn(INVOKESPECIAL, internalClassName, name, descriptor);
 	}
 	
@@ -354,6 +377,12 @@ public class ASMAdapter implements Opcodes {
 		if(ExampleType.STRING.equals(lhs.getNodeType()))
 			throw new UnsupportedOperationException("Todo");
 		mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));	
+	}
+	
+	//TODO: Modulo visitor schrijven, hier is geen standaard opcode voor. Zelf maken aan de hand van reeks andere bewerkingen
+	public void visitModulo(TypedNode lhs, TypedNode rhs){
+		//Placeholder zodat het compileert
+		int i = 0;
 	}
 	
 	public void visitNot(){
