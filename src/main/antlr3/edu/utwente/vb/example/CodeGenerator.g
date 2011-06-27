@@ -142,7 +142,7 @@ expression
   | ^(op=MINUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.ISUB, $base.tree,$sec.tree); })
   | ^(op=MULT base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMUL, $base.tree,$sec.tree); }) 
   | ^(op=DIV base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IDIV, $base.tree,$sec.tree); })
-  | ^(op=MOD base=expression sec=expression { aa.visitModulo($base.tree,$sec.tree); }) 
+  | ^(op=MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IREM, $base.tree,$sec.tree); }) 
   | ^(op=NOT base=expression { aa.visitNot(); })
   | ^(ret=RETURN expr=expression)
   | sim=simpleExpression
