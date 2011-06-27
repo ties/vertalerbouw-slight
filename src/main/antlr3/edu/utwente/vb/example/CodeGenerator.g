@@ -168,12 +168,6 @@ ifStatement
     Label elseEnd = new Label();
   }
   : ^(IF cond=expression { aa.visitIfBegin($cond.tree, ifEnd); } ifExpr=closedCompoundExpression { aa.visitIfHalf($cond.tree, ifEnd, elseEnd); } (elseExpr=closedCompoundExpression)? ){ aa.visitIfEnd($elseExpr.tree, elseEnd); }
-    {/* if($elseExpr.tree==null)
-        aa.visitIf($cond.tree, $ifExpr.tree);
-      else
-        aa.visitIfElse($cond.tree, $ifExpr.tree, $elseExpr.tree); 
-    */}
-  
   ;  
     
 whileStatement

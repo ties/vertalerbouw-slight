@@ -151,17 +151,17 @@ public class ASMAdapter implements Opcodes {
 	 * Initialises Example builtin-functions like print() and read()
 	 */
 	private void builtinFunctions(){
-		{	//print(String)
-			mg = (GeneratorAdapter) cv.visitMethod(ACC_PUBLIC, "print", "(Ljava/lang/String;)V", null, null);
-			mg.visitCode();
-			mg.visitFieldInsn(GETSTATIC, "java/lang/System", "out",
+		{	//print(String)mg = 
+			MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "print", "(Ljava/lang/String;)V", null, null);
+			mv.visitCode();
+			mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out",
 					"Ljava/io/PrintStream;");
-			mg.visitVarInsn(ALOAD, 1);
-			mg.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println",
+			mv.visitVarInsn(ALOAD, 1);
+			mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println",
 					"(Ljava/lang/String;)V");
-			mg.visitInsn(RETURN);
-			mg.visitMaxs(2, 2);
-			mg.visitEnd();
+			mv.visitInsn(RETURN);
+			mv.visitMaxs(2, 2);
+			mv.visitEnd();
 		}
 	}
 	
@@ -326,11 +326,12 @@ public class ASMAdapter implements Opcodes {
 	}
 	
 	public void visitIfBegin(TypedNode node, Label ifEnd){
-		//0 (false) op de stack
-		mg.visitInsn(ICONST_0);
+		//Type van expressiezijden opvragen
+		Type type = node.getNodeType().toASM();
 		//Jumpen naar ifEnd als niet gelijk, later backpatchen
-		mg.ifICmp(IFEQ, ifEnd);
+		mg.ifCmp(type, IFNE, ifEnd);
 	}
+	
 	
 	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd){
 		//Backpatchen
