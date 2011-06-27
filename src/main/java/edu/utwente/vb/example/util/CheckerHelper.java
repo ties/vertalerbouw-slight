@@ -27,6 +27,7 @@ import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.VariableId;
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
+import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
 
@@ -233,10 +234,19 @@ public class CheckerHelper {
 
 	public AppliedOccurrenceNode setBindingNode(TypedNode tgt, TypedNode src) {
 		AppliedOccurrenceNode target = (AppliedOccurrenceNode) tgt;
-		target.setBindingNode(src);
+		log.debug("CLASS: " + src.getClass());
+		checkArgument(src instanceof BindingOccurrenceNode);
+		BindingOccurrenceNode bindingNode = (BindingOccurrenceNode) src;
+		target.setBindingNode(bindingNode);
 		return target;
 	}
 
+	public AppliedOccurrenceNode setBindingNodeFunction(TypedNode tgt, TypedNode src){
+		AppliedOccurrenceNode target = (AppliedOccurrenceNode) tgt;
+		target.setBindingNode(src);
+		return target;
+	}
+	
 	/**
 	 * Throws exception if two given types are not equal
 	 * 

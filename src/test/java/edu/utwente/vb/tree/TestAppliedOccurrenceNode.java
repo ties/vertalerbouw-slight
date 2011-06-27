@@ -48,8 +48,9 @@ public class TestAppliedOccurrenceNode{
 		assertNull(testNode.getNodeType());
 		
 		TypedNode other = CheckerHelper.byToken("AAAA", ExampleType.CHAR);
+		BindingOccurrenceNode binding = (BindingOccurrenceNode) other;
 		
-		testNode.setBindingNode(other);
+		testNode.setBindingNode(binding);
 		
 		assertEquals(testNode.getNodeType(), ExampleType.CHAR);
 	}
@@ -59,7 +60,9 @@ public class TestAppliedOccurrenceNode{
 		assertNull(testNode.getBindingNode());
 		TypedNode other = CheckerHelper.byToken("AAAA", ExampleType.CHAR);
 		
-		testNode.setBindingNode(other);
+		BindingOccurrenceNode binding = (BindingOccurrenceNode) other;
+		
+		testNode.setBindingNode(binding);
 		
 		assertEquals(testNode.getBindingNode(), other);
 	}

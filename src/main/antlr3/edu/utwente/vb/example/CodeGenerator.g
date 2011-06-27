@@ -89,10 +89,10 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } rvd=valueDeclaration? {aa.visitDeclEnd($rvd.tree);})
-  | ^(CONST prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } cvd=valueDeclaration {aa.visitDeclEnd($cvd.tree);}) 
-  | ^(INFERVAR IDENTIFIER { aa.visitDecl($IDENTIFIER); } run=valueDeclaration? {aa.visitDeclEnd($run.tree);}) 
-  | ^(INFERCONST IDENTIFIER { aa.visitDecl($IDENTIFIER); } cons=valueDeclaration {aa.visitDeclEnd($cons.tree);})
+  : ^(VAR prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER.tree); } rvd=valueDeclaration? {aa.visitDeclEnd($rvd.tree);})
+  | ^(CONST prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER.tree); } cvd=valueDeclaration {aa.visitDeclEnd($cvd.tree);}) 
+  | ^(INFERVAR IDENTIFIER { aa.visitDecl($IDENTIFIER.tree); } run=valueDeclaration? {aa.visitDeclEnd($run.tree);}) 
+  | ^(INFERCONST IDENTIFIER { aa.visitDecl($IDENTIFIER.tree); } cons=valueDeclaration {aa.visitDeclEnd($cons.tree);})
   ;
   
 valueDeclaration 
@@ -126,7 +126,7 @@ compoundExpression
   ;
   
 expression
-  : ^(op=BECOMES base=expression sec=expression)
+  : ^(op=BECOMES base=expression sec=expression { aa.visitBecomes($base.tree); })
   | ^(op=OR base=expression sec=expression) 
   | ^(op=AND base=expression sec=expression) 
   | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)

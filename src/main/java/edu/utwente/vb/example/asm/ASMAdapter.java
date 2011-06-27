@@ -35,6 +35,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
+import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.symbols.ExampleType;
@@ -69,9 +70,7 @@ public class ASMAdapter implements Opcodes {
 	/** The constructor */
 	private GeneratorAdapter constructorMethodGenerator;
 	/** The current variable */
-	private TypedNode currentVar;
-	/** The locals map */
-	private LocalsMap localsMap;
+	private BindingOccurrenceNode currentVar;
 	/** The class name */
 	private final String internalClassName;
 	/** The method adapter */
@@ -110,7 +109,6 @@ public class ASMAdapter implements Opcodes {
 		CheckClassAdapter checkAdapter = new CheckClassAdapter(tcv);
 		cv = checkAdapter;
 
-		localsMap = new LocalsMap();
 
 		/*
 		 * version - the class version. access - the class's access flags (see
@@ -192,9 +190,6 @@ public class ASMAdapter implements Opcodes {
 		FunctionId<TypedNode> funcId = funcNode.getBoundMethod();
 		String name = node.getText();
 
-		// Reset de locals map
-		localsMap.reset();
-
 		mg = new GeneratorAdapter(ACC_PUBLIC, funcId.asMethod(), null, null, cv);
 		mg.visitCode();
 		// Laad this - sowieso nodig voor de return
@@ -213,13 +208,25 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public void visitBecomes(TypedNode node) {
-
+		checkArgument(node instanceof AppliedOccurrenceNode);
+		AppliedOccurrenceNode appNode = (AppliedOccurrenceNode) node;
+		checkArgument(appNode.getBindingNode() instanceof BindingOccurrenceNode);
+		BindingOccurrenceNode bindingOccurrence = (BindingOccurrenceNode) appNode.getBindingNode();
+		
+		if(bindingOccurrence.isLocal()){
+			mg.storeLocal(bindingOccurrence.getNumber());
+		}else{
+			mg.putField(Type.getObjectType(internalClassName), appNode.getText(), appNode.getNodeType().toASM());
+		}
+		
 		// fv.visitEnd();
 	}
 
 	public void visitDecl(TypedNode node) {
 		checkArgument(mg == null || inFunction);
-		currentVar = node;
+		checkArgument(node instanceof BindingOccurrenceNode);
+		
+		currentVar = (BindingOccurrenceNode) node;
 
 		if (!inFunction) {// Initialisatie van variabele in constructor
 			log.debug("declVar {} {}", node.getText(), node.getNodeType()
@@ -235,7 +242,7 @@ public class ASMAdapter implements Opcodes {
 			 * (tov argumenten bijvoorbeeld) wordt gedaan door ASM magie
 			 */
 			int i = mg.newLocal(node.getNodeType().toASM());
-			localsMap.put(currentVar, i);
+			currentVar.setNumber(i);
 		}
 	}
 
@@ -248,7 +255,7 @@ public class ASMAdapter implements Opcodes {
 		boolean hasValue = node != null;
 
 		if (!inFunction) {
-			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(), localsMap.get(currentVar));
+			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(), currentVar);
 
 			if (hasValue) {
 				mg.visitFieldInsn(PUTFIELD, internalClassName,
@@ -257,10 +264,10 @@ public class ASMAdapter implements Opcodes {
 			}
 		} else {
 			log.debug("VarInsn {} {}", currentVar.getNodeType().toASM()
-					.getOpcode(ISTORE), localsMap.get(currentVar));
+					.getOpcode(ISTORE), currentVar);
 
 			if (hasValue) {
-				mg.storeLocal(localsMap.getIndex(currentVar.getText()));
+				mg.storeLocal(currentVar.getNumber());
 			}
 		}
 		currentVar = null;
@@ -326,6 +333,10 @@ public class ASMAdapter implements Opcodes {
 		mg.ifICmp(IFEQ, loopBegin);
 	}
 
+	public void visitBecomes(TypedNode lhs, TypedNode rhs){
+		
+	}
+	
 	public void visitCharAtom(TypedNode node) {
 		visitAtom(node.getNodeType().toASM(), (int) node.getText().charAt(0));
 	}
@@ -383,4 +394,5 @@ public class ASMAdapter implements Opcodes {
 			}
 		}
 	}
+	
 }

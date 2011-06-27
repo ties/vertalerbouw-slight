@@ -262,7 +262,7 @@ functionCall
     List<ExampleType> args = Lists.newArrayList();
   }
   : ^(CALL id=IDENTIFIER (ex=expression {args.add($ex.tree.getNodeType());})*)
-    { ch.setBindingNode($id, ch.applyFunction($id, args));
+    { ch.setBindingNodeFunction($id, ch.applyFunction($id, args));
       ch.copyNodeType($id, $CALL);
     }
   ; 

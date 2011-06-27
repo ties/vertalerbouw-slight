@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public class TypedNode extends CommonTree {
-	private ExampleType type;
+	protected ExampleType type;
 	private boolean constantExpression = false;
 	
 	public TypedNode() { }

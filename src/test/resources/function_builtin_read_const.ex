@@ -1,4 +1,4 @@
-# checkerexpected: SymbolTableException
+# expected: MismatchedTokenException
 const int a
 
 def main():

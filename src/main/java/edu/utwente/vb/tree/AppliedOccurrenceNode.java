@@ -50,6 +50,10 @@ public class AppliedOccurrenceNode extends TypedNode{
 	}
 	
 	
+	public void setBindingNode(BindingOccurrenceNode ct){
+		bindingNode = checkNotNull(ct);
+	}
+	
 	public void setBindingNode(TypedNode ct){
 		bindingNode = checkNotNull(ct);
 	}
