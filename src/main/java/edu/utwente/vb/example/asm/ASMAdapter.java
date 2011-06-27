@@ -205,6 +205,8 @@ public class ASMAdapter implements Opcodes {
 		mg.returnValue();
 		mg.visitMaxs(1000, 1000);
 		mg.visitEnd();
+		
+		mg = null;
 	}
 
 	public void visitBecomes(TypedNode node) {
@@ -216,10 +218,10 @@ public class ASMAdapter implements Opcodes {
 		if(bindingOccurrence.isLocal()){
 			mg.storeLocal(bindingOccurrence.getNumber());
 		}else{
+			mg.loadThis();
+			mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed zolang wij geen long/double primitieven hebben ...
 			mg.putField(Type.getObjectType(internalClassName), appNode.getText(), appNode.getNodeType().toASM());
 		}
-		
-		// fv.visitEnd();
 	}
 
 	public void visitDecl(TypedNode node) {
@@ -258,6 +260,8 @@ public class ASMAdapter implements Opcodes {
 			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(), currentVar);
 
 			if (hasValue) {
+				mg.loadThis();
+				mg.swap();
 				mg.visitFieldInsn(PUTFIELD, internalClassName,
 						currentVar.getText(), currentVar.getNodeType().toASM()
 								.getDescriptor());
@@ -270,6 +274,8 @@ public class ASMAdapter implements Opcodes {
 				mg.storeLocal(currentVar.getNumber());
 			}
 		}
+		
+		mg = null;
 		currentVar = null;
 	}
 
@@ -334,6 +340,13 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public void visitBecomes(TypedNode lhs, TypedNode rhs){
+		checkArgument(lhs instanceof BindingOccurrenceNode);
+		BindingOccurrenceNode bindingNode = (BindingOccurrenceNode) lhs;
+		if(bindingNode.isLocal()){
+			mg.storeLocal(bindingNode.getNumber());
+		}else{
+			mg.putField(Type.getObjectType(internalClassName), bindingNode.getText(), bindingNode.getNodeType().toASM());
+		}
 		
 	}
 	
