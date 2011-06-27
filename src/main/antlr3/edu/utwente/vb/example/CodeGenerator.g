@@ -28,6 +28,8 @@ options {
   import edu.utwente.vb.exceptions.*;
   import java.io.File;
   
+  import org.objectweb.asm.Label;
+  
   /** Logger */
   import org.slf4j.Logger;
   import org.slf4j.LoggerFactory;
@@ -150,7 +152,11 @@ statements
   ;
 
 ifStatement
-  : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
+  @init{
+    Label ifEnd = new Label();
+    Label elseEnd = new Label();
+  }
+  : ^(IF cond=expression { aa.visitIfBegin($cond.tree, ifEnd); } ifExpr=closedCompoundExpression { aa.visitIfHalf($cond.tree, ifEnd, elseEnd); } (elseExpr=closedCompoundExpression)? ){ aa.visitIfEnd($elseExpr.tree, elseEnd); }
     {/* if($elseExpr.tree==null)
         aa.visitIf($cond.tree, $ifExpr.tree);
       else
@@ -160,7 +166,7 @@ ifStatement
   ;  
     
 whileStatement
-  : ^(WHILE { aa.visitWhile(); } cond=expression {aa.visitWhile($cond.tree);} loop=closedCompoundExpression { aa.visitEndWhile(); })
+  : ^(WHILE { aa.visitWhile(); } cond=expression {aa.visitWhile($cond.tree); } loop=closedCompoundExpression { aa.visitEndWhile(); })
   ;    
     
 primitive

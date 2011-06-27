@@ -91,7 +91,7 @@ public class ASMAdapter implements Opcodes {
 	private final Logger log = LoggerFactory.getLogger(ASMAdapter.class);
 
 	private List<String> toInstantiate = new ArrayList<String>();
-
+	
 	public ASMAdapter(String className, String sourceName) {
 		this(className);
 		cv.visitSource(sourceName, null);
@@ -286,11 +286,26 @@ public class ASMAdapter implements Opcodes {
 		ExampleType returnType = node.getNodeType();
 		descriptor += returnType.toASM();
 
-		mg.visitMethodInsn(INVOKESPECIAL, null, name, descriptor);
+		mg.visitMethodInsn(INVOKESPECIAL, internalClassName, name, descriptor);
 	}
-
-	public void visitIf() {
-
+	
+	public void visitIfBegin(TypedNode node, Label ifEnd){
+		//0 (false) op de stack
+		mg.visitInsn(ICONST_0);
+		//Jumpen naar ifEnd als niet gelijk, later backpatchen
+		mg.ifICmp(IFEQ, ifEnd);
+	}
+	
+	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd){
+		//Backpatchen
+		mg.mark(ifEnd);
+		//0 (false) op de stack
+		mg.visitInsn(ICONST_1);
+		//Jumpen naar elseEnd als gelijk, later backpatchen
+		mg.ifICmp(IFEQ, elseEnd);
+	}
+	public void visitIfEnd(TypedNode node, Label elseEnd){
+		mg.mark(elseEnd);
 	}
 
 	public void visitIfElse() {
