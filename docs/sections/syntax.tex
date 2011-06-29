@@ -18,7 +18,7 @@ Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarhei
                                       \>| \textbf{var} IDENTIFIER\\
                                       \>| \textbf{const} IDENTIFIER valueDeclaration\\
 \\
-{\bf valueDeclaration}            ::= = compoundExpression\\
+{\bf valueDeclaration}            ::= \textbf{=} compoundExpression\\
 \\
 {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
                                       \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
@@ -80,13 +80,13 @@ Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarhei
 {\bf statements}                  ::= \=ifStatement\\
                                       \>| whileStatement\\
 \\
-{\bf ifStatement}                 ::= \=IF \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression ELSE $\colon$ closedCompoundExpression\\
-                                      \>| IF \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
-                                      \>| IF expression $\colon$ closedCompoundExpression ELSE $\colon$ closedCompoundExpression\\
-                                      \>| IF expression $\colon$ closedCompoundExpression\\
+{\bf ifStatement}                 ::= \=\textbf{if} \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression \textbf{else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression \textbf{else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression\\
 \\
-{\bf whileStatement}              ::= \=WHILE \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
-                                      \>| WHILE expression $\colon$ closedCompoundExpression\\
+{\bf whileStatement}              ::= \=\textbf{while} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{while} expression $\colon$ closedCompoundExpression\\
 \\ 
 {\bf paren}                       ::= \textbf{(} expression \textbf{)}\\
 \\   
