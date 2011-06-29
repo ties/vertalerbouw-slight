@@ -8,7 +8,7 @@ De topnode in de hierarchy is de node Program. Een Program bestaat uit nul of me
 
 {\bf program}                     ::= \=(declaration | functionDef)*\\
 \\
-{\bf declaration}                 ::= primitive id=IDENTIFIER valueDeclaration?\\
+{\bf declaration}                 ::= \=primitive IDENTIFIER valueDeclaration?\\
                                       \> | CONST primitive IDENTIFIER valueDeclaration\\
                                       \> | VAR IDENTIFIER valueDeclaration?\\
                                       \> | CONST IDENTIFIER valueDeclaration\\

@@ -1,1 +1,26 @@
 \chapter{Semantiek}
+
+\section{Commando's}
+
+\section{Expressies}
+
+\section{Variabelen}
+
+\section{Declaraties}
+Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de opgegeven identifier.
+    \subsection{Syntax}    
+        \begin{tabbing}
+        {\bf declaration}                 ::= \=primitive IDENTIFIER valueDeclaration?\\
+                                              \>| CONST primitive IDENTIFIER valueDeclaration\\
+                                              \>| VAR IDENTIFIER valueDeclaration?\\
+                                              \>| CONST IDENTIFIER valueDeclaration\\
+        \end{tabbing}
+    \subsection{Semantiek}
+        \begin{itemize}
+        \item De variabeledeclaratie 'primitive IDENTIFIER valueDeclaration?' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele van type primitive. Als deze declaratie wordt gevolgd door een valueDeclaration dan wordt de waade van valueDeclaration ge\"{e}valueerd en toegekent aan de variabele die is gebonden aan IDENTIFIER. Als deze declaratie niet wordt gevolgd door een valueDeclaration dan wordt er geen waarde toegekend aan de variabele gebonden aan IDENTIFIER.
+        \item De constantedeclaratie 'CONST primitive IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante van type primitive met de waarde welke volgt uit de evaluatie van valueDeclaration.
+        \item De variabeledeclaratie 'VAR IDENTIFIER valueDeclaration?' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele. Als deze declaratie wordt gevolgd door een valueDeclaration dan wordt het type van de variabele gebonden aan IDENTIFIER het type van de uitvoer welke volgt uit de evaluatie van valueDeclaration en wordt de waarde van de variabele gebonden aan IDENTIFIER de waarde welke volgt uit de uitvoer van valueDelaration. Als deze declaratie niet wordt gevolgd door een valueDeclaration dan wordt er geen type en waarde toegekend aan de variabele gebonden aan IDENTIFIER, dit gebeurd alsnog bij de eerste BECOMES op deze variabele.
+        \item De constantedeclaratie 'CONST IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante waarbij het type van deze contstante het type wordt van de waarde van de evaluatie van valueDeclaration en de waarde wordt de waarde van de evaluatie van valueDeclaration. 
+        \end{itemize}
+\section{Parameters}
+
