@@ -33,14 +33,21 @@ Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de 
 \section{Functies}
     \subsection{Syntax}
         \begin{tabbing}
-            {\bf functionDef}                 ::= FUNCTION \=IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)?\\
-                                                  \>RPAREN (ARROW primitive)? COLON closedCompoundExpression\\
+            {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
+                                                  \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
             \\
-            {\bf parameterDef}                ::= primitive IDENTIFIER \\
+            {\bf parameterDef}                ::= \=parameterFirstElem parameterOtherElems\\
+                                                  \>| parameterFirstElem\\
+                                                  \>| \textbf{nothing}\\
             \\
+            {\bf parameterFirstElem}          ::= primitive IDENTIFIER\\
+            \\
+            {\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
+                                                  \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
         \end{tabbing}
     \subsection{Semantiek}
         \begin{itemize}
-        \item 
+        \item De functiedeclaratie 'def IDENTIFIER parameterDef -> primitive : closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is type primitive.
+        \item De functiedeclaratie 'def IDENTIFIER parameterDef: closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is van het type van de return-expressies in de closedCompoundExpression.
         \end{itemize}
 
