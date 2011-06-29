@@ -44,9 +44,8 @@ tokens {
 
 //Interpunction
 COLON   : ':';
-SEMI    : ';';
+//SEMI    : ';';
 COMMA   : ',';
-//DOT     : '.';
 LPAREN  : '(';
 RPAREN  : ')';
 SQUOT   : '\'';

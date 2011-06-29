@@ -25,5 +25,18 @@ Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de 
         \item De variabeledeclaratie 'VAR IDENTIFIER valueDeclaration?' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele. Als deze declaratie wordt gevolgd door een valueDeclaration dan wordt het type van de variabele gebonden aan IDENTIFIER het type van de uitvoer welke volgt uit de evaluatie van de compoundExpression van valueDeclaration en wordt de waarde van de variabele gebonden aan IDENTIFIER de waarde welke volgt uit de uitvoer van de compoundExpression van valueDelaration. Als deze declaratie niet wordt gevolgd door een valueDeclaration dan wordt er geen type en waarde toegekend aan de variabele gebonden aan IDENTIFIER, dit gebeurd alsnog bij de eerste BECOMES op deze variabele.
         \item De constantedeclaratie 'CONST IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante waarbij het type van deze contstante het type wordt van de waarde van de evaluatie van de compoundExpression van valueDeclaration en de waarde wordt de waarde van de evaluatie van valueDeclaration. 
         \end{itemize}
-\section{Parameters}
+
+\section{Functies}
+    \subsection{Syntax}
+        \begin{tabbing}
+            {\bf functionDef}                 ::= FUNCTION \=IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)?\\
+                                                  \>RPAREN (ARROW primitive)? COLON closedCompoundExpression\\
+            \\
+            {\bf parameterDef}                ::= primitive IDENTIFIER \\
+            \\
+        \end{tabbing}
+    \subsection{Semantiek}
+        \begin{itemize}
+        \item 
+        \end{itemize}
 

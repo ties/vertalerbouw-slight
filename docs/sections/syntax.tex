@@ -1,46 +1,74 @@
 \chapter{Syntax}
-\section{De grote lijnen}
-Syntax
+\section{Opmerkingen}
+In het ANTLR bestand Parser.g valt op dat deze in EBNF vorm is genoteerd. Om de taal eenvoudiger en gestructureerder uit te kunnen leggen de syntax van Example voor dit verslag omgezet naar BNF vorm. Enige verschillen tussen de grammatica zoals genoteerd in dit hoofdstuk en de grammatica zoals terug te vinden in Bijlage B komen hier vandaan. Enkel de program-regel is in EBNF genoteerd, daar dit hier geen belemmering vormt en een omslagtige notatie voorkomt. Op enkele plaatsen staat \textbf{nothing} in het BNF, dit betekend dat deze grammaticaregel ook leeg/niks kan zijn.\\
+ 
+Hoewel in de syntax eenvoudigweg de naam van tokens zoals gedefinieerd in de Lexer hadden kunnen worden gebruikt is er voor gekozen om keywords in de syntaxomschrijving volledig uit te schrijven. Deze wijze van noteren geeft de lezer een beter beeld van de syntax en voorkomt dat de lezer heen en weer moet bladeren tussen deze pagina en de Lexer definitie. Elementen die domweg het teken representeren dat ze zijn en niet refereren naar een andere regel in de BNF staan voor de leesbaarheid dikgedrukt. Hierbij staan de invoeren INDENT en DEDENT voor een inspringende tab en een tab terug.\\
 
-De topnode in de hierarchy is de node Program. Een Program bestaat uit nul of meer declaraties van globale variabelen gevolgd door nul of meer functies die in het programma gebruikt kunnen worden en uiteindelijk een Main functie.
+Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarheid kan de syntax op sommige punten wellicht niet meer LL(1) zijn. Echter is deze syntax volledig equivalent aan syntax uit Example's bronbestanden in Bijlagen A en B.
 
+\section{Example's syntax}
 \begin{tabbing}
 
 {\bf program}                     ::= \=(declaration | functionDef)*\\
 \\
-{\bf declaration}                 ::= \=primitive IDENTIFIER valueDeclaration?\\
-                                      \> | CONST primitive IDENTIFIER valueDeclaration\\
-                                      \> | VAR IDENTIFIER valueDeclaration?\\
-                                      \> | CONST IDENTIFIER valueDeclaration\\
+{\bf declaration}                 ::= \=primitive IDENTIFIER valueDeclaration\\
+                                      \>| primitive IDENTIFIER\\
+                                      \>| \textbf{const} primitive IDENTIFIER valueDeclaration\\
+                                      \>| \textbf{var} IDENTIFIER valueDeclaration\\
+                                      \>| \textbf{var} IDENTIFIER\\
+                                      \>| \textbf{const} IDENTIFIER valueDeclaration\\
 \\
-{\bf valueDeclaration}            ::= BECOMES compoundExpression\\
+{\bf valueDeclaration}            ::= = compoundExpression\\
 \\
-{\bf functionDef}                 ::= FUNCTION \=IDENTIFIER LPAREN (parameterDef (COMMA parameterDef)*)?\\
-                                      \>RPAREN (ARROW primitive)? COLON closedCompoundExpression\\
+{\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
+                                      \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
 \\
-{\bf parameterDef}                ::= primitive IDENTIFIER \\
+{\bf parameterDef}                ::= \=parameterFirstElem parameterOtherElems\\
+                                      \>| parameterFirstElem\\
+                                      \>| \textbf{nothing}\\
 \\
-{\bf closedCompoundExpression}    ::= INDENT compoundExpression* DEDENT\\
+{\bf parameterFirstElem}          ::= primitive IDENTIFIER\\
+\\
+{\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
+                                      \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
+\\
+{\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundExpression \textbf{DEDENT}\\
 \\ 
+{\bf compoundMultiExpression}     ::= \=compoundExpression compoundMultiExpression\\
+                                      \>| compoundExpression\\
+\\
 {\bf compoundExpression}          ::= \=expression\\
-                                      \> | RETURN expression\\
-                                      \> | declaration\\
+                                      \>| \textbf{return} expression\\
+                                      \>| declaration\\
 \\ 
-{\bf expression}                  ::= orExpression (BECOMES expression)?\\
+{\bf expression}                  ::= \=orExpression = expression\\
+                                      \>| orExpression\\
 \\   
-{\bf orExpression}                ::= andExpression (OR andExpression)*\\
+{\bf orExpression}                ::= \=andExpression \textbf{or} orExpression\\
+                                      \>| andExpression\\
 \\   
-{\bf andExpression}               ::= equationExpression (AND equationExpression)*\\
+{\bf andExpression}               ::= \=equationExpression \textbf{and} andExpression\\
+                                      \>| equationExpression\\
 \\ 
-{\bf equationExpression}          ::= plusExpression ((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) plusExpression)*\\
+{\bf equationExpression}          ::= \=plusExpression \textbf{\textless{}=} equationExpression\\
+                                      \>| plusExpression \textbf{\textgreater{}=} equationExpression)\\
+                                      \>| plusExpression \textbf{\textgreater{}} equationExpression)\\
+                                      \>| plusExpression \textbf{\textless{}} equationExpression)\\
+                                      \>| plusExpression \textbf{==} equationExpression)\\
+                                      \>| plusExpression \textbf{!=} equationExpression)\\
+                                      \>| plusExpression\\
+
 \\ 
-{\bf plusExpression}              ::= multiplyExpression \= (PLUS multiplyExpression)\\
-                                                         \>|(MINUS multiplyExpression)\\
-                                                         \>)*\\
+{\bf plusExpression}              ::= \=multiplyExpression \textbf{+} plusExpression\\
+                                      \>| multiplyExpression \textbf{-} plusExpression\\
+                                      \>| multiplyExpression\\
 \\
-{\bf multiplyExpression}          ::= unaryExpression ((MULT | DIV | MOD) unaryExpression)*\\
+{\bf multiplyExpression}          ::= \=unaryExpression \textbf{*} unaryExpression)*\\
+                                      \>| unaryExpression \textbf{/} unaryExpression)*\\
+                                      \>| unaryExpression \textbf{\%} unaryExpression)*\\
 \\
-{\bf unaryExpression}             ::= (NOT)? simpleExpression\\
+{\bf unaryExpression}             ::= \=\textbf{$\!$} simpleExpression\\
+                                      \>| simpleExpression\\ 
 \\   
 {\bf simpleExpression}            ::= \=atom\\
                                       \>| functionCall\\
@@ -52,30 +80,49 @@ De topnode in de hierarchy is de node Program. Een Program bestaat uit nul of me
 {\bf statements}                  ::= \=ifStatement\\
                                       \>| whileStatement\\
 \\
-{\bf ifStatement}                 ::= \=IF \=LPAREN expression RPAREN COLON closedCompoundExpression\\
-                                      \>\>(ELSE COLON closedCompoundExpression)?\\
-                                      \>| IF expression COLON closedCompoundExpression \\
-                                      \>\>(ELSE COLON closedCompoundExpression)?\\
+{\bf ifStatement}                 ::= \=IF \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression ELSE $\colon$ closedCompoundExpression\\
+                                      \>| IF \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| IF expression $\colon$ closedCompoundExpression ELSE $\colon$ closedCompoundExpression\\
+                                      \>| IF expression $\colon$ closedCompoundExpression\\
 \\
-{\bf whileStatement}              ::= \=WHILE LPAREN expression RPAREN COLON closedCompoundExpression\\
-                                      \>| WHILE expression COLON closedCompoundExpression\\
-\\    
-{\bf primitive}                   ::= \=VOID\\
-                                      \>| BOOLEAN\\
-                                      \>| CHAR\\
-                                      \>| INT\\
-                                      \>| STRING\\
+{\bf whileStatement}              ::= \=WHILE \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| WHILE expression $\colon$ closedCompoundExpression\\
 \\ 
-{\bf atom}                        ::= \=INT-LITERAL\\
-                                      \>| CHAR-LITERAL\\
-                                      \>| STRING-LITERAL\\
-                                      \>| TRUE\\
-                                      \>| FALSE\\
-\\ 
-{\bf paren}                       ::= LPAREN expression RPAREN\\
+{\bf paren}                       ::= \textbf{(} expression \textbf{)}\\
 \\   
 {\bf variable}                    ::= IDENTIFIER \\
 \\   
-{\bf functionCall}                ::= IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN \\
-
+{\bf functionCall}                ::= IDENTIFIER ( params ) \\
+\\
+{\bf params}                      ::= \=expression\\
+                                      \>| expression paramOtherElems\\
+                                      \>| \textbf{nothing}
+\\
+{\bf paramOtherElems}             ::= \=\textbf{,}expression\\
+                                      \>\textbf{,}expression paramOtherElems\\
+\\    
+{\bf primitive}                   ::= \=\textbf{void}\\
+                                      \>| \textbf{bool}\\
+                                      \>| \textbf{char}\\
+                                      \>| \textbf{int}\\
+                                      \>| \textbf{string}\\
+\\ 
+{\bf atom}                        ::= \=DIGIT+\\
+                                      \>| \textbf{'}LETTER\textbf{'}\\
+                                      \>| LETTER+\\
+                                      \>| \textbf{True}\\
+                                      \>| \textbf{False}\\
+\\
+{\bf IDENTIFIER}                  ::= LETTER SYMBOLS\\
+\\
+{\bf SYMBOLS}                     ::= LETTER | DIGIT | SYMBOLS\\
+\\
+{\bf LETTER}                      ::= LOWER | UPPER\\
+\\
+{\bf DIGIT}                       ::= '0'..'9'\\
+\\
+{\bf LOWER}                       ::= 'a'..'z'\\
+\\     
+{\bf UPPER}                       ::= 'A'..'Z'\\
+\\
 \end{tabbing}
