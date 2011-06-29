@@ -8,6 +8,7 @@ Per compiler-laag zullen we nu kort indiepen op de werking en de verantwoordelij
 \section{Lexer}
 De lexer specificeerd alle soorten tokens die bestaan binnen de Example programmeertaal.
 \section{Parser}
+De parser is ervoor verantwoordelijk om te controleren of de programmacode welke door de programmeur is ingegeven voldoet aan de syntax-eisen van de Example-programmeertaal.
 \section{Checker}
 De verantwoordelijkheden van de lexer zijn drieledig:
 \begin{itemize}
@@ -16,5 +17,6 @@ De verantwoordelijkheden van de lexer zijn drieledig:
 	\item Het toekennen van een type aan alle noden in de AST.
 \end{itemize}
 \section{Code Generator}
+Nadat de parser en checker beiden hun goedkeuring hebben gegeven over van respectievelijk de syntax van het programma en het voldoen aan Example's contextbeperkingen van het programma moet ervoor gezorgd worden dat het programma daadwerkelijk iets gaat doen. De codegenerator is verantwoordelijk om de instructies ingegeven in de Example-taal om te zetten naar instructies welke een computer kan uitvoeren. Vanwege de platformonafhankelijkheid en de goede documentatie is gekozen voor de Java Virtuele Machine als doeltaal. Omdat het een grote stap is om rechtstreeks JVM-code te genereren is er voor gekozen gebruik te maken van ASM 3.0, evenals het bekendere Jasmin een Java bytecode engineering library. 
 \section{Interpreter}
 Example maakt gebruik van de Java Virtual Machine. Dit is een interpreter die de JVM-code die de Code Generator heeft geproduceert kan uitvoeren en zorgt dat het systeem uiteindelijk dat doet wat de programmeur heeft gespecificeerd in zijn Example-code. 
