@@ -1,11 +1,97 @@
 \chapter{Semantiek}
 
-\section{Commando's}
-
 \section{Expressies}
+    \subsection{Syntax}
+        \begin{tabbing} 
+            {\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundMultiExpression \textbf{DEDENT}\\
+            \\ 
+            {\bf compoundMultiExpression}     ::= \=compoundExpression compoundMultiExpression\\
+                                                  \>| compoundExpression\\
+            \\
+            {\bf compoundExpression}          ::= \=expression\\
+                                                  \>| \textbf{return} expression\\
+                                                  \>| declaration\\
+            \\ 
+            {\bf expression}                  ::= \=orExpression = expression\\
+                                                  \>| orExpression\\
+            \\   
+            {\bf orExpression}                ::= \=andExpression \textbf{or} orExpression\\
+                                                  \>| andExpression\\
+            \\   
+            {\bf andExpression}               ::= \=equationExpression \textbf{and} andExpression\\
+                                                  \>| equationExpression\\
+            \\ 
+            {\bf equationExpression}          ::= \=plusExpression \textbf{\textless{}=} equationExpression\\
+                                                  \>| plusExpression \textbf{\textgreater{}=} equationExpression\\
+                                                  \>| plusExpression \textbf{\textgreater{}} equationExpression\\
+                                                  \>| plusExpression \textbf{\textless{}} equationExpression\\
+                                                  \>| plusExpression \textbf{==} equationExpression\\
+                                                  \>| plusExpression \textbf{!=} equationExpression\\
+                                                  \>| plusExpression\\
 
-\section{Variabelen}
-
+            \\ 
+            {\bf plusExpression}              ::= \=multiplyExpression \textbf{+} plusExpression\\
+                                                  \>| multiplyExpression \textbf{-} plusExpression\\
+                                                  \>| multiplyExpression\\
+            \\
+            {\bf multiplyExpression}          ::= \=unaryExpression \textbf{*} multiplyExpression\\
+                                                  \>| unaryExpression \textbf{/} multiplyExpression\\
+                                                  \>| unaryExpression \textbf{\%} multiplyExpression\\
+            \\
+            {\bf unaryExpression}             ::= \=\textbf{!} simpleExpression\\
+                                                  \>| simpleExpression\\ 
+            \\   
+            {\bf simpleExpression}            ::= \=atom\\
+                                                  \>| functionCall\\
+                                                  \>| variable\\
+                                                  \>| paren\\
+                                                  \>| closedCompoundExpression\\
+                                                  \>| statements\\
+            \\
+            {\bf atom}                        ::= \=DIGIT+\\
+                                                  \>| \textbf{'}LETTER\textbf{'}\\
+                                                  \>| LETTER+\\
+                                                  \>| \textbf{True}\\
+                                                  \>| \textbf{False}\\
+            \\   
+            {\bf functionCall}                ::= IDENTIFIER \textbf{(}params\textbf{)} \\
+            \\      
+            {\bf variable}                    ::= IDENTIFIER \\
+            \\ 
+            {\bf paren}                       ::= \textbf{(} expression \textbf{)}\\
+        \end{tabbing}
+    \subsection{Semantiek}
+        Een expressie wordt ge\"{e}evalueerd om een waarde op te leveren.
+        \begin{itemize}
+        \item De expressie 'INDENT compoundMultiExpression DEDENT' levert de waarde op die de return-expressies van de compoundMultiExpression opleveren.
+        \item De expressie 'orExpression = expression' evalueert de waard van expression en kent deze waarde aan de variabele die in orExpression zit (orExpression is ee variabele, dit dwingt de checker af). Verder wordt de waarde opgelevert die opgeleverd wordt door de evaluatie van expression.
+        \item De expressie 'andExpression or orExpression' levert een boolean waarde op. andExpression wordt ge\"{e}valueerd, orExpression wordt ge\"{e}valueerd en indien een van deze True is wordt True opgeleverd, anders wordt False opgeleverd.
+        \item De expressie 'equationExpression or andExpression' levert een boolean waarde op. equationExpression wordt ge\"{e}valueerd, andExpression wordt ge\"{e}valueerd en indien beide True zijn wordt True opgeleverd, anders wordt False opgeleverd.
+        \item De expressie 'plusExpression \textless{}= equationExpression' levert een boolean waarde op. plusExpression wordt ge\"{e}valueerd. equationExpression wordt ge\"{e}valueerd en indien de waarde van plusExpression kleiner is of gelijk is aan de waarde van equationExpression wordt True opgeleverd, anders wordt False opgeleverd. De evaluatie van plusExpression en die van equationExpression zijn door de checker gegarandeerd gelijktypig.
+        \item De expressie 'plusExpression \textgreater{}= equationExpression' levert een boolean waarde op. plusExpression wordt ge\"{e}valueerd. equationExpression wordt ge\"{e}valueerd en indien de waarde van plusExpression groter is of gelijk is aan de waarde van equationExpression wordt True opgeleverd, anders wordt False opgeleverd. De evaluatie van plusExpression en die van equationExpression zijn door de checker gegarandeerd gelijktypig.
+        \item De expressie 'plusExpression \textgreater{} equationExpression)' levert een boolean waarde op. plusExpression wordt ge\"{e}valueerd. equationExpression wordt ge\"{e}valueerd en indien de waarde van plusExpression groter is dan de waarde van equationExpression wordt True opgeleverd, anders wordt False opgeleverd. De evaluatie van plusExpression en die van equationExpression zijn door de checker gegarandeerd gelijktypig.
+        \item De expressie 'plusExpression \textless{} equationExpression' levert een boolean waarde op. plusExpression wordt ge\"{e}valueerd. equationExpression wordt ge\"{e}valueerd en indien de waarde van plusExpression kleiner dan de waarde van equationExpression wordt True opgeleverd, anders wordt False opgeleverd. De evaluatie van plusExpression en die van equationExpression zijn door de checker gegarandeerd gelijktypig.
+        \item De expressie 'plusExpression == equationExpression' levert een boolean waarde op. plusExpression wordt ge\"{e}valueerd. equationExpression wordt ge\"{e}valueerd en indien de waarde van plusExpression gelijk is aan de waarde van equationExpression wordt True opgeleverd, anders wordt False opgeleverd. De evaluatie van plusExpression en die van equationExpression zijn door de checker gegarandeerd gelijktypig.
+        \item De expressie 'plusExpression != equationExpression' levert een boolean waarde op. plusExpression wordt ge\"{e}valueerd. equationExpression wordt ge\"{e}valueerd en indien de waarde van plusExpression kleiner is of gelijk is aan de waarde van equationExpression wordt True opgeleverd, anders wordt False opgeleverd. De evaluatie van plusExpression en die van equationExpression zijn door de checker gegarandeerd gelijktypig.
+        \item De expressie 'multiplyExpression + plusExpression' levert een string, char of int waarde op. multiplyExpression wordt ge\"{e}valueerd en plusExpression wordt ge\"{e}valueerd. De opgeleverde waarde hangt af van het type van de waarde die door multiplyExpression en plusExpression worden opgeleverd, de volgende gevallen zijn hierin te onderscheiden:
+            \begin{itemize}
+            \item Indien multiplyExpression en plusExpression beide van het type String zijn wordt een string opgelevert welke gelijk is aan de String opgelevert door multiplyExpression direct gevolgd door de String opgelevert door plusExpression.
+            \item Indien multiplyExpression en plusExpression beide van het type int zijn wordt een int opgelevert welke gelijk is aan de som opgelevert door de integerwaarde van multiplyExpression op te tellen bij de integerwaarde opgelevert door plusExpression.
+            \item Indien multiplyExpression van het type string is en plusExpression van het type int is wordt een string opgelevert welke gelijk is aan de String opgelevert door multiplyExpression direct gevolgd door het cijfer opgelevert door plusExpression.
+            \item Indien multiplyExpression van het type string is en plusExpression van het type char is wordt een string opgelevert welke gelijk is aan de String opgelevert door multiplyExpression direct gevolgd door het character opgelevert door plusExpression.
+            \end{itemize}
+        \item De expressie 'multiplyExpression - plusExpression' levert een int op. multiplyExpression wordt ge\"{e}evalueerd en plusExpression wordt ge\"{e}evalueerd en de cijferwaarde van plusExpression wordt afgetrokken van de cijferwaarde van multiplyExpression en het resultaat wordt opgeleverd.
+        \item De expressie 'unaryExpression * multiplyExpression' levert een int op. unaryExpression wordt ge\"{e}evalueerd en multiplyExpression wordt ge\"{e}evalueerd en de cijferwaarde van unaryExpression wordt vermenigvuldigd van de cijferwaarde van multiplyExpression en het resultaat wordt opgeleverd.
+        \item De expressie 'unaryExpression / multiplyExpression' levert een int op. unaryExpression wordt ge\"{e}evalueerd en multiplyExpression wordt ge\"{e}evalueerd en de cijferwaarde van unaryExpression wordt gedeeld door de cijferwaarde van multiplyExpression, vervolgens afgerond naar beneden afgerond naar een int en het resultaat wordt opgeleverd.
+        \item De expressie 'unaryExpression \% multiplyExpression' levert een int op. unaryExpression wordt ge\"{e}evalueerd en multiplyExpression wordt ge\"{e}evalueerd en van de cijferwaarde van unaryExpression en de cijferwaarde van multiplyExpression wordt de modulo bepaald en dit resultaat wordt opgeleverd.
+        \item De expressie '! simpleExpression' evalueert de boolean waarde van simpleExpression. Indien simpleExpression naar True evalueerd wordt False opgeleverd en indien simpleExpression naar False evalueerd wordt True opgeleverd.
+        \item De expressie 'atom' evalueert de string, int, char, of bool waarde aan de hand van de geschreven tekst en levert deze op.
+        \item De expressie 'IDENTIFIER (params)' evalueert de functieaanroep van de functie met naam IDENTIFIER onder de parameters params en levert de terugkeerwaarde van deze functie op.
+        \item De expressie 'IDENTIFIER' levert de waarde van de variabele op die gebonden is aan deze IDENTIFIER.
+        \item De expressie '( expression )' levert niets op, maar de evaluatie van de expressie binnen de '(' en ')' is wel van invloed op while- en ifstatements. Zie ook semantiek: statements.
+        \item De expressie 'closedCompoundExpression' levert de waarde op die de return-expressies van de compoundMultiExpression opleveren.
+        \item De expressie 'statement' levert niets op. Voor de semantiek van deze regel, zie semantiek: statements. 
+        \end{itemize}
 
 \section{Declaraties}
 Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de opgegeven identifier.
@@ -30,7 +116,8 @@ Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de 
         \item De constantedeclaratie 'const IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante waarbij het type van deze contstante het type wordt van de waarde van de evaluatie van de compoundExpression van valueDeclaration en de waarde wordt de waarde van de evaluatie van valueDeclaration. 
         \end{itemize}
 
-\section{Functies}
+\section{Functiedefinities}
+Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameters en teruggeeftype, welke gebonden is aan de opgegeven identifier.
     \subsection{Syntax}
         \begin{tabbing}
             {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\

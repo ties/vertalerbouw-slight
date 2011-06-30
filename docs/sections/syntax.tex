@@ -32,7 +32,7 @@ Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarhei
 {\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
                                       \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
 \\
-{\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundExpression \textbf{DEDENT}\\
+{\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundMultiExpression \textbf{DEDENT}\\
 \\ 
 {\bf compoundMultiExpression}     ::= \=compoundExpression compoundMultiExpression\\
                                       \>| compoundExpression\\
@@ -51,11 +51,11 @@ Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarhei
                                       \>| equationExpression\\
 \\ 
 {\bf equationExpression}          ::= \=plusExpression \textbf{\textless{}=} equationExpression\\
-                                      \>| plusExpression \textbf{\textgreater{}=} equationExpression)\\
-                                      \>| plusExpression \textbf{\textgreater{}} equationExpression)\\
-                                      \>| plusExpression \textbf{\textless{}} equationExpression)\\
-                                      \>| plusExpression \textbf{==} equationExpression)\\
-                                      \>| plusExpression \textbf{!=} equationExpression)\\
+                                      \>| plusExpression \textbf{\textgreater{}=} equationExpression\\
+                                      \>| plusExpression \textbf{\textgreater{}} equationExpression\\
+                                      \>| plusExpression \textbf{\textless{}} equationExpression\\
+                                      \>| plusExpression \textbf{==} equationExpression\\
+                                      \>| plusExpression \textbf{!=} equationExpression\\
                                       \>| plusExpression\\
 
 \\ 
@@ -63,11 +63,11 @@ Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarhei
                                       \>| multiplyExpression \textbf{-} plusExpression\\
                                       \>| multiplyExpression\\
 \\
-{\bf multiplyExpression}          ::= \=unaryExpression \textbf{*} unaryExpression)*\\
-                                      \>| unaryExpression \textbf{/} unaryExpression)*\\
-                                      \>| unaryExpression \textbf{\%} unaryExpression)*\\
+{\bf multiplyExpression}          ::= \=unaryExpression \textbf{*} multiplyExpression\\
+                                      \>| unaryExpression \textbf{/} multiplyExpression\\
+                                      \>| unaryExpression \textbf{\%} multiplyExpression\\
 \\
-{\bf unaryExpression}             ::= \=\textbf{$\!$} simpleExpression\\
+{\bf unaryExpression}             ::= \=\textbf{!} simpleExpression\\
                                       \>| simpleExpression\\ 
 \\   
 {\bf simpleExpression}            ::= \=atom\\
@@ -92,7 +92,7 @@ Als gevolg van eerder genoemde transformaties ter bevordering van de leesbaarhei
 \\   
 {\bf variable}                    ::= IDENTIFIER \\
 \\   
-{\bf functionCall}                ::= IDENTIFIER ( params ) \\
+{\bf functionCall}                ::= IDENTIFIER \textbf{(}params\textbf{)} \\
 \\
 {\bf params}                      ::= \=expression\\
                                       \>| expression paramOtherElems\\
