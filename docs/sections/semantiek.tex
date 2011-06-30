@@ -138,3 +138,23 @@ Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameter
         \item De functiedeclaratie 'def IDENTIFIER parameterDef: closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is van het type van de return-expressies in de closedCompoundExpression.
         \end{itemize}
 
+\section{Statements}
+    \subsection{Syntax}
+        \begin{tabbing}
+        {\bf statements}                  ::= \=ifStatement\\
+                                          \>| whileStatement\\
+        \\
+        {\bf ifStatement}                 ::= \=\textbf{if} \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression \textbf    {else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression \textbf{else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression\\
+        \\
+        {\bf whileStatement}              ::= \=\textbf{while} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{while} expression $\colon$ closedCompoundExpression\\
+        \\ 
+        \end{tabbing}
+    \subsection{Semantiek}
+                \begin{itemize}
+        \item 
+        \end{itemize}
+
