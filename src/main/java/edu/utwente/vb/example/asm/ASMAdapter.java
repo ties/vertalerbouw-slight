@@ -72,7 +72,7 @@ public class ASMAdapter implements Opcodes {
 	/** The current variable */
 	private BindingOccurrenceNode currentVar;
 	/** The class name */
-	private final String internalClassName;
+	private final Type internalClassType;
 	/** The method adapter */
 	private GeneratorAdapter mg;
 
@@ -97,8 +97,9 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public ASMAdapter(String cn) {
-		this.internalClassName = cn.replace('.', '/');
-		log.debug("instantiating ASMAdapter for {}", internalClassName);
+		this.internalClassType = Type.getObjectType(cn.replace('.', '/'));
+		
+		log.debug("instantiating ASMAdapter for {}", internalClassType);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
@@ -121,7 +122,7 @@ public class ASMAdapter implements Opcodes {
 		 * be null, but only for the Object class. interfaces - the internal
 		 * names of the class's interfaces (see getInternalName). May be null.
 		 */
-		cv.visit(V1_5, ACC_PUBLIC, internalClassName, null, "java/lang/Object",
+		cv.visit(V1_5, ACC_PUBLIC, internalClassType.getInternalName(), null, "java/lang/Object",
 				null);
 		// Constructor stub
 		// Code hieronder komt uit javadoc van ASM GeneratorAdapter
@@ -140,8 +141,8 @@ public class ASMAdapter implements Opcodes {
 		Method mainMethod = Method.getMethod("void main(String[])");
 		GeneratorAdapter main = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
 		main.visitCode();
-		main.newInstance(Type.getObjectType(internalClassName));
-		main.invokeConstructor(Type.getObjectType(internalClassName), m);
+		main.newInstance(internalClassType);
+		main.invokeConstructor(internalClassType, m);
 		main.returnValue();
 		main.visitMaxs(1, 1);
 		main.visitEnd();
@@ -242,7 +243,7 @@ public class ASMAdapter implements Opcodes {
 		}else{
 			mg.loadThis();
 			mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed zolang wij geen long/double primitieven hebben ...
-			mg.putField(Type.getObjectType(internalClassName), appNode.getText(), appNode.getNodeType().toASM());
+			mg.putField(internalClassType, appNode.getText(), appNode.getNodeType().toASM());
 		}
 	}
 
@@ -284,7 +285,7 @@ public class ASMAdapter implements Opcodes {
 			if (hasValue) {
 				mg.loadThis();
 				mg.swap();
-				mg.visitFieldInsn(PUTFIELD, internalClassName,
+				mg.visitFieldInsn(PUTFIELD, internalClassType.getInternalName(),
 						currentVar.getText(), currentVar.getNodeType().toASM()
 								.getDescriptor());
 			}
@@ -301,28 +302,11 @@ public class ASMAdapter implements Opcodes {
 		currentVar = null;
 	}
 
-	public void instantiate() {
-		log.debug("instantiate()");
-		for (String id : toInstantiate) {
-			// variabele setten.
-		}
-	}
-
 	public void visitFuncCall(TypedNode node, List<TypedNode> params) {
 		String name = node.getText();
+		Method target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
 		
-		String descriptor = "(";
-		for (TypedNode param : params) {
-			ExampleType type = param.getNodeType();
-			descriptor += type.toASM();
-		}
-		descriptor += ")";
-
-		ExampleType returnType = node.getNodeType();
-		descriptor += returnType.toASM();
-
-		if(name.equals("print") )
-		mg.visitMethodInsn(INVOKESPECIAL, internalClassName, name, descriptor);
+		mg.invokeVirtual(internalClassType, target);
 	}
 	
 	public void visitIfBegin(TypedNode node, Label ifEnd){
@@ -369,7 +353,7 @@ public class ASMAdapter implements Opcodes {
 		if(bindingNode.isLocal()){
 			mg.storeLocal(bindingNode.getNumber());
 		}else{
-			mg.putField(Type.getObjectType(internalClassName), bindingNode.getText(), bindingNode.getNodeType().toASM());
+			mg.putField(internalClassType, bindingNode.getText(), bindingNode.getNodeType().toASM());
 		}
 		
 	}
