@@ -8,6 +8,10 @@ Om de semantiek van de Example taal zo gestructureerd mogelijk uit te leggen wor
 \end{enumerate}
 Alle BNF-regels vallen in een van deze vier categorie\"{e}n. \'{e}\'{e}n voor \'{e}\'{e}n zullen alle categorie\"{e}n nu worden behandeld, waarbij een eenduidig beeld geschetst wordt van de betekenis van de syntaxregels.
 
+\section{Program}
+{\bf program}                     ::= (declaration | functionDef)*
+Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van declaration en functionDef regels. In eerste instantie voelt dit tegennatuurlijk, hoe wordt er immers ooit iets aangeroepen als een program slechts uit definities bestaat? Dit wordt veroorzaakt door de definitie van een main methode in Example. Wil men in Example een programma schrijven welke bij uitvoer direct acties uitvoert en niet enkel functies, variabelen en constanten definieerd dan moet er in het programma een main() worden opgenomen. Een main methode wordt bij uitvoer van Example programma bij uitvoer automatisch aangeroepen.
+
 \section{Declaraties}
 Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de opgegeven identifier.
     \subsection{Syntax}    
