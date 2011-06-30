@@ -1,4 +1,13 @@
 \chapter{Semantiek}
+Om de semantiek van de Example taal zo gestructureerd mogelijk uit te leggen wordt onderscheid gemaakt tussen vier categorie\"{e}n syntaxregels:
+\begin{enumerate}
+\item Declaraties
+\item Functiedefinities
+\item Statements
+\item Expressies
+\end{enumerate}
+Alle BNF-regels vallen in een van deze vier categorie\"{e}n. \'{e}\'{e}n voor \'{e}\'{e}n zullen alle categorie\"{e}n nu worden behandeld, waarbij een eenduidig beeld geschetst wordt van de betekenis van de syntaxregels.
+
 \section{Declaraties}
 Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de opgegeven identifier.
     \subsection{Syntax}    
@@ -69,6 +78,7 @@ Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van 
         \end{itemize}
 
 \section{Expressies}
+Een expressie wordt ge\"{e}evalueerd en zal mogelijk, maar in de meeste gevallen, een waarde opleveren.
     \subsection{Syntax}
         \begin{tabbing} 
             {\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundMultiExpression \textbf{DEDENT}\\
@@ -129,7 +139,6 @@ Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van 
             {\bf paren}                       ::= \textbf{(} expression \textbf{)}\\
         \end{tabbing}
     \subsection{Semantiek}
-        Een expressie wordt ge\"{e}evalueerd om een waarde op te leveren.
         \begin{itemize}
         \item De expressie 'INDENT compoundMultiExpression DEDENT' levert de waarde op die de return-expressies van de compoundMultiExpression opleveren.
         \item De expressie 'orExpression = expression' evalueert de waard van expression en kent deze waarde aan de variabele die in orExpression zit (orExpression is ee variabele, dit dwingt de checker af). Verder wordt de waarde opgelevert die opgeleverd wordt door de evaluatie van expression.
