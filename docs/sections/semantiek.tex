@@ -1,4 +1,72 @@
 \chapter{Semantiek}
+\section{Declaraties}
+Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de opgegeven identifier.
+    \subsection{Syntax}    
+        \begin{tabbing}
+            {\bf declaration}         ::= \=primitive IDENTIFIER valueDeclaration\\
+                                      \>| primitive IDENTIFIER\\
+                                      \>| \textbf{const} primitive IDENTIFIER valueDeclaration\\
+                                      \>| \textbf{var} IDENTIFIER valueDeclaration\\
+                                      \>| \textbf{var} IDENTIFIER\\
+                                      \>| \textbf{const} IDENTIFIER valueDeclaration\\
+            \\
+            {\bf valueDeclaration}    ::= \textbf{=} compoundExpression\\
+        \end{tabbing}
+    \subsection{Semantiek}
+        \begin{itemize}
+        \item De variabeledeclaratie 'primitive IDENTIFIER valueDeclaration' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele van type primitive. De waarde van de compoundExpression van valueDeclaration wordt ge\"{e}valueerd en toegekent aan de variabele die is gebonden aan IDENTIFIER. 
+        \item De variabeledeclaratie 'primitive IDENTIFIER' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele van type primitive. Er geen waarde toegekend aan de variabele gebonden aan IDENTIFIER.
+        \item De constantedeclaratie 'const primitive IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante van type primitive met de waarde welke volgt uit de evaluatie van de compoundExpression van valueDeclaration.
+        \item De variabeledeclaratie 'var IDENTIFIER valueDeclaration' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele. Als deze declaratie wordt gevolgd door een valueDeclaration dan wordt het type van de variabele gebonden aan IDENTIFIER het type van de uitvoer welke volgt uit de evaluatie van de compoundExpression van valueDeclaration en wordt de waarde van de variabele gebonden aan IDENTIFIER de waarde welke volgt uit de uitvoer van de compoundExpression van valueDelaration.
+        \item De variabeledeclaratie 'var IDENTIFIER' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele. Er wordt geen type en waarde toegekend aan de variabele gebonden aan IDENTIFIER, dit gebeurd alsnog bij de eerste BECOMES op deze variabele.
+        \item De constantedeclaratie 'const IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante waarbij het type van deze contstante het type wordt van de waarde van de evaluatie van de compoundExpression van valueDeclaration en de waarde wordt de waarde van de evaluatie van valueDeclaration. 
+        \end{itemize}
+
+\section{Functiedefinities}
+Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameters en teruggeeftype, welke gebonden is aan de opgegeven identifier.
+    \subsection{Syntax}
+        \begin{tabbing}
+            {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
+                                                  \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
+            \\
+            {\bf parameterDef}                ::= \=parameterFirstElem parameterOtherElems\\
+                                                  \>| parameterFirstElem\\
+                                                  \>| \textbf{nothing}\\
+            \\
+            {\bf parameterFirstElem}          ::= primitive IDENTIFIER\\
+            \\
+            {\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
+                                                  \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
+        \end{tabbing}
+    \subsection{Semantiek}
+        \begin{itemize}
+        \item De functiedeclaratie 'def IDENTIFIER parameterDef -> primitive : closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is type primitive.
+        \item De functiedeclaratie 'def IDENTIFIER parameterDef: closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is van het type van de return-expressies in de closedCompoundExpression.
+        \end{itemize}
+
+\section{Statements}
+Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van instructies te beinvloeden. Twee soorten statements die zijn ge\"{i}mplementeerd in de Example programeertaal zijn het if-statement en het while-statement.
+    \subsection{Syntax}
+        \begin{tabbing}
+        {\bf statements}                  ::= \=ifStatement\\
+                                          \>| whileStatement\\
+        \\
+        {\bf ifStatement}                 ::= \=\textbf{if} \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression \textbf    {else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression \textbf{else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression\\
+        \\
+        {\bf whileStatement}              ::= \=\textbf{while} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{while} expression $\colon$ closedCompoundExpression\\
+        \\ 
+        \end{tabbing}
+    \subsection{Semantiek}
+        \begin{itemize}
+        \item Het statement 'if (expression) $\colon$ closedCompoundExpression else $\colon$ closedCompoundExpression' evalueert de uitkomst van expression. Is deze expressie waar dan dan wordt de eerste closedCompoundExpression uitgevoerd; is deze expressie niet waar dan wordt de tweede closedCompoundExpression uitgevoerd. Expression is van type bool, daar controleert de checker op.
+        \item Het statement 'if expression $\colon$ closedCompoundExpression else $\colon$ closedCompoundExpression' evalueert de uitkomst van expression. Is deze expressie waar dan dan wordt de eerste closedCompoundExpression uitgevoerd; is deze expressie niet waar dan wordt de tweede closedCompoundExpression uitgevoerd. Expression is van type bool, daar controleert de checker op.
+        \item Het statement 'while (expression) $\colon$ closedCompoundExpression' evalueert de uitkomst van expression; als het True is dan wordt closedCompoundExpression uitgevoerd. Daarna wordt het while-statement nogmaals uitgevoerd. Wanneer de uitkomst van expression False is, dan is het while-statement klaar. Expression is van type bool, daar controleert de checker op.
+        \item Het statement 'while expression $\colon$ closedCompoundExpression' evalueert de uitkomst van expression; als het True is dan wordt closedCompoundExpression uitgevoerd. Daarna wordt het while-statement nogmaals uitgevoerd. Wanneer de uitkomst van expression False is, dan is het while-statement klaar. Expression is van type bool, daar controleert de checker op.
+        \end{itemize}
 
 \section{Expressies}
     \subsection{Syntax}
@@ -91,70 +159,5 @@
         \item De expressie '( expression )' levert niets op, maar de evaluatie van de expressie binnen de '(' en ')' is wel van invloed op while- en ifstatements. Zie ook semantiek: statements.
         \item De expressie 'closedCompoundExpression' levert de waarde op die de return-expressies van de compoundMultiExpression opleveren.
         \item De expressie 'statement' levert niets op. Voor de semantiek van deze regel, zie semantiek: statements. 
-        \end{itemize}
-
-\section{Declaraties}
-Een declaratie cre\"{e}ert een variabele of constante, welke is gebonden aan de opgegeven identifier.
-    \subsection{Syntax}    
-        \begin{tabbing}
-            {\bf declaration}         ::= \=primitive IDENTIFIER valueDeclaration\\
-                                      \>| primitive IDENTIFIER\\
-                                      \>| \textbf{const} primitive IDENTIFIER valueDeclaration\\
-                                      \>| \textbf{var} IDENTIFIER valueDeclaration\\
-                                      \>| \textbf{var} IDENTIFIER\\
-                                      \>| \textbf{const} IDENTIFIER valueDeclaration\\
-            \\
-            {\bf valueDeclaration}    ::= \textbf{=} compoundExpression\\
-        \end{tabbing}
-    \subsection{Semantiek}
-        \begin{itemize}
-        \item De variabeledeclaratie 'primitive IDENTIFIER valueDeclaration' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele van type primitive. De waarde van de compoundExpression van valueDeclaration wordt ge\"{e}valueerd en toegekent aan de variabele die is gebonden aan IDENTIFIER. 
-        \item De variabeledeclaratie 'primitive IDENTIFIER' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele van type primitive. Er geen waarde toegekend aan de variabele gebonden aan IDENTIFIER.
-        \item De constantedeclaratie 'const primitive IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante van type primitive met de waarde welke volgt uit de evaluatie van de compoundExpression van valueDeclaration.
-        \item De variabeledeclaratie 'var IDENTIFIER valueDeclaration' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele. Als deze declaratie wordt gevolgd door een valueDeclaration dan wordt het type van de variabele gebonden aan IDENTIFIER het type van de uitvoer welke volgt uit de evaluatie van de compoundExpression van valueDeclaration en wordt de waarde van de variabele gebonden aan IDENTIFIER de waarde welke volgt uit de uitvoer van de compoundExpression van valueDelaration.
-        \item De variabeledeclaratie 'var IDENTIFIER' bindt IDENTIFIER aan een nieuw gecre\"{e}erde variabele. Er wordt geen type en waarde toegekend aan de variabele gebonden aan IDENTIFIER, dit gebeurd alsnog bij de eerste BECOMES op deze variabele.
-        \item De constantedeclaratie 'const IDENTIFIER valueDeclaration' bindt een IDENTIFIER aan een nieuw gecre\"{e}erde constante waarbij het type van deze contstante het type wordt van de waarde van de evaluatie van de compoundExpression van valueDeclaration en de waarde wordt de waarde van de evaluatie van valueDeclaration. 
-        \end{itemize}
-
-\section{Functiedefinities}
-Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameters en teruggeeftype, welke gebonden is aan de opgegeven identifier.
-    \subsection{Syntax}
-        \begin{tabbing}
-            {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
-                                                  \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
-            \\
-            {\bf parameterDef}                ::= \=parameterFirstElem parameterOtherElems\\
-                                                  \>| parameterFirstElem\\
-                                                  \>| \textbf{nothing}\\
-            \\
-            {\bf parameterFirstElem}          ::= primitive IDENTIFIER\\
-            \\
-            {\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
-                                                  \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
-        \end{tabbing}
-    \subsection{Semantiek}
-        \begin{itemize}
-        \item De functiedeclaratie 'def IDENTIFIER parameterDef -> primitive : closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is type primitive.
-        \item De functiedeclaratie 'def IDENTIFIER parameterDef: closedCompoundExpression' bindt de instructies van closedCompoundExpressie aan een nieuw gecre\"{e}erde functie met naam IDENTIFIER. Als parameters heeft de functie de opgegeven combinatie(s) type (primitive), naam (IDENTIFIER). Het type van de teruggeefwaarde dat wordt teruggegeven aan de aanroeper is van het type van de return-expressies in de closedCompoundExpression.
-        \end{itemize}
-
-\section{Statements}
-    \subsection{Syntax}
-        \begin{tabbing}
-        {\bf statements}                  ::= \=ifStatement\\
-                                          \>| whileStatement\\
-        \\
-        {\bf ifStatement}                 ::= \=\textbf{if} \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression \textbf    {else} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{if} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression \textbf{else} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression\\
-        \\
-        {\bf whileStatement}              ::= \=\textbf{while} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{while} expression $\colon$ closedCompoundExpression\\
-        \\ 
-        \end{tabbing}
-    \subsection{Semantiek}
-                \begin{itemize}
-        \item 
         \end{itemize}
 
