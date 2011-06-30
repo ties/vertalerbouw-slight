@@ -11,7 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.utwente.vb.GeneratedTestUtilities;
+import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.example.util.CheckerHelper;
+import edu.utwente.vb.example.util.Utils;
 import edu.utwente.vb.symbols.ExampleType;
 
 public class TestAppliedOccurrenceNode{
@@ -58,13 +60,12 @@ public class TestAppliedOccurrenceNode{
 	@Test
 	public void testBindingOccurrence(){
 		assertNull(testNode.getBindingNode());
-		TypedNode other = CheckerHelper.byToken("AAAA", ExampleType.CHAR);
 		
-		BindingOccurrenceNode binding = (BindingOccurrenceNode) other;
+		BindingOccurrenceNode binding = new BindingOccurrenceNode(new CommonToken(Lexer.SYNTHETIC, "AAAA"));
 		
 		testNode.setBindingNode(binding);
 		
-		assertEquals(testNode.getBindingNode(), other);
+		assertEquals(testNode.getBindingNode(), binding);
 	}
 
 	@Test(expected=NullPointerException.class)
