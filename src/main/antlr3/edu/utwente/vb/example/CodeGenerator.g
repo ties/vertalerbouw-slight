@@ -88,30 +88,30 @@ program
   ;
 
 content
-  : (declaration | {aa.setInFunction(true);}functionDef {aa.setInFunction(false);})*
+  : (declaration | {aa.setInFunction(true);} functionDef {aa.setInFunction(false);})*
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } rvd=valueDeclaration? {aa.visitDeclEnd($rvd.tree);})
-  | ^(CONST prim=primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } cvd=valueDeclaration {aa.visitDeclEnd($cvd.tree);}) 
+  : ^(VAR primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } rvd=valueDeclaration? {aa.visitDeclEnd($rvd.tree);})
+  | ^(CONST primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } cvd=valueDeclaration {aa.visitDeclEnd($cvd.tree);}) 
   | ^(INFERVAR IDENTIFIER { aa.visitDecl($IDENTIFIER); } run=valueDeclaration? {aa.visitDeclEnd($run.tree);}) 
   | ^(INFERCONST IDENTIFIER { aa.visitDecl($IDENTIFIER); } cons=valueDeclaration {aa.visitDeclEnd($cons.tree);})
   ;
   
 valueDeclaration 
-  : BECOMES ce=compoundExpression
+  : BECOMES compoundExpression
   ;
  
 functionDef
   @init{
     List<TypedNode> params = Lists.newArrayList();
   }
-  : ^(FUNCTION (t=primitive?) IDENTIFIER 
+  : ^(FUNCTION (primitive?) IDENTIFIER 
       (p=parameterDef {params.add($p.id_node);})* 
       { 
         aa.visitFuncDef($IDENTIFIER, params);
       } 
-      returnTypeNode=closedCompoundExpression 
+      closedCompoundExpression 
       { aa.visitEndFuncDef(); })
   ;
   
@@ -120,50 +120,50 @@ parameterDef returns [TypedNode id_node]
   ; 
 
 closedCompoundExpression
-  : ^(SCOPE (ce=compoundExpression)*)
+  : ^(SCOPE (compoundExpression)*)
   ;
 
 compoundExpression
-  : expr=expression
-  | dec=declaration
+  : expression
+  | declaration
   ;
   
 expression
   //Assignment
-  : ^(op=BECOMES base=expression sec=expression { aa.visitBecomes($base.tree); })
+  : ^(BECOMES base=expression expression { aa.visitBecomes($base.tree); })
   //Comparisons
-  | ^(op=LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFLE, $base.tree,$sec.tree); })
-  | ^(op=GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFGE, $base.tree,$sec.tree); })
-  | ^(op=GT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFGT, $base.tree,$sec.tree); })
-  | ^(op=LT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFLT, $base.tree,$sec.tree); })
-  | ^(op=EQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFEQ, $base.tree,$sec.tree); })
-  | ^(op=NOTEQ base=expression sec=expression { aa.visitCompareOperator(Opcodes.IFNE, $base.tree,$sec.tree); })
+  | ^(LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFLE, $base.tree,$sec.tree); })
+  | ^(GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFGE, $base.tree,$sec.tree); })
+  | ^(GT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFGT, $base.tree,$sec.tree); })
+  | ^(LT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFLT, $base.tree,$sec.tree); })
+  | ^(EQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFEQ, $base.tree,$sec.tree); })
+  | ^(NOTEQ base=expression sec=expression { aa.visitCompareOperator(Opcodes.IFNE, $base.tree,$sec.tree); })
   //Binary operators
-  | ^(op=OR base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IOR, $base.tree, $sec.tree); }) 
-  | ^(op=AND base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IAND, $base.tree, $sec.tree); }) 
-  | ^(op=PLUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IADD, $base.tree,$sec.tree); })
-  | ^(op=MINUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.ISUB, $base.tree,$sec.tree); })
-  | ^(op=MULT base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMUL, $base.tree,$sec.tree); }) 
-  | ^(op=DIV base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IDIV, $base.tree,$sec.tree); })
-  | ^(op=MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IREM, $base.tree,$sec.tree); }) 
+  | ^(OR base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IOR, $base.tree, $sec.tree); }) 
+  | ^(AND base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IAND, $base.tree, $sec.tree); }) 
+  | ^(PLUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IADD, $base.tree,$sec.tree); })
+  | ^(MINUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.ISUB, $base.tree,$sec.tree); })
+  | ^(MULT base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMUL, $base.tree,$sec.tree); }) 
+  | ^(DIV base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IDIV, $base.tree,$sec.tree); })
+  | ^(MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IREM, $base.tree,$sec.tree); }) 
   //Unary operators
-  | ^(op=NOT base=expression { aa.visitNot(); })
-  | ^(ret=RETURN expr=expression {aa.visitReturn($expr.tree); })
-  | sim=simpleExpression
+  | ^(NOT base=expression { aa.visitNot(); })
+  | ^(RETURN expr=expression {aa.visitReturn($expr.tree); })
+  | simpleExpression
   ;
   
 simpleExpression
   : atom                                     
-  | fc=functionCall                          
+  | functionCall                          
   | variable                                 
   | paren                                    
-  | cce=closedCompoundExpression             
-  | s=statements                             
+  | closedCompoundExpression             
+  | statements                             
   ;
   
 statements
-  : ifState=ifStatement
-  | whileState=whileStatement 
+  : ifStatement
+  | whileStatement 
   ;
 
 ifStatement
@@ -171,7 +171,7 @@ ifStatement
     Label ifEnd = new Label();
     Label elseEnd = new Label();
   }
-  : ^(IF cond=expression { aa.visitIfBegin($cond.tree, ifEnd); } ifExpr=closedCompoundExpression { aa.visitIfHalf($cond.tree, ifEnd, elseEnd); } (elseExpr=closedCompoundExpression)? ){ aa.visitIfEnd($elseExpr.tree, elseEnd); }
+  : ^(IF cond=expression { aa.visitIfBegin($cond.tree, ifEnd); } closedCompoundExpression { aa.visitIfHalf($cond.tree, ifEnd, elseEnd); } (elseExpr=closedCompoundExpression)? ){ aa.visitIfEnd($elseExpr.tree, elseEnd); }
   ;  
     
 whileStatement
@@ -179,7 +179,7 @@ whileStatement
     Label loopBegin = new Label();
     Label loopEnd   = new Label();
   }
-  : ^(WHILE cond=expression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); } loop=closedCompoundExpression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); })
+  : ^(WHILE cond=expression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); } closedCompoundExpression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); })
   ;    
     
 primitive
@@ -204,7 +204,7 @@ paren
   ;
   
 variable
-  : id=IDENTIFIER
+  : IDENTIFIER
   ;
   
 functionCall
