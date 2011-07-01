@@ -148,7 +148,7 @@ expression
   | ^(op=MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IREM, $base.tree,$sec.tree); }) 
   //Unary operators
   | ^(op=NOT base=expression { aa.visitNot(); })
-  | ^(ret=RETURN expr=expression)
+  | ^(ret=RETURN expr=expression {aa.visitReturn($expr.tree); })
   | sim=simpleExpression
   ;
   
