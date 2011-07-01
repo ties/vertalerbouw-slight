@@ -23,7 +23,7 @@ options {
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
-  
+    
   import java.util.List;
   import com.google.common.collect.Lists;
   
