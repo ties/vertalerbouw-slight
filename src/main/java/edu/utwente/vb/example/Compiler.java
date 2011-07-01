@@ -162,7 +162,7 @@ public class Compiler {
 					CodegenPreparation.program_return prepare_result = prepare
 							.program();
 				}
-				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
 				nodes.setTokenStream(tokens);
 				CodeGenerator codg;
 				if (opt_debug_codegen) {

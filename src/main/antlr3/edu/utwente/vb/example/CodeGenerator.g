@@ -88,7 +88,7 @@ program
   ;
 
 content
-  : (declaration | {aa.setInFunction(true);}functionDef {aa.setInFunction(false);})*
+  : (declaration | functionDef)*
   ;
   
 declaration
@@ -204,15 +204,19 @@ paren
   ;
   
 variable
-  : id=IDENTIFIER
+  : id=IDENTIFIER { aa.visitVariable($id); }
   ;
   
 functionCall
   @init{
     List<TypedNode> params = Lists.newArrayList();
   }
-  : ^(CALL id=IDENTIFIER (ex=expression {params.add($ex.tree);})*)
+  : ^(CALL id=IDENTIFIER 
+ 	{
+ 		aa.visitFuncCallBegin($id, params);
+ 	}
+  		(ex=expression {params.add($ex.tree);})*)
     { 
-      aa.visitFuncCall($id, params);
+      aa.visitFuncCallEnd($id, params);
     }
   ; 
