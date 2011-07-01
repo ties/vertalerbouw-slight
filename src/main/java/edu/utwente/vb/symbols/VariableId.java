@@ -36,6 +36,11 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	}
 	
 	@Override
+	public edu.utwente.vb.symbols.Id.IdType getIdType() {
+		return IdType.VARIABLE;
+	}
+	
+	@Override
 	public int hashCode() {
 		return Objects.hashCode(node, type);
 	}

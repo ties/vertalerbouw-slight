@@ -8,6 +8,10 @@ import org.antlr.runtime.tree.BaseTree;
 import com.google.common.collect.Lists;
 
 public interface Id<T extends BaseTree> {
+	public enum IdType{VARIABLE, FUNCTION, BUILTIN, VARARGS}
+	
+	public IdType getIdType();
+	
 	public ExampleType getType();
 	
 	public T getNode();

@@ -30,6 +30,7 @@ import edu.utwente.vb.example.Builtins;
 import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.FunctionId;
+import edu.utwente.vb.symbols.Id.IdType;
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.FunctionNode;
@@ -334,20 +335,40 @@ public class ASMAdapter implements Opcodes {
 	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
 		checkArgument(n instanceof AppliedOccurrenceNode);
 		
-		AppliedOccurrenceNode node = (AppliedOccurrenceNode)n;
+		AppliedOccurrenceNode an = (AppliedOccurrenceNode)n;
+		
+		checkArgument(an.getBindingNode() instanceof FunctionNode);
+		
+		FunctionNode node = (FunctionNode)an.getBindingNode();
+		
+		checkArgument(!node.getBoundMethod().getIdType().equals(IdType.VARIABLE));
 		
 		String name = node.getText();
-		Method target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
+		Method target;
 		
-		// Lelijke check op functies die gedefinieerd zijn in prelude - maar kan erger
-		if(n.getToken().getType() == Lexer.SYNTHETIC){// Ingebouwde functie
-			log.debug("Builtin function "  + name);
-			mg.invokeVirtual(superClassName, target);
-		} else {
-			log.debug("User-Defined function " + name);
-			// The difference between the invokespecial and the invokevirtual instructions is that invokevirtual invokes a method based on the class of the object. 
-			// The invokespecial instruction is used to invoke instance initialization methods (§3.9) as well as private methods and methods of a superclass of the current class.
-			mg.invokeVirtual(internalClassType, target);
+		switch(node.getBoundMethod().getIdType()){
+			case BUILTIN:
+				log.debug("Builtin function "  + name);
+				target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
+				mg.invokeVirtual(superClassName, target);
+				break;
+			case FUNCTION:
+				log.debug("User-Defined function " + name);
+				// The difference between the invokespecial and the invokevirtual instructions is that invokevirtual invokes a method based on the class of the object. 
+				// The invokespecial instruction is used to invoke instance initialization methods (§3.9) as well as private methods and methods of a superclass of the current class.
+				target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
+				mg.invokeVirtual(internalClassType, target);
+				break;
+			case VARARGS:
+				// For each argument: dispatch a [functionname] call for the given argument
+				// then save it into the variable
+				for(TypedNode arg : params){
+					target = new Method(name, node.getNodeType().toASM(), new Type[]{ arg.getNodeType().toASM()});
+					log.debug("Dispatching read to " + target);
+					mg.invokeVirtual(superClassName, target);
+					visitBecomes(arg);
+				}				
+				break;
 		}
 	}
 	
