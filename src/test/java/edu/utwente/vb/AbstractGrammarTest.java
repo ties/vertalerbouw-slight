@@ -56,6 +56,7 @@ public abstract class AbstractGrammarTest{
 		Parser parser = new Parser(tokens,
 				new BlankDebugEventListener());
 		//*needed* :)
+		parser.setDebug();
 		parser.setTreeAdaptor(new TypedNodeAdaptor());
 		return parser;
 	}
@@ -64,6 +65,7 @@ public abstract class AbstractGrammarTest{
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(parser.program().getTree());
 		
 		Checker	checker = new Checker(nodes, new BlankDebugEventListener());
+		checker.setDebug(0);
 		/* Patch de symbol table met default functies */
 		SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 		Prelude pre = new Prelude();

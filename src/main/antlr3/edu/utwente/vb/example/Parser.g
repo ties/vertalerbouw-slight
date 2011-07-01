@@ -17,22 +17,29 @@ options {
 package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
   import edu.utwente.vb.tree.*;
-  import edu.utwente.vb.example.util.Utils;
 }
 
 // Alter code generation so catch-clauses get replaced with this action.
 // This disables ANTLR error handling;
 
 @rulecatch {
-catch (RecognitionException e) {
-      if(debug_mode==true) 
-        throw e;
-  }
+	catch (RecognitionException e) {
+	  if(debug_mode==true) 
+	  throw e;
+	}
+	  
+	catch (RuntimeException e){
+	  nrErr += 1;
+	  emitErrorMessage("[Example] error [" + nrErr + "] - " + e.getMessage());
+	  if(debug_mode==true) 
+	    throw e;
+	}
+	  
 }
 
 @members {
 //TODO: In Compiler.java integreren: als deze op debug mode, dan ook Checker op debug mode. 
-private static boolean debug_mode = true;
+private static boolean debug_mode = false;
 
 /** Binnen een assignment mag geen return meer staan aan de RHS */
 private boolean inAssignment = false;
@@ -50,6 +57,11 @@ protected int nrErr = 0;
 
 public int nrErrors() {
 	return nrErr;
+}
+
+public void displayRuntimeError(RuntimeException e){
+  nrErr += 1;
+  emitErrorMessage("[Example] error [" + nrErr + "] - char " + e.getMessage());
 }
 
 public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
@@ -83,6 +95,11 @@ public void displayRecognitionError(String[] tokenNames, RecognitionException e)
 	} else
 		super.displayRecognitionError(tokenNames, e);
 }
+
+  public void setDebug(){
+    debug_mode = true;
+  }
+
 }
 
 /**
@@ -276,8 +293,8 @@ atom
   | MINUS INT_LITERAL
     -> NEGATIVE INT_LITERAL
   | INT_LITERAL
-  | CHAR_LITERAL { Utils.stripQuotes($CHAR_LITERAL); }
-  | STRING_LITERAL { Utils.stripQuotes($STRING_LITERAL); }
+  | CHAR_LITERAL
+  | STRING_LITERAL
   | TRUE
   | FALSE
   ;
