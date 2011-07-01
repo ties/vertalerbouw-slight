@@ -216,8 +216,9 @@ functionCall
     {
       aa.visitFuncCallBegin($id, params);
     }
-      (ex=expression {params.add($ex.tree);})*)
+      (ex=expression {params.add($ex.tree);})*
     { 
       aa.visitFuncCallEnd($id, params);
     }
+    )
   ; 

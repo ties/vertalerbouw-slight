@@ -330,9 +330,11 @@ public class ASMAdapter implements Opcodes {
 		// Load this onto the stack
 		// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]  => ...
 		mg.loadThis();
+		log.debug("visitFuncCallBegin");
 	}
 
 	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
+		log.debug("visit function call: " + n);
 		checkArgument(n instanceof AppliedOccurrenceNode);
 		
 		AppliedOccurrenceNode an = (AppliedOccurrenceNode)n;
@@ -362,6 +364,7 @@ public class ASMAdapter implements Opcodes {
 			case VARARGS:
 				// For each argument: dispatch a [functionname] call for the given argument
 				// then save it into the variable
+				log.debug("VarArgs dispatch");
 				for(TypedNode arg : params){
 					target = new Method(name, node.getNodeType().toASM(), new Type[]{ arg.getNodeType().toASM()});
 					log.debug("Dispatching read to " + target);

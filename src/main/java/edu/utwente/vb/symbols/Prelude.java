@@ -13,6 +13,7 @@ import static edu.utwente.vb.symbols.ExampleType.*;
 import static edu.utwente.vb.example.util.CheckerHelper.*;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
 
 public class Prelude {
@@ -63,7 +64,11 @@ public class Prelude {
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
-		builder.add(new VarArgsFunctionId<TypedNode>(byToken("read", ExampleType.VOID), ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING));
+		
+		FunctionNode readNode = byToken("read", ExampleType.VOID);
+		VarArgsFunctionId<TypedNode> varArgs = new VarArgsFunctionId<TypedNode>(readNode, ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING);
+		readNode.setBoundMethod(varArgs);
+		builder.add(varArgs);
 		//Sla op
 		builtins = builder.build();
 	}
