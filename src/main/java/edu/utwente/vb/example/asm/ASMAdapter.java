@@ -365,11 +365,17 @@ public class ASMAdapter implements Opcodes {
 				// For each argument: dispatch a [functionname] call for the given argument
 				// then save it into the variable
 				log.debug("VarArgs dispatch");
+				boolean first = true;
 				for(TypedNode arg : params){
-					target = new Method(name, node.getNodeType().toASM(), new Type[]{ arg.getNodeType().toASM()});
+					if(!first)
+						mg.loadThis();
+					
+					target = new Method(name, arg.getNodeType().toASM(), new Type[]{ arg.getNodeType().toASM()});
 					log.debug("Dispatching read to " + target);
 					mg.invokeVirtual(superClassName, target);
 					visitBecomes(arg);
+					
+					first = false;
 				}				
 				break;
 		}
