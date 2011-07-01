@@ -1,6 +1,7 @@
 package edu.utwente.vb.example.asm;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,6 +39,8 @@ import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
+import edu.utwente.vb.example.Builtins;
+import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.LocalsMap;
@@ -72,7 +75,8 @@ public class ASMAdapter implements Opcodes {
 	/** The current variable */
 	private BindingOccurrenceNode currentVar;
 	/** The class name */
-	private final String internalClassName;
+	private final Type internalClassType;
+	private final Type superClassName;
 	/** The method adapter */
 	private GeneratorAdapter mg;
 
@@ -97,8 +101,9 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public ASMAdapter(String cn) {
-		this.internalClassName = cn.replace('.', '/');
-		log.debug("instantiating ASMAdapter for {}", internalClassName);
+		this.internalClassType = Type.getObjectType(cn.replace('.', '/'));
+		
+		log.debug("instantiating ASMAdapter for {}", internalClassType);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
@@ -121,27 +126,25 @@ public class ASMAdapter implements Opcodes {
 		 * be null, but only for the Object class. interfaces - the internal
 		 * names of the class's interfaces (see getInternalName). May be null.
 		 */
-		cv.visit(V1_5, ACC_PUBLIC, internalClassName, null, "java/lang/Object",
+		superClassName = Type.getType(Builtins.class);
+		cv.visit(V1_5, ACC_PUBLIC, internalClassType.getInternalName(), null, superClassName.getInternalName(),
 				null);
 		// Constructor stub
-		// Code hieronder komt uit javadoc van ASM GeneratorAdapter
+		// Code hieronder komt uit javadoc van ASM GeneratorAdapter		
 		Method m = Method.getMethod("void <init> ()");
 		constructorMethodGenerator = new GeneratorAdapter(ACC_PUBLIC, m, null,
 				null, cv);
 		constructorMethodGenerator.visitCode();
 		constructorMethodGenerator.loadThis();
 		constructorMethodGenerator.invokeConstructor(
-				Type.getType(Object.class), m);
+				Type.getType(Builtins.class), m);
 		constructorMethodGenerator.loadThis();
-		
-		builtinFunctions();
-		
 		
 		Method mainMethod = Method.getMethod("void main(String[])");
 		GeneratorAdapter main = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
 		main.visitCode();
-		main.newInstance(Type.getObjectType(internalClassName));
-		main.invokeConstructor(Type.getObjectType(internalClassName), m);
+		main.newInstance(internalClassType);
+		main.invokeConstructor(internalClassType, m);
 		main.returnValue();
 		main.visitMaxs(1, 1);
 		main.visitEnd();
@@ -211,6 +214,8 @@ public class ASMAdapter implements Opcodes {
 		FunctionNode funcNode = (FunctionNode) node;
 		FunctionId<TypedNode> funcId = funcNode.getBoundMethod();
 		String name = node.getText();
+		
+		inFunction = true;// Set "In a function"  state
 
 		mg = new GeneratorAdapter(ACC_PUBLIC, funcId.asMethod(), null, null, cv);
 		mg.visitCode();
@@ -222,8 +227,9 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public void visitEndFuncDef() {
-		log.debug("visitEndFuncDef");
-
+		log.debug("visitEndFuncDef, in function before? {}", inFunction);
+		inFunction = false;
+		
 		mg.returnValue();
 		mg.visitMaxs(1000, 1000);
 		mg.visitEnd();
@@ -242,7 +248,7 @@ public class ASMAdapter implements Opcodes {
 		}else{
 			mg.loadThis();
 			mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed zolang wij geen long/double primitieven hebben ...
-			mg.putField(Type.getObjectType(internalClassName), appNode.getText(), appNode.getNodeType().toASM());
+			mg.putField(internalClassType, appNode.getText(), appNode.getNodeType().toASM());
 		}
 	}
 
@@ -284,10 +290,13 @@ public class ASMAdapter implements Opcodes {
 			if (hasValue) {
 				mg.loadThis();
 				mg.swap();
-				mg.visitFieldInsn(PUTFIELD, internalClassName,
+				mg.visitFieldInsn(PUTFIELD, internalClassType.getInternalName(),
 						currentVar.getText(), currentVar.getNodeType().toASM()
 								.getDescriptor());
 			}
+			
+			// Remove the pointer to the constructor
+			mg = null;
 		} else {
 			log.debug("VarInsn {} {}", currentVar.getNodeType().toASM()
 					.getOpcode(ISTORE), currentVar);
@@ -297,32 +306,33 @@ public class ASMAdapter implements Opcodes {
 			}
 		}
 		
-		mg = null;
 		currentVar = null;
 	}
-
-	public void instantiate() {
-		log.debug("instantiate()");
-		for (String id : toInstantiate) {
-			// variabele setten.
-		}
+	
+	public void visitFuncCallBegin(TypedNode n, List<TypedNode> params){
+		// Load this onto the stack
+		// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]  => ...
+		mg.loadThis();
 	}
 
-	public void visitFuncCall(TypedNode node, List<TypedNode> params) {
-		String name = node.getText();
+	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
+		checkArgument(n instanceof AppliedOccurrenceNode);
 		
-		String descriptor = "(";
-		for (TypedNode param : params) {
-			ExampleType type = param.getNodeType();
-			descriptor += type.toASM();
+		AppliedOccurrenceNode node = (AppliedOccurrenceNode)n;
+		
+		String name = node.getText();
+		Method target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
+		
+		// Lelijke check op functies die gedefinieerd zijn in prelude - maar kan erger
+		if(n.getToken().getType() == Lexer.SYNTHETIC){// Ingebouwde functie
+			log.debug("Builtin function "  + name);
+			mg.invokeVirtual(superClassName, target);
+		} else {
+			log.debug("User-Defined function " + name);
+			// The difference between the invokespecial and the invokevirtual instructions is that invokevirtual invokes a method based on the class of the object. 
+			// The invokespecial instruction is used to invoke instance initialization methods (§3.9) as well as private methods and methods of a superclass of the current class.
+			mg.invokeVirtual(internalClassType, target);
 		}
-		descriptor += ")";
-
-		ExampleType returnType = node.getNodeType();
-		descriptor += returnType.toASM();
-
-		if(name.equals("print") )
-		mg.visitMethodInsn(INVOKESPECIAL, internalClassName, name, descriptor);
 	}
 	
 	public void visitIfBegin(TypedNode node, Label ifEnd){
@@ -369,7 +379,7 @@ public class ASMAdapter implements Opcodes {
 		if(bindingNode.isLocal()){
 			mg.storeLocal(bindingNode.getNumber());
 		}else{
-			mg.putField(Type.getObjectType(internalClassName), bindingNode.getText(), bindingNode.getNodeType().toASM());
+			mg.putField(internalClassType, bindingNode.getText(), bindingNode.getNodeType().toASM());
 		}
 		
 	}
@@ -397,6 +407,19 @@ public class ASMAdapter implements Opcodes {
 	
 	public void visitNot(){
 		mg.not();
+	}
+	
+	public void visitVariable(TypedNode n){
+		checkArgument(n instanceof AppliedOccurrenceNode);
+		
+		BindingOccurrenceNode node = (BindingOccurrenceNode)((AppliedOccurrenceNode)n).getBindingNode();
+		if(node.isLocal()){
+			// Load a local
+			// Note that we define method arguments in a slightly odd way - this might cause problems later on. 
+			mg.loadLocal(node.getNumber());
+		} else {
+			mg.getField(internalClassType, node.getText(), node.getNodeType().toASM());
+		}
 	}
 	
 	public void visitCharAtom(TypedNode node) {
