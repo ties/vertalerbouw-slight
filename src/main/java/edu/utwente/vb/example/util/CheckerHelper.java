@@ -26,6 +26,7 @@ import edu.utwente.vb.symbols.Id;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.VariableId;
+import edu.utwente.vb.symbols.Id.IdType;
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.FunctionNode;
@@ -307,15 +308,19 @@ public class CheckerHelper {
 	public static FunctionId<TypedNode> createBuiltin(String token,
 			ExampleType ret, ExampleType lhs, ExampleType rhs)
 			throws IllegalFunctionDefinitionException {
-		return createFunctionId(token, ret, createVariableId("lhs", lhs),
-				createVariableId("rhs", rhs));
+		FunctionId<TypedNode> f = createFunctionId(token, ret, createVariableId("lhs", lhs),	createVariableId("rhs", rhs));
+		f.setIdType(IdType.BUILTIN);
+		return f;
 	}
 
 	public static FunctionId<TypedNode> createFunctionId(String token,
 			ExampleType type, VariableId<TypedNode>... p)
 			throws IllegalFunctionDefinitionException {
-		return new FunctionId<TypedNode>(byToken(token, type), type,
-				Lists.newArrayList(p));
+		FunctionNode astNode = byToken(token, type);
+		FunctionId<TypedNode> functionId = new FunctionId<TypedNode>(astNode, type, Lists.newArrayList(p));
+		functionId.setIdType(IdType.BUILTIN);
+		astNode.setBoundMethod(functionId);
+		return functionId; 
 	}
 
 	public static VariableId<TypedNode> createVariableId(String token,
@@ -323,8 +328,8 @@ public class CheckerHelper {
 		return new VariableId<TypedNode>(byToken(token, type), type);
 	}
 
-	public static TypedNode byToken(String token, ExampleType type) {
-		TypedNode tmp = new TypedNode(new CommonToken(Lexer.SYNTHETIC, token));// Create
+	public static FunctionNode byToken(String token, ExampleType type) {
+		FunctionNode tmp = new FunctionNode(new CommonToken(Lexer.SYNTHETIC, token));// Create
 																				// token
 																				// with
 																				// given

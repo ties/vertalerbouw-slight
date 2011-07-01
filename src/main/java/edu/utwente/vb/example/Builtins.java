@@ -11,7 +11,7 @@ public class Builtins {
 		reader = new BufferedReader(new InputStreamReader(System.in));
 	}
 	
-	protected int readInt(){
+	protected int read(int i){
 		try{
 			return reader.read();
 		} catch (IOException e) {
@@ -19,11 +19,11 @@ public class Builtins {
 		}
 	}
 	
-	protected char readChar(){
-		return (char)readInt();
+	protected char read(char c){
+		return (char)read(0);
 	}
 	
-	protected String readString(){
+	protected String read(String s){
 		try{
 			return reader.readLine();
 		} catch (IOException e) {

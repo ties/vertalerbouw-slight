@@ -22,6 +22,7 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	private ExampleType returnType;
 	private T node;
 	private List<VariableId<T>> formalParameters;
+	private IdType idType = IdType.FUNCTION;
 	
 	/**
 	 * A function identifier
@@ -53,6 +54,10 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
 	}
 	
+	public void setIdType(IdType idType) {
+		this.idType = idType;
+	}
+	
 	
 	@Override
 	public ExampleType getType() {
@@ -76,6 +81,11 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	public List<ExampleType> getTypeParameters() {
 		return extractTypes(formalParameters);
+	}
+	
+	@Override
+	public edu.utwente.vb.symbols.Id.IdType getIdType() {
+		return idType;
 	}
 	
 	@Override

@@ -63,9 +63,7 @@ public class Prelude {
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
-		builder.add(createFunctionId("read", ExampleType.STRING, 	createVariableId("str", ExampleType.STRING)));
-		builder.add(createFunctionId("read", ExampleType.INT, 		createVariableId("num", ExampleType.INT)));
-		builder.add(createFunctionId("read", ExampleType.CHAR, 	    createVariableId("chr", ExampleType.CHAR)));
+		builder.add(new VarArgsFunctionId<TypedNode>(byToken("read", ExampleType.VOID), ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING));
 		//Sla op
 		builtins = builder.build();
 	}
