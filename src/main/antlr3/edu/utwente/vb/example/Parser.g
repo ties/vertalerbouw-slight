@@ -105,7 +105,7 @@ content
 declaration
   // Regels herschrijven naar consistente vorm
   :
-  primitive id=IDENTIFIER valueDeclaration?
+  primitive IDENTIFIER valueDeclaration?
     ->
       ^(VAR primitive IDENTIFIER<BindingOccurrenceNode> valueDeclaration?)
   // Constanten kunnen alleen van primitive typen zijn
@@ -122,14 +122,9 @@ declaration
 
 valueDeclaration
   :
-  
-  {
-   inAssignment = true;
-  }
+  { inAssignment = true; }
   BECOMES compoundExpression 
-                            {
-                             inAssignment = false;
-                            }
+  { inAssignment = false; }
   ;
 
 functionDef
@@ -164,14 +159,8 @@ compoundExpression
 
 expression
   :
-  orExpression (BECOMES^ 
-                        {
-                         inAssignment = true;
-                        }
-    expression 
-              {
-               inAssignment = false;
-              })?
+  orExpression (BECOMES^ { inAssignment = true; }
+    expression { inAssignment = false; })?
   ;
 
 orExpression
