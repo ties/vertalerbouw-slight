@@ -26,12 +26,15 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 
 public class Compiler {
 	private final static PrintStream out = System.out;
-
+	private static int nrErrs = 0;
+	
+	
 	private static boolean opt_ast = false, opt_dot = false,
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
 			opt_debug_checker = false, opt_debug_parser = false,
-			opt_debug_preparation = false, opt_debug_codegen = false;
+			opt_debug_preparation = false, opt_debug_codegen = false,
+			opt_debug = false;
 
 	private static String filename = null;
 
@@ -69,6 +72,8 @@ public class Compiler {
 				i++;
 				filename = args[i];
 				out.println("// using filename: " + filename);
+			}else if (args[i].equals("-debug")) {
+				opt_debug = true;
 			} else {
 				System.err
 						.println("// error: unknown option '" + args[i] + "'");
@@ -114,12 +119,18 @@ public class Compiler {
 			} else {
 				parser = new Parser(tokens);
 			}
+			
+			if(opt_debug)
+				parser.setDebug();
 			parser.setTreeAdaptor(new TypedNodeAdaptor());
 
 			Parser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
-
+			
+			nrErrs += parser.nrErrors();
+			
 			Checker checker;
+			
 
 			Checker.program_return checker_result = null;
 			// Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
@@ -133,6 +144,9 @@ public class Compiler {
 				} else {
 					checker = new Checker(nodes);
 				}
+				if(opt_debug)
+					checker.setDebug(nrErrs);
+				
 				/* TODO: Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 				Prelude pre = new Prelude();

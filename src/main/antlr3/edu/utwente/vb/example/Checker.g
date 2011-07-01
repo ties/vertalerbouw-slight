@@ -39,14 +39,32 @@ options {
 // This disables ANTLR error handling;
 @rulecatch { 
     catch (RecognitionException e) { 
-       throw e; 
-    } 
-    
+      if(debug_mode==true) 
+        throw e;
+    }
+    catch (RuntimeException e){
+      nrErr += 1;
+      emitErrorMessage("[Example] error [" + nrErr + "] - " + e.getMessage());
+      if(debug_mode==true) 
+        throw e;
+    }
+
 }
 
 @members{
   private CheckerHelper ch;
   private Logger log = LoggerFactory.getLogger(Checker.class);
+  private static boolean debug_mode = false;
+  protected int nrErr = 0;
+
+  public int nrErrors() {
+    return nrErr;
+  } 
+  
+  public void setDebug(int errs){
+    debug_mode = true;
+    nrErr = errs;
+  }
   
   /** 
   * Compositie met hulp van een CheckerHelper. In members stoppen is onhandig;
