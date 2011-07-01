@@ -17,13 +17,11 @@ tokens {
   SCOPE;
   CALL;
   FORMAL;
-  EMPTY;
   INFER;
   INFERVAR;
   INFERCONST;
   NEGATIVE;
   PAREN;
-  GLOBAL;
   SYNTHETIC;
 }
 
@@ -33,6 +31,9 @@ tokens {
 }
 
 @members{
+  /** 
+  * indentToken() and dedentToken() used to accomplish python-style in- and dedenting  *
+  **/  
   protected int indentToken(){
     return INDENT;
   }
@@ -44,7 +45,6 @@ tokens {
 
 //Interpunction
 COLON   : ':';
-//SEMI    : ';';
 COMMA   : ',';
 LPAREN  : '(';
 RPAREN  : ')';
