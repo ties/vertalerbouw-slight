@@ -5,5 +5,5 @@
 #
 
 def main():
-	var i = 3
+	var i = 42
 	print(i)

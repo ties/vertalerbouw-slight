@@ -76,8 +76,8 @@ IF      : 'if';
 ELSE    : 'else';
 WHILE   : 'while';
 //Function declaration
-FUNCTION  : 'def';
-ARROW     : '->';
+FUNCTION	: 'def';
+ARROW		: '->';
 
 //Return statement
 RETURN    : 'return';

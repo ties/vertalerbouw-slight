@@ -79,6 +79,7 @@ public class ASMAdapter implements Opcodes {
 	private final Type superClassName;
 	/** The method adapter */
 	private GeneratorAdapter mg;
+	private GeneratorAdapter mainFunctionMethodGenerator;
 
 	/**
 	 * De classVisitor, hier roep je alles op aan. Delegeert het door
@@ -141,13 +142,11 @@ public class ASMAdapter implements Opcodes {
 		constructorMethodGenerator.loadThis();
 		
 		Method mainMethod = Method.getMethod("void main(String[])");
-		GeneratorAdapter main = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
-		main.visitCode();
-		main.newInstance(internalClassType);
-		main.invokeConstructor(internalClassType, m);
-		main.returnValue();
-		main.visitMaxs(1, 1);
-		main.visitEnd();
+		mainFunctionMethodGenerator = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
+		mainFunctionMethodGenerator.visitCode();
+		mainFunctionMethodGenerator.newInstance(internalClassType);
+		mainFunctionMethodGenerator.dup(); // Not needed if main is not there, but nm for now.
+		mainFunctionMethodGenerator.invokeConstructor(internalClassType, m);
 	}
 	
 	/**
@@ -178,7 +177,10 @@ public class ASMAdapter implements Opcodes {
 		constructorMethodGenerator.returnValue();
 		constructorMethodGenerator.visitMaxs(1000, 1000); // maxStack door classWriter
 		constructorMethodGenerator.visitEnd();
-				
+		
+		mainFunctionMethodGenerator.returnValue();
+		mainFunctionMethodGenerator.visitMaxs(2, 1);
+		mainFunctionMethodGenerator.visitEnd();
 		/* Sluit nu de klasse af */
 		cv.visitEnd();
 		//
@@ -224,6 +226,15 @@ public class ASMAdapter implements Opcodes {
 
 		log.debug("visitFuncDef {} {}", name, Type.getMethodDescriptor(node
 				.getNodeType().toASM(), ExampleType.nodeListToASM(params)));
+		
+		// Now check if this is the main. 
+		// If so, add a call to the main function to the classes main[] in order to actually execute the code
+		// Adding MAIN to the Lexer causes some trouble (FUNC DEF/FUNC DEF need to be specified for both IDENTIFIER and MAIN, etc
+		// The other option (IDENTIFIED : MAIN | ...) is also ugly
+		if("main".equals(name)) {
+			mainFunctionMethodGenerator.dup();
+			mainFunctionMethodGenerator.invokeVirtual(internalClassType, funcId.asMethod());
+		}
 	}
 
 	public void visitEndFuncDef() {
@@ -418,6 +429,8 @@ public class ASMAdapter implements Opcodes {
 			// Note that we define method arguments in a slightly odd way - this might cause problems later on. 
 			mg.loadLocal(node.getNumber());
 		} else {
+			// ..., objectref  ..., value
+			mg.loadThis();
 			mg.getField(internalClassType, node.getText(), node.getNodeType().toASM());
 		}
 	}

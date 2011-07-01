@@ -191,7 +191,7 @@ primitive
   ;
 
 atom
-  : INT_LITERAL { aa.visitIntegerAtom($INT_LITERAL, true); }
+  : INT_LITERAL { aa.visitIntegerAtom($INT_LITERAL, false); }
   | NEGATIVE INT_LITERAL { aa.visitIntegerAtom($INT_LITERAL, true); }
   | CHAR_LITERAL { aa.visitCharAtom($CHAR_LITERAL); }
   | STRING_LITERAL { aa.visitStringAtom($STRING_LITERAL); }
