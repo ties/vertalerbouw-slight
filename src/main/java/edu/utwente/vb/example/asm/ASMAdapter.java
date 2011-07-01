@@ -364,10 +364,19 @@ public class ASMAdapter implements Opcodes {
 		mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));	
 	}
 	
-	//TODO: Modulo visitor schrijven, hier is geen standaard opcode voor. Zelf maken aan de hand van reeks andere bewerkingen
-	public void visitModulo(TypedNode lhs, TypedNode rhs){
-		//Placeholder zodat het compileert
-		int i = 0;
+	public void visitCompareOperator(int opcode, TypedNode lhs, TypedNode rhs){
+		Label l3 = new Label();
+		Label l4 = new Label();
+		mg.visitJumpInsn(opcode, l3);
+		mg.visitInsn(ICONST_0);
+		mg.visitJumpInsn(GOTO, l4);
+		mg.visitLabel(l3);
+		mg.visitInsn(ICONST_1);
+		mg.visitLabel(l4);
+	}
+	
+	public void visitReturn(TypedNode expr){
+		mg.visitInsn(expr.getNodeType().toASM().getOpcode(IRETURN));
 	}
 	
 	public void visitNot(){
