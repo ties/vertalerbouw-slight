@@ -23,7 +23,7 @@ options {
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
-  
+    
   import java.util.List;
   import com.google.common.collect.Lists;
   
@@ -38,7 +38,9 @@ options {
 // Alter code generation so catch-clauses get replaced with this action. 
 // This disables ANTLR error handling;
 @rulecatch { 
-    catch (RecognitionException e) { 
+    catch (RecognitionException e) {
+      nrErr += 1;
+      emitErrorMessage("[Example] error [" + nrErr + "] - " + e.getMessage()); 
       if(debug_mode==true) 
         throw e;
     }
@@ -61,9 +63,8 @@ options {
     return nrErr;
   } 
   
-  public void setDebug(int errs){
+  public void setDebug(){
     debug_mode = true;
-    nrErr = errs;
   }
   
   /** 

@@ -26,7 +26,6 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 
 public class Compiler {
 	private final static PrintStream out = System.out;
-	private static int nrErrs = 0;
 	
 	
 	private static boolean opt_ast = false, opt_dot = false,
@@ -127,11 +126,8 @@ public class Compiler {
 			Parser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
 			
-			nrErrs += parser.nrErrors();
-			
 			Checker checker;
 			
-
 			Checker.program_return checker_result = null;
 			// Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
@@ -145,7 +141,7 @@ public class Compiler {
 					checker = new Checker(nodes);
 				}
 				if(opt_debug)
-					checker.setDebug(nrErrs);
+					checker.setDebug();
 				
 				/* TODO: Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();

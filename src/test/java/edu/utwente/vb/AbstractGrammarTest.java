@@ -65,7 +65,7 @@ public abstract class AbstractGrammarTest{
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(parser.program().getTree());
 		
 		Checker	checker = new Checker(nodes, new BlankDebugEventListener());
-		checker.setDebug(0);
+		checker.setDebug();
 		/* Patch de symbol table met default functies */
 		SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 		Prelude pre = new Prelude();
