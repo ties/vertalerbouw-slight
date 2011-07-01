@@ -29,8 +29,6 @@ options {
   import java.io.File;
   
   import org.objectweb.asm.Opcodes;
-  
-  
   import org.objectweb.asm.Label;
   
   /** Logger */

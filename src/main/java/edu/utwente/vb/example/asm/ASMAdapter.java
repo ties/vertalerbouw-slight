@@ -342,7 +342,6 @@ public class ASMAdapter implements Opcodes {
 		mg.ifCmp(type, IFNE, ifEnd);
 	}
 	
-	
 	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd){
 		//Backpatchen
 		mg.mark(ifEnd);
