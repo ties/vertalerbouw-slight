@@ -172,7 +172,7 @@ closedCompoundExpression returns [ExampleType return_type = null;]
 compoundExpression returns [ExampleType return_type = ExampleType.UNKNOWN;]
   : expr=expression { $return_type = $expr.return_type; }
   | ^(RETURN expr=expression) { $return_type = ch.copyNodeType($expr.tree, $RETURN); }
-  | dec=declaration 
+  | declaration 
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
@@ -200,7 +200,7 @@ simpleExpression returns [ExampleType return_type = ExampleType.UNKNOWN;]
   : atom
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
   //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
-  | fc=functionCall
+  | functionCall
   | variable
   | paren { $return_type = $paren.return_type; }
   | cce=closedCompoundExpression { $return_type = cce.return_type; }
@@ -246,7 +246,6 @@ atom
   | STRING_LITERAL        { ch.setNodeType(ExampleType.STRING, $STRING_LITERAL);}
   | TRUE                  { ch.setNodeType(ExampleType.BOOL, $TRUE);}
   | FALSE                 { ch.setNodeType(ExampleType.BOOL, $FALSE);}
-  //TODO: Hier exceptie gooien zodra iets anders dan deze tokens wordt gelezen
   ;
   
 paren returns [ExampleType return_type = ExampleType.UNKNOWN;]
