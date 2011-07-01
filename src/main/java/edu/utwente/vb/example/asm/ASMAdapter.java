@@ -1,13 +1,13 @@
 package edu.utwente.vb.example.asm;
 
-import java.io.ByteArrayOutputStream;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
@@ -18,33 +18,23 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
-import org.objectweb.asm.commons.LocalVariablesSorter;
+import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
-
-import org.objectweb.asm.*;
-import org.objectweb.asm.commons.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import antlr.Utils;
-
-import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
-import edu.utwente.vb.tree.AppliedOccurrenceNode;
-import edu.utwente.vb.tree.BindingOccurrenceNode;
-import edu.utwente.vb.tree.FunctionNode;
-import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.example.Builtins;
 import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.FunctionId;
-import edu.utwente.vb.symbols.LocalsMap;
-import edu.utwente.vb.symbols.LocalsMap.LocalVariable;
+import edu.utwente.vb.tree.AppliedOccurrenceNode;
+import edu.utwente.vb.tree.BindingOccurrenceNode;
+import edu.utwente.vb.tree.FunctionNode;
+import edu.utwente.vb.tree.TypedNode;
+import edu.utwente.vb.tree.BindingOccurrenceNode.VariableType;
 
 /**
  * Adapter voor de ASM library, scheelt code in de grammar & testbaarheid
@@ -216,8 +206,6 @@ public class ASMAdapter implements Opcodes {
 		FunctionNode funcNode = (FunctionNode) node;
 		FunctionId<TypedNode> funcId = funcNode.getBoundMethod();
 		String name = node.getText();
-		
-		inFunction = true;// Set "In a function"  state
 
 		mg = new GeneratorAdapter(ACC_PUBLIC, funcId.asMethod(), null, null, cv);
 		mg.visitCode();
@@ -236,10 +224,16 @@ public class ASMAdapter implements Opcodes {
 			mainFunctionMethodGenerator.invokeVirtual(internalClassType, funcId.asMethod());
 		}
 	}
+	
+	public void visitArgument(TypedNode id, int n){
+		checkArgument(id instanceof BindingOccurrenceNode);
+		BindingOccurrenceNode node = (BindingOccurrenceNode)id;
+		node.setVariableType(VariableType.ARGUMENT);
+		node.setNumber(n);
+	}
 
 	public void visitEndFuncDef() {
 		log.debug("visitEndFuncDef, in function before? {}", inFunction);
-		inFunction = false;
 		
 		mg.returnValue();
 		mg.visitMaxs(1000, 1000);
@@ -254,12 +248,18 @@ public class ASMAdapter implements Opcodes {
 		checkArgument(appNode.getBindingNode() instanceof BindingOccurrenceNode);
 		BindingOccurrenceNode bindingOccurrence = (BindingOccurrenceNode) appNode.getBindingNode();
 		
-		if(bindingOccurrence.isLocal()){
-			mg.storeLocal(bindingOccurrence.getNumber());
-		}else{
-			mg.loadThis();
-			mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed zolang wij geen long/double primitieven hebben ...
-			mg.putField(internalClassType, appNode.getText(), appNode.getNodeType().toASM());
+		switch(bindingOccurrence.getVariableType()){
+			case LOCAL:
+				mg.storeLocal(bindingOccurrence.getNumber());
+				break;
+			case ARGUMENT:
+				mg.storeArg(bindingOccurrence.getNumber());
+				break;
+			case FIELD:
+				mg.loadThis();
+				mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed zolang wij geen long/double primitieven hebben ...
+				mg.putField(internalClassType, appNode.getText(), appNode.getNodeType().toASM());
+				break;
 		}
 	}
 
@@ -275,7 +275,9 @@ public class ASMAdapter implements Opcodes {
 			cv.visitField(ACC_PUBLIC, node.getText(),
 					node.getNodeType().toASM().getDescriptor(), null, null)
 					.visitEnd();
-
+			
+			currentVar.setVariableType(VariableType.FIELD);
+			
 			mg = constructorMethodGenerator;
 		} else {
 			/*
@@ -284,7 +286,10 @@ public class ASMAdapter implements Opcodes {
 			 */
 			int i = mg.newLocal(node.getNodeType().toASM());
 			currentVar.setNumber(i);
+			currentVar.setVariableType(VariableType.LOCAL);
 		}
+		
+		assert currentVar.getVariableType() != null;
 	}
 
 	/**
@@ -349,18 +354,18 @@ public class ASMAdapter implements Opcodes {
 	public void visitIfBegin(TypedNode node, Label ifEnd){
 		//Type van expressiezijden opvragen
 		Type type = node.getNodeType().toASM();
-		//Jumpen naar ifEnd als niet gelijk, later backpatchen
-		mg.ifCmp(type, IFNE, ifEnd);
+		// Jump naar ifEnd als true
+		mg.ifCmp(type, GeneratorAdapter.EQ, ifEnd);
 	}
 	
+	/**
+	 * Mark het label dat het einde van de de TRUE expressies definiteert en GOTO het label aan het einde van de else.
+	 */
 	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd){
-		//Backpatchen
-		mg.mark(ifEnd);
-		//0 (false) op de stack
-		mg.visitInsn(ICONST_1);
-		//Jumpen naar elseEnd als gelijk, later backpatchen
-		mg.ifICmp(IFEQ, elseEnd); 
-	}
+		mg.goTo(elseEnd);
+		mg.mark(ifEnd); 
+	} 
+	
 	public void visitIfEnd(TypedNode node, Label elseEnd){
 		mg.mark(elseEnd);
 	}
@@ -383,32 +388,36 @@ public class ASMAdapter implements Opcodes {
 		mg.ifICmp(IFEQ, loopBegin);
 	}
 
-	public void visitBecomes(TypedNode lhs, TypedNode rhs){
-		checkArgument(lhs instanceof BindingOccurrenceNode);
-		BindingOccurrenceNode bindingNode = (BindingOccurrenceNode) lhs;
-		if(bindingNode.isLocal()){
-			mg.storeLocal(bindingNode.getNumber());
-		}else{
-			mg.putField(internalClassType, bindingNode.getText(), bindingNode.getNodeType().toASM());
-		}
-		
-	}
-	
 	public void visitBinaryOperator(/* Opcode */ int opcode, TypedNode lhs, TypedNode rhs){
-		if(ExampleType.STRING.equals(lhs.getNodeType()))
-			throw new UnsupportedOperationException("Todo");
-		mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));	
+		if(!ExampleType.STRING.equals(lhs.getNodeType())){
+			mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));
+		} else {
+			checkArgument(opcode == Opcodes.IADD, "Invalid binary operator on a string");
+			mg.invokeVirtual(superClassName, new Method("stringAppend", Type.getType(String.class), new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
+		}	
 	}
 	
 	public void visitCompareOperator(int opcode, TypedNode lhs, TypedNode rhs){
-		Label l3 = new Label();
-		Label l4 = new Label();
-		mg.visitJumpInsn(opcode, l3);
-		mg.visitInsn(ICONST_0);
-		mg.visitJumpInsn(GOTO, l4);
-		mg.visitLabel(l3);
-		mg.visitInsn(ICONST_1);
-		mg.visitLabel(l4);
+		if(!ExampleType.STRING.equals(lhs.getNodeType())){
+			Label l3 = new Label();
+			Label l4 = new Label();
+			mg.visitJumpInsn(opcode, l3);
+			mg.visitInsn(ICONST_0);
+			mg.visitJumpInsn(GOTO, l4);
+			mg.visitLabel(l3);
+			mg.visitInsn(ICONST_1);
+			mg.visitLabel(l4);
+		} else {
+			checkArgument(opcode == Opcodes.IFNE || opcode == Opcodes.IFEQ);
+			switch(opcode){
+				case Opcodes.IFNE:
+					mg.invokeVirtual(superClassName, new Method("stringEQ", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
+					break;
+				case Opcodes.IFEQ:
+					mg.invokeVirtual(superClassName, new Method("stringNE", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
+					break;
+			}
+		}
 	}
 	
 	public void visitReturn(TypedNode expr){
@@ -423,14 +432,17 @@ public class ASMAdapter implements Opcodes {
 		checkArgument(n instanceof AppliedOccurrenceNode);
 		
 		BindingOccurrenceNode node = (BindingOccurrenceNode)((AppliedOccurrenceNode)n).getBindingNode();
-		if(node.isLocal()){
-			// Load a local
-			// Note that we define method arguments in a slightly odd way - this might cause problems later on. 
-			mg.loadLocal(node.getNumber());
-		} else {
-			// ..., objectref  ..., value
-			mg.loadThis();
-			mg.getField(internalClassType, node.getText(), node.getNodeType().toASM());
+		switch(node.getVariableType()){
+			case ARGUMENT:
+				mg.loadArg(node.getNumber());
+				break;
+			case LOCAL:
+				mg.loadLocal(node.getNumber());
+				break;
+			case FIELD:
+				mg.loadThis();
+				mg.getField(internalClassType, node.getText(), node.getNodeType().toASM());
+				break;
 		}
 	}
 	

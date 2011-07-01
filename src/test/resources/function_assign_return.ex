@@ -10,3 +10,7 @@ def hoger(int a, int b):
 
 int c = hoger(1, 2)
 
+def main():
+	print(c)
+
+

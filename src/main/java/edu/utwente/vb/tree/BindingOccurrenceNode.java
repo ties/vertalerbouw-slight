@@ -1,9 +1,12 @@
 package edu.utwente.vb.tree;
 
 import org.antlr.runtime.Token;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BindingOccurrenceNode extends TypedNode{
-	private int varNumber = -1;
+	public enum VariableType { LOCAL, FIELD, ARGUMENT }
+	private VariableType type;
+	private int varNumber = 0;
 	private int ttype;
 	
 	/*
@@ -46,7 +49,11 @@ public class BindingOccurrenceNode extends TypedNode{
 		return varNumber;
 	}
 	
-	public boolean isLocal(){
-		return varNumber >= 0;
+	public VariableType getVariableType(){
+		return type;
+	}
+	
+	public void setVariableType(VariableType type){
+		this.type = checkNotNull(type);
 	}
 }
