@@ -3,7 +3,10 @@ package edu.utwente.vb.example.util;
 import java.io.File;
 import java.util.List;
 
+import org.antlr.runtime.CommonToken;
 import org.objectweb.asm.Type;
+
+import org.antlr.runtime.Token;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -40,5 +43,11 @@ public class Utils {
 		}
 		
 		return camelCase.toString();
+	}
+	
+	public static void stripQuotes(Token token){
+    	CommonToken t = ((CommonToken)token);
+        t.setStartIndex(t.getStartIndex() + 1);
+        t.setStopIndex(t.getStopIndex() - 1);
 	}
 }
