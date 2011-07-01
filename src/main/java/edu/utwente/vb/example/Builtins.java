@@ -42,4 +42,24 @@ public class Builtins {
 	protected void print(String line){
 		System.out.println(line);
 	}
+	
+	protected String stringAppend(String lhs, String rhs){
+		return lhs + rhs;
+	}
+	
+	protected String stringAppend(String lhs, char rhs){
+		return lhs + rhs;
+	}
+	
+	protected String stringAppend(String lhs, int rhs){
+		return lhs + rhs;
+	}
+	
+	protected boolean stringEQ(String lhs, String rhs){
+		return lhs.equals(rhs);
+	}
+	
+	protected boolean stringNE(String lhs, String rhs){
+		return !lhs.equals(rhs);
+	}
 }

@@ -119,7 +119,7 @@ INT_LITERAL     : DIGIT+;
 CHAR_LITERAL    : SQUOT LETTER SQUOT;
 IDENTIFIER      : LETTER (LETTER | DIGIT)*;
 
-STRING_LITERAL    : ('\"' (options{greedy=true;} : (~('"'|'\n'|'\r'))*) '\"');
+STRING_LITERAL    : (DQUOT (options{greedy=true;} : (~(DQUOT|'\n'|'\r'))*) DQUOT);
 
 fragment DIGIT  : ('0'..'9');
 fragment LOWER  : ('a'..'z');

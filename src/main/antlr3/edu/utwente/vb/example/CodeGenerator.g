@@ -86,7 +86,7 @@ program
   ;
 
 content
-  : (declaration | functionDef)*
+  : (declaration | { aa.setInFunction(true); } functionDef { aa.setInFunction(false); } )*
   ;
   
 declaration
@@ -114,7 +114,10 @@ functionDef
   ;
   
 parameterDef returns [TypedNode id_node]
-  : ^(FORMAL primitive IDENTIFIER){ $id_node = $IDENTIFIER; }
+	@init{
+		int parameterNumber = 0;
+	}
+  : ^(FORMAL primitive IDENTIFIER){ aa.visitArgument($IDENTIFIER, parameterNumber++); $id_node = $IDENTIFIER; }
   ; 
 
 closedCompoundExpression
