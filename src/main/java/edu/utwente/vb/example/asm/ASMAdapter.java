@@ -352,6 +352,7 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public void visitFuncCallBegin(TypedNode n, List<TypedNode> params) {
+		mg.visitLineNumber(n.getLine(), mg.mark());
 		// Special handling of VarArgs/READ function
 		checkArgument(n instanceof AppliedOccurrenceNode);
 
@@ -494,10 +495,10 @@ public class ASMAdapter implements Opcodes {
 			checkArgument(opcode == Opcodes.IF_ICMPNE || opcode == Opcodes.IF_ICMPEQ);
 			switch(opcode){
 				case Opcodes.IF_ICMPNE:
-					mg.invokeVirtual(superClassName, new Method("stringEQ", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
+					mg.invokeVirtual(superClassName, new Method("stringNE", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
 					break;
 				case Opcodes.IF_ICMPEQ:
-					mg.invokeVirtual(superClassName, new Method("stringNE", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
+					mg.invokeVirtual(superClassName, new Method("stringEQ", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
 					break;
 			}
 		}

@@ -16,4 +16,6 @@ def main():
     ensure(c=='d')
     ensure(d)
     ensure(!e)
+	print(f)
+	print("this is a string")
     ensure(f=="this is a string")
