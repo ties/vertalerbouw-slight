@@ -103,9 +103,10 @@ valueDeclaration
 functionDef
   @init{
     List<TypedNode> params = Lists.newArrayList();
+    int parameterNumber = 0;// parameter 0 = this bij func call van non-static
   }
   : ^(FUNCTION (primitive?) IDENTIFIER 
-      (p=parameterDef {params.add($p.id_node);})* 
+      (p=parameterDef[parameterNumber] {params.add($p.id_node); parameterNumber++;})* 
       { 
         aa.visitFuncDef($IDENTIFIER, params);
       } 
@@ -113,11 +114,8 @@ functionDef
       { aa.visitEndFuncDef(); })
   ;
   
-parameterDef returns [TypedNode id_node]
-	@init{
-		int parameterNumber = 0;// parameter 0 = this bij func call van non-static
-	}
-  : ^(FORMAL primitive IDENTIFIER){ aa.visitArgument($IDENTIFIER, parameterNumber++); $id_node = $IDENTIFIER; }
+parameterDef[int parameterNumber] returns [TypedNode id_node]
+  : ^(FORMAL primitive IDENTIFIER){ aa.visitArgument($IDENTIFIER, parameterNumber); $id_node = $IDENTIFIER; }
   ; 
 
 closedCompoundExpression
