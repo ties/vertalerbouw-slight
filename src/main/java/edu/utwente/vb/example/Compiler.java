@@ -32,8 +32,7 @@ public class Compiler {
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
 			opt_debug_checker = false, opt_debug_parser = false,
-			opt_debug_preparation = false, opt_debug_codegen = false,
-			opt_debug = false;
+			opt_debug_codegen = false, opt_debug = false;
 
 	private static String filename = null;
 
@@ -60,9 +59,6 @@ public class Compiler {
 			} else if (args[i].equals("-debug_parser")) {
 				out.println("// + debugging parser");
 				opt_debug_parser = true;
-			} else if (args[i].equals("-debug_preparation")) {
-				out.println("// + debugging code generation preparation");
-				opt_debug_preparation = true;
 			} else if (args[i].equals("-debug_codegen")) {
 				out.println("// + debugging code generation");
 				opt_debug_codegen = true;
@@ -158,21 +154,7 @@ public class Compiler {
 			}
 
 			if (!opt_no_codegen) { // run codegenerator
-				{
-					BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(
-							(TypedNode) checker_result.getTree());
-					CodegenPreparation prepare;
-					if (!opt_debug_preparation) {
-						prepare = new CodegenPreparation(nodes,
-								new BlankDebugEventListener());
-					} else {
-						prepare = new CodegenPreparation(nodes);
-					}
-					prepare.setTreeAdaptor(new TypedNodeAdaptor());
-					CodegenPreparation.program_return prepare_result = prepare
-							.program();
-				}
-				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
+				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream((TypedNode) checker_result.getTree());
 				nodes.setTokenStream(tokens);
 				CodeGenerator codg;
 				if (opt_debug_codegen) {
