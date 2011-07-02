@@ -370,6 +370,9 @@ public class ASMAdapter implements Opcodes {
 
 	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
 		log.debug("visit function call: " + n);
+		// Load arguments
+		loadArguments = true;
+		
 		checkArgument(n instanceof AppliedOccurrenceNode);
 
 		AppliedOccurrenceNode an = (AppliedOccurrenceNode) n;
@@ -415,6 +418,7 @@ public class ASMAdapter implements Opcodes {
 				target = new Method(name, arg.getNodeType().toASM(),
 						new Type[] { arg.getNodeType().toASM() });
 				log.debug("Dispatching read to " + target);
+				visitVariable(arg);
 				mg.invokeVirtual(superClassName, target);
 				visitBecomes(arg);
 
@@ -513,23 +517,22 @@ public class ASMAdapter implements Opcodes {
 
 		BindingOccurrenceNode node = (BindingOccurrenceNode) ((AppliedOccurrenceNode) n)
 				.getBindingNode();
-		switch (node.getVariableType()) {
-		case ARGUMENT:
-			if (loadArguments) {
+		if(loadArguments){
+			switch (node.getVariableType()) {
+			case ARGUMENT:
 				mg.loadArg(node.getNumber());
+				break;
+			case LOCAL:
+				mg.loadLocal(node.getNumber());
+				break;
+			case FIELD:
+				mg.loadThis();
+				mg.getField(internalClassType, node.getText(), node.getNodeType()
+						.toASM());
+				break;
 			}
-			log.debug("loading argument {} #{}? {}",
-					new Object[] { node, node.getNumber(), loadArguments });
-			break;
-		case LOCAL:
-			mg.loadLocal(node.getNumber());
-			break;
-		case FIELD:
-			mg.loadThis();
-			mg.getField(internalClassType, node.getText(), node.getNodeType()
-					.toASM());
-			break;
 		}
+		log.debug("loading argument {} #{}? {}", new Object[] { node, node.getNumber(), loadArguments });
 	}
 
 	public void visitCharAtom(TypedNode node) {
