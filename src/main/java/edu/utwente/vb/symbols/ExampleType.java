@@ -17,7 +17,7 @@ import edu.utwente.vb.tree.TypedNode;
  *
  */
 public enum ExampleType{
-	VOID(Type.VOID_TYPE), INT(Type.INT_TYPE), CHAR(Type.CHAR_TYPE), STRING(Type.getType(String.class)), BOOL(Type.BOOLEAN_TYPE), UNKNOWN;
+	VOID(Type.VOID_TYPE), INT(Type.INT_TYPE), CHAR(Type.CHAR_TYPE), STRING(Type.getType(String.class)), BOOL(Type.BOOLEAN_TYPE), UNKNOWN(Type.INT_TYPE);
 	
 	private final Type asmType;
 	

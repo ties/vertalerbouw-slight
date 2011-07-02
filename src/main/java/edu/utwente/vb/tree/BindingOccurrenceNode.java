@@ -29,6 +29,7 @@ public class BindingOccurrenceNode extends TypedNode{
 		super(node);
 		this.ttype = node.ttype;
 		this.varNumber = node.varNumber;
+		this.type = node.type;
 	}
 
 	public BindingOccurrenceNode(Token t) {

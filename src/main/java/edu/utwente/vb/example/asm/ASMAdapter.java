@@ -1,6 +1,7 @@
 package edu.utwente.vb.example.asm;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -143,25 +144,6 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	/**
-	 * Initialises Example builtin-functions like print() and read()
-	 */
-	private void builtinFunctions() {
-		{ // print(String)mg =
-			MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "print",
-					"(Ljava/lang/String;)V", null, null);
-			mv.visitCode();
-			mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out",
-					"Ljava/io/PrintStream;");
-			mv.visitVarInsn(ALOAD, 1);
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println",
-					"(Ljava/lang/String;)V");
-			mv.visitInsn(RETURN);
-			mv.visitMaxs(2, 2);
-			mv.visitEnd();
-		}
-	}
-
-	/**
 	 * Einde van de visit - Debug bytecode + sluit constructor af
 	 */
 	public void visitEnd() {
@@ -277,9 +259,8 @@ public class ASMAdapter implements Opcodes {
 	public void visitDecl(TypedNode node) {
 		checkArgument(mg == null || inFunction);
 		checkArgument(node instanceof BindingOccurrenceNode);
-		
 		currentVar = (BindingOccurrenceNode) node;
-
+		
 		if (!inFunction) {// Initialisatie van variabele in constructor
 			log.debug("declVar {} {}", node.getText(), node.getNodeType()
 					.toASM().getDescriptor());
@@ -306,8 +287,10 @@ public class ASMAdapter implements Opcodes {
 	/**
 	 * Omdat wij constanten niet statisch definieren is er geen verschil tussen
 	 * einde van var & const definitie
+	 * @post currentVar = null
 	 */
 	public void visitDeclEnd(TypedNode node) {
+		checkNotNull(currentVar);
 		// Moeten we storen? -> heeft ie een expressie
 		boolean hasValue = node != null;
 
@@ -340,10 +323,7 @@ public class ASMAdapter implements Opcodes {
 
 	private void loadPlaceholder() {
 		if (currentVar.getNodeType() == ExampleType.STRING) {
-			// Load een Object als placeholder
-			mg.newInstance(Type.getType(Object.class));
-			Method m = Method.getMethod("void <init> ()");
-			mg.invokeConstructor(Type.getType(Object.class), m);
+			mg.visitLdcInsn("");
 		} else {
 			// Primitive -> 0 is goed
 			mg.visitInsn(ICONST_0);
