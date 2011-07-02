@@ -1,7 +1,23 @@
 \chapter{Testen}
+Om niet voor onaangename verassingen te komen te staan bij gebruik van de Example programmeertaal is het van groot belang om de programmeertaal goed te testen. Om het testen van Example gestructureerd aan te kunnen pakken zijn de nodige uren ge\"{i}nvesteerd in het ontwikkelen van een uitgebreide testsuite aan tests. In deze testsuite is een poging gedaan om voor elke constructie een serie aan tests te ontwikkelen waarin alle semantisch verschillende vormen van gebruik een keer getest worden. De testsuite behelst ruim honderd Example testprogramma's waarin elk testprogramma \'{e}\'{e}n of meerdere semantisch verschillende scenario's dekt. Tevens dekt de testsuite alle lagen van de compiler welke bij daadwerkelijke executie ook worden doorlopen: de lexer, de parser, de checker, de codedegeneratievoorbereidingslaag en de codegenerator. Alle gebruikte testcases zijn terug te vinden in appendix F\\
+
+Een grote kracht van de testsuite zit in het automatische aanroep waarbij met \'{e}\'{e}n execute direct achterhaald kan worden welke constructies wel en welke constructies niet naar behoren werken. Gedurende de ontwikkeling van de Example programmeertaal is deze testsuite bij elke wijziging/compilatie van de de vertaler gebruikt om het directe effect van de gedane wijziging te kunnen meten. Door de goede dekking van de gebruikte testsuite kan gesteld worden dat de standaardconstructies binnen Example weinig tot geen fouten bevat op implementatieniveau. Dit maakt Example zeer geschikt voor implementatie van middelgrote tot grote programma's en algoritmen.\\
+
+De rest van dit hoofdstuk zal worden gebruikt om per onderdeel van de Example compiler toe te lichten welke testen op deze laag zijn uitgevoerd en op welke wijze deze testen tot uitvoer zijn gebracht. De Lexer is hierbij dermate eenvoudig dat deze buiten beschouwing is gelaten.
+ 
 \section{Parser}
-- automatisch doorvoeren van test files
+Bij het ontwikkelen van de testcases zijn doelbewust zowel goede testvoorbeelden (welke de parser behoren te doorlopen) als foutieve testvoorbeelden (waarbij de parser de gebruiker dient te voorzien van een foutmelding) opgenomen. Om toch voor alle testcases eenvoudig te kunnen sorteren op correctheid van het parsergedrag zoekt de testsuite in de commentaarregels van de testprogramma's naar het keyword 'expected' gevolgd door een exceptie welke op dit testbestand wordt verwacht.\\
+
+De commentaarregel:
+\begin{lstlisting}[language=Python]
+# expected: MismatchedTokenException
+\end{lstlisting}
+informeert de testsuite van het feit dat deze testcase doelbewust zo is opgesteld dat de programmacode een MismathedTokenException zou moeten gooien. Het voordeel dat hiermee wordt gecree\"{e}rd is dat hiermee is gewaarborgd dat de gebruiker van de Example programmeertaal de nette foutmelding te zien krijgt welke Example standaard weergeeft bij MismatchedTokenExceptions (of een van de andere andere subklassen van RecognitionException).
 
 \section{Checker}
-- automatisch doorvoeren van test files
-- als parameter 'checkerexpected:' verwachten we een exceptie alleen bij de checker.
+Enkel testbestanden welke door de parser als 'syntactisch valide' Example code is bestempeld zullen door de testsuite worden gebruikt als invoer voor de Checker. Dit om te voorkomen dat onjuiste fouten in de testuitvoer verschijnen. Evenals de parser wordt ook op checkerniveau onderscheidt gemaakt tussen goede en doelbewust foutieve testcases door middel van een keyword welke wordt toegevoegd aan commentaarregels aan het begin van de testcase. Voor de checker is dit keyword 'checkerexpected', waarbij dit keyword wordt gevolgd door de bij het Example-project behorende exceptieklasse SymboltableException, of \'{e}\'{e}n van de subklassen hiervan die binnen het Example-project zijn gedefinieerd.
+
+\section{Codegen preparation}
+
+\section{Codegenerator}
+Evenals in eerdere lagen worden enkel die testklassen die foutloos worden bevonden door alle voorgaande compilerlagen getest met de codegenerator. Ook zijn testcases welke zijn voorzien van een aanroep van de readfunctie niet gebruikt als invoer voor de geautomatiseerde test omdat de test dan zou blijven hangen op de testcase welke blijft wachten op invoer van de gebruiker. Voor grondig testen van de codegenerator is het in tegenstelling tot de overige compilerlagen niet meer voldoende om te luisteren naar het gooien van excepties. Een codegenerator nog niet juist wanneer valide code wordt gegenereerd, een codegenerator is juist wanneer code wordt gegenereerd welke voor \emph{de juiste uitvoer zorgt}. Om in staat te zijn om te testen op \emph{juiste} uitvoer is binnen de taal een methode \textbf{ensure} ge\"{i}mplementeerd welke een boolean expressie evalueerd en een Error (java.lang.Error.Error) met heldere foutomschrijving gooit wanneer de meegegeven boolean expressie naar 'onwaar' evalueert. Alle testcases zijn voorzien met aanroepen van de ensure-methode om correcte uit van constructies en correctie waarden van te testen.
