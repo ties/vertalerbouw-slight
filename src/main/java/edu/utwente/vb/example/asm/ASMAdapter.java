@@ -277,7 +277,7 @@ public class ASMAdapter implements Opcodes {
 	public void visitDecl(TypedNode node) {
 		checkArgument(mg == null || inFunction);
 		checkArgument(node instanceof BindingOccurrenceNode);
-
+		
 		currentVar = (BindingOccurrenceNode) node;
 
 		if (!inFunction) {// Initialisatie van variabele in constructor
