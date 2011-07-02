@@ -1,14 +1,11 @@
 package edu.utwente.vb.symbols;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.List;
 import java.util.Set;
 
 import org.antlr.runtime.tree.BaseTree;
 import org.objectweb.asm.commons.Method;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

@@ -1,22 +1,20 @@
 package edu.utwente.vb.symbols;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Arrays;
 import java.util.List;
 
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 import org.objectweb.asm.commons.Method;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FunctionId<T extends BaseTree> implements Id<T>{
 	private ExampleType returnType;

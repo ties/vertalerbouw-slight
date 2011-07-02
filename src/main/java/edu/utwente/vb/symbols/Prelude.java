@@ -1,16 +1,17 @@
 package edu.utwente.vb.symbols;
 
-import java.util.List;
+import static edu.utwente.vb.example.util.CheckerHelper.byToken;
+import static edu.utwente.vb.example.util.CheckerHelper.createBuiltin;
+import static edu.utwente.vb.example.util.CheckerHelper.createFunctionId;
+import static edu.utwente.vb.example.util.CheckerHelper.createVariableId;
+import static edu.utwente.vb.symbols.ExampleType.BOOL;
+import static edu.utwente.vb.symbols.ExampleType.CHAR;
+import static edu.utwente.vb.symbols.ExampleType.INT;
+import static edu.utwente.vb.symbols.ExampleType.STRING;
+
 import java.util.Set;
 
-import org.antlr.runtime.CommonToken;
-
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import static edu.utwente.vb.symbols.ExampleType.*;
-import static edu.utwente.vb.example.util.CheckerHelper.*;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.tree.FunctionNode;

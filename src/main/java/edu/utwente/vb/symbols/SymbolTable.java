@@ -1,16 +1,10 @@
 package edu.utwente.vb.symbols;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.List;
-import java.util.Set;
 
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableList;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
