@@ -1,11 +1,8 @@
 package edu.utwente.vb.symbols;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.List;
-
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
 import com.google.common.base.Objects;

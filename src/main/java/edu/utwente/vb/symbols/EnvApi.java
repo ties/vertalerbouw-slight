@@ -1,9 +1,7 @@
 package edu.utwente.vb.symbols;
 
 import java.util.List;
-import java.util.Set;
 
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;

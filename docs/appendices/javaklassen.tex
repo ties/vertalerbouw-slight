@@ -1,2 +1,700 @@
 \chapter{Java hulpklassen}
 Alle zelf ge\"{i}mplementeerde Java-klassen welke zijn gebruikt bij de Example-compiler zijn bijgevoegd in deze Appendix.
+
+\section{Symboltable}
+\subsection{Env.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
+/**
+ * A Symbol Table in the style of Aho, Sethi and Ullman - Compilers: Principles, 
+ * Techniques, and Tools [pg. 85, 970]
+ * @author Ties
+ * @param T the custom Token type
+ */
+public class Env<T extends BaseTree> implements EnvApi<T>{
+	private Logger log = LoggerFactory.getLogger(Env.class);
+	/** The table of functions for this level */
+	private final SetMultimap<String, FunctionId<T>> functions 
+        = HashMultimap.create();
+	/** The table of variables for this level */
+	private final Map<String, VariableId<T>> variables
+         = Maps.newHashMap();
+	/** The previous level */
+	protected final Env<T> prev;
+	
+	/**
+	 * Construct a new Environment
+	 * @param p previous level
+	 */
+	public Env(final Env<T> p) {
+		checkNotNull(p);
+		this.prev = p; 
+	}
+	
+	public Env(){
+		this.prev = null;
+	}
+	
+	/**
+	 * Put a variable into the symbol table, checking if it's name is unique at 
+     * the current level
+	 * @throws IllegalVariableDefinitionException 
+	 */
+	public void put(final VariableId<T> i) throws IllegalVariableDefinitionException{
+		checkNotNull(i); checkNotNull(i.getText());
+		if(variables.containsKey(i.getText())){//duplicate definition in this scope level
+			throw new IllegalVariableDefinitionException("duplicate definition of variable
+                 \"" + i.getText() + "\" in the current scope");
+		}
+		variables.put(i.getText(), i);
+	}
+	
+	/**
+	 * Put a function into the symbol table, checking if it's name is unique at the current 
+     * level w/ the same type of operands
+	 * @throws IllegalFunctionDefinitionException 
+	 */
+	public void put(final FunctionId<T> i) throws IllegalFunctionDefinitionException{
+		checkNotNull(i); checkNotNull(i.getText());
+		if(functions.containsKey(i.getText())){//duplicate definition in this scope level
+			for(FunctionId<T> potential : functions.get(i.getText())){
+				if(potential.equalsSignature(i.getText(), ExampleType.asArray(i.getTypeParameters())))
+					throw new IllegalFunctionDefinitionException("Function " + i.getText() 
+                        + " with signature " + i.getTypeParameters().toString() 
+                        + " is already defined in the current scope");		
+			}
+		}
+		functions.put(i.getText(), i);
+	}
+	
+	
+	
+	/**
+	 * Get all the occurrences of a Id matching the given identifier
+	 */
+	public List<Id<T>> get(final String w){
+		checkNotNull(w);
+		ImmutableList.Builder<Id<T>> mappings = ImmutableList.builder();
+		for(Env e = this; e != null; e = e.prev){
+			mappings.addAll(e.functions.get(w));
+			if(e.variables.containsKey(w))
+				mappings.add((VariableId<T>)e.variables.get(w));
+		}
+		return mappings.build();
+	}
+	
+	/**
+	 * Get the binding occurrence of this applied occurrence
+	 * @throws SymbolTableException 
+	 * @require !applied.contains(Type.VOID) || applied.size() == 1
+	 * 
+	 * *: Invariant: *als* er een match was die gelijk was op hetzelfde niveau, 
+     * was die gevonden bij put
+	 * lijkt veel op get, maar kan de Set van daar niet hergebruiken, want geen 
+     * garanties over order daarnaast is dit efficienter, hij springt er eerder uit
+	 */
+	@Override
+	public FunctionId<T> apply(final String n, final ExampleType... applied) 
+        throws SymbolTableException {
+		    log.debug("applyFunction {} ({})", n, Arrays.toString(applied));
+		    //zie (*)
+		    for(Env e = this; e != null; e = e.prev){
+			    for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
+			    	if(id.equalsSignature(n, applied))
+			    		return id;
+			    }
+		    }
+		    log.debug("Function not found for {} ({})", n, applied);
+		    throw new SymbolTableException("No matching entry for " + n + " ("  
+                + Arrays.toString(applied) + ")");
+	}
+	
+	@Override
+	public VariableId<T> apply(final String n) throws SymbolTableException {
+		for(Env e = this; e != null; e = e.prev){
+			if(e.variables.containsKey(n))
+				return (VariableId<T>) e.variables.get(n);
+		}
+		throw new SymbolTableException("No matching entry for variable name " + n);
+	}
+	
+}
+\end{lstlisting}
+\subsection{EnvApi.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import java.util.List;
+import java.util.Set;
+
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
+
+/**
+ * API voor een Symbol Table (laag)
+ * @author ties
+ *
+ * @param <T> Type van de AST Nodes
+ */
+public interface EnvApi<T extends BaseTree> {
+	/**
+	 * Voeg een functie aan de Environment toe
+	 * @param i
+	 */
+	public void put(final FunctionId<T> i) throws IllegalFunctionDefinitionException;
+	
+	/**
+	 * 
+	 */
+	public void put(final VariableId<T> var) throws IllegalVariableDefinitionException;
+	
+	/**
+	 * Haal alle mappings van de tekst van dit ID op
+	 * @param w string van het label
+	 * @return Set van de Id's
+	 */
+	public List<Id<T>> get(final String w);
+	
+	/**
+	 * Apply a variable
+	 * @param n identifier name
+	 * @param applied applied parameter types
+	 * @return the id
+	 */
+	public VariableId<T> apply(final String n) throws SymbolTableException;
+	
+	/**
+	 * Apply a function
+	 * @param n function name
+	 * @param applied types of the parameters
+	 * @return
+	 */
+	public FunctionId<T> apply(final String n, final ExampleType... applied) throws SymbolTableException;
+}
+\end{lstlisting}
+\subsection{FunctionId.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+import org.objectweb.asm.commons.Method;
+
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class FunctionId<T extends BaseTree> implements Id<T>{
+	private ExampleType returnType;
+	private T node;
+	private List<VariableId<T>> formalParameters;
+	private IdType idType = IdType.FUNCTION;
+	
+	/**
+	 * A function identifier
+	 * 
+	 * Function identifiers can return Type.VOID
+	 * If a function identifier has no formal parameters, it's parameters will be the empty list
+	 * The formal parameters can NOT contain Type.VOID
+	 * 
+	 * @param t Node
+	 * @param r return type
+	 * @param p formal parameters.
+	 * @throws IllegalFunctionDefinitionException 
+	 */
+	public FunctionId(T t, ExampleType r, VariableId<T>... p) throws IllegalFunctionDefinitionException{
+		this.node = checkNotNull(t);
+		this.returnType = checkNotNull(r);
+		
+		formalParameters = ImmutableList.copyOf(checkNotNull(p));
+		if(formalParameters.contains(ExampleType.VOID))
+			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
+	}
+	
+	public FunctionId(T t, ExampleType r, List<VariableId<T>> p) throws IllegalFunctionDefinitionException{
+		this.node = checkNotNull(t);
+		this.returnType = checkNotNull(r);
+		
+		formalParameters = ImmutableList.copyOf(checkNotNull(p));
+		if(extractTypes(formalParameters).contains(ExampleType.VOID))
+			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
+	}
+	
+	public void setIdType(IdType idType) {
+		this.idType = idType;
+	}
+	
+	
+	@Override
+	public ExampleType getType() {
+		return returnType;
+	}
+	
+	@Override
+	public T getNode() {
+		return node;
+	}
+	
+	@Override
+	public String getText() {
+		return node.getText();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(node, returnType);
+	}
+	
+	public List<ExampleType> getTypeParameters() {
+		return extractTypes(formalParameters);
+	}
+	
+	@Override
+	public edu.utwente.vb.symbols.Id.IdType getIdType() {
+		return idType;
+	}
+	
+	@Override
+	public String toString() {
+		return node.getText() + " (" + Objects.toStringHelper(formalParameters) + ") -> " + returnType;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof FunctionId){
+			FunctionId that = (FunctionId)obj;
+			return Objects.equal(this.node, that.node) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.formalParameters, that.formalParameters);
+		}
+		return false;
+	}
+	
+	
+	@Override
+	public boolean equalsSignature(String name, ExampleType... applied) {
+		return Objects.equal(this.node.getText(), name) && Arrays.deepEquals(applied, ExampleType.asArray(extractTypes(formalParameters)));
+	}
+
+	/**
+	 * Converteer deze FunctionId naar een ASM-stijl Method descriptor.
+	 * @return
+	 */
+	public Method asMethod(){
+		return new Method(getText(), returnType.toASM(), ExampleType.listToASM(extractTypes(formalParameters)));
+	}
+	
+	/**
+	 * Transformeer een Lijst van VariableId's in een lijst van de Type's die in de VariableId's zitten
+	 * @param params 
+	 * @return
+	 */
+	private static <Q extends BaseTree> List<ExampleType> extractTypes(List<VariableId<Q>> params){
+		return Lists.transform(params, new Function<VariableId<Q>, ExampleType>() {
+			@Override
+			public ExampleType apply(VariableId<Q> input) {
+				return input.getType();
+			}
+		});
+	}
+	
+	/**
+	 * Update het return type van deze methode 
+	 */
+	@Override
+	public void updateType(ExampleType t) {
+		checkArgument(ExampleType.UNKNOWN.equals(this.returnType), "Return type is not unknown");
+		checkArgument(!ExampleType.UNKNOWN.equals(t), "Can not update to type UNKNOWN");
+		this.returnType = t;
+	}
+}
+
+\end{lstlisting}
+\subsection{Id.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import java.util.List;
+
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+
+import com.google.common.collect.Lists;
+
+public interface Id<T extends BaseTree> {
+	public enum IdType{VARIABLE, FUNCTION, BUILTIN, VARARGS}
+	
+	public IdType getIdType();
+	
+	public ExampleType getType();
+	
+	public T getNode();
+	
+	public String getText();
+	
+	@Override
+	public int hashCode();
+	
+	@Override
+	public boolean equals(Object obj);
+	
+	public boolean equalsSignature(String name, ExampleType... params);
+	
+	public void updateType(ExampleType t);
+}
+
+\end{lstlisting}
+\subsection{Prelude.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import java.util.List;
+import java.util.Set;
+
+import org.antlr.runtime.CommonToken;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
+import static edu.utwente.vb.symbols.ExampleType.*;
+import static edu.utwente.vb.example.util.CheckerHelper.*;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.tree.FunctionNode;
+import edu.utwente.vb.tree.TypedNode;
+
+public class Prelude {
+	public final Set<FunctionId<TypedNode>> builtins;
+	
+	@SuppressWarnings("unchecked")
+	public Prelude() throws IllegalFunctionDefinitionException{
+		ImmutableSet.Builder<FunctionId<TypedNode>> builder = ImmutableSet.builder();
+		//Voeg operatoren toe
+		// apply/becomes varianten
+		builder.add(createBuiltin("=", BOOL, BOOL, BOOL));
+		builder.add(createBuiltin("=", INT, INT, INT));
+		builder.add(createBuiltin("=", CHAR, CHAR, CHAR));
+		builder.add(createBuiltin("=", STRING, STRING, STRING));
+		// boolean
+		builder.add(createBuiltin("==", BOOL, BOOL, BOOL));
+		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
+		builder.add(createBuiltin("and", BOOL, BOOL, BOOL));
+		builder.add(createBuiltin("or", BOOL, BOOL, BOOL));
+		builder.add(createFunctionId("!", ExampleType.BOOL, createVariableId("rhs", ExampleType.BOOL)));
+		// int
+		builder.add(createBuiltin("+", INT, INT, INT));
+		builder.add(createBuiltin("-", INT, INT, INT));
+		builder.add(createBuiltin("*", INT, INT, INT));
+		builder.add(createBuiltin("/", INT, INT, INT));
+		builder.add(createBuiltin("%", INT, INT, INT));
+		// boolean + int
+		builder.add(createBuiltin("==", BOOL, INT, INT));
+		builder.add(createBuiltin("!=", BOOL, INT, INT));
+		builder.add(createBuiltin("<", BOOL, INT, INT));
+		builder.add(createBuiltin("<=", BOOL, INT, INT));
+		builder.add(createBuiltin(">", BOOL, INT, INT));
+		builder.add(createBuiltin(">=", BOOL, INT, INT));
+		// string -> tijdelijk met +..
+		builder.add(createBuiltin("+", STRING, STRING, STRING));
+		builder.add(createBuiltin("+", STRING, STRING, CHAR));
+		builder.add(createBuiltin("+", STRING, STRING, INT));
+		builder.add(createBuiltin("+", STRING, STRING, BOOL));
+		builder.add(createBuiltin("==", BOOL, STRING, STRING));
+		builder.add(createBuiltin("!=", BOOL, STRING, STRING));
+		// char
+		builder.add(createBuiltin("==", BOOL, CHAR, CHAR));
+		builder.add(createBuiltin("!=", BOOL, CHAR, CHAR));
+		builder.add(createBuiltin("<", BOOL, CHAR, CHAR));
+		builder.add(createBuiltin("<=", BOOL, CHAR, CHAR));
+		builder.add(createBuiltin(">", BOOL, CHAR, CHAR));
+		builder.add(createBuiltin(">=", BOOL, CHAR, CHAR));
+		//Builting functions
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.BOOL)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
+		
+		FunctionNode readNode = byToken("read", ExampleType.VOID);
+		VarArgsFunctionId<TypedNode> varArgs = new VarArgsFunctionId<TypedNode>(readNode, ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING);
+		readNode.setBoundMethod(varArgs);
+		builder.add(varArgs);
+		
+		builder.add(createFunctionId("ensure", ExampleType.VOID,	createVariableId("expr", ExampleType.BOOL)));
+		//Sla op
+		builtins = builder.build();
+	}
+	
+	public void inject(SymbolTable<TypedNode> t) throws IllegalFunctionDefinitionException{
+		for(FunctionId<TypedNode> node : builtins){
+			t.put(node);
+		}
+	}
+}
+
+\end{lstlisting}
+\subsection{VarArgsFunctionId.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
+import java.util.Set;
+
+import org.antlr.runtime.tree.BaseTree;
+import org.objectweb.asm.commons.Method;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+
+public class VarArgsFunctionId<T extends BaseTree> extends FunctionId<T>{
+	private Set<ExampleType> acceptableTypes;
+	
+	/**
+	 * A function identifier that accept any number of arguments that match the list of allowed types.
+	 * 
+	 * @param t Node
+	 * @param r return type
+	 * @param acceptable acceptable types
+	 * @throws IllegalFunctionDefinitionException 
+	 */
+	public VarArgsFunctionId(T t, ExampleType r, ExampleType... acceptable) throws IllegalFunctionDefinitionException{
+		super(t, r);
+		acceptableTypes = Sets.newHashSet(acceptable);
+	}
+	
+	@Override
+	public Method asMethod() {
+		throw new UnsupportedOperationException("Can not convert varArgs to fixed args");
+	}
+	
+	@Override
+	public boolean equalsSignature(String name, ExampleType... applied) {
+		return getText().equals(name) && acceptableTypes.containsAll(Lists.newArrayList(applied));
+	}
+	
+	@Override
+	public List<ExampleType> getTypeParameters() {
+		throw new UnsupportedOperationException("Can not get type parameters");
+	}
+	
+	@Override
+	public void updateType(ExampleType t) {
+		throw new UnsupportedOperationException("Can not update type");
+	}	
+	
+	@Override
+	public edu.utwente.vb.symbols.Id.IdType getIdType() {
+		return IdType.VARARGS;
+	}
+}
+
+\end{lstlisting}
+\subsection{VariableId.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.List;
+
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+
+import com.google.common.base.Objects;
+
+public class VariableId<T extends BaseTree> implements Id<T>{
+	private ExampleType type;
+	private final T node;
+	/** Variable is a constant (ie: not assignable) */
+	private boolean constant = false;
+	
+	public VariableId(T n, ExampleType t){
+		this.type =	checkNotNull(t);
+		this.node = checkNotNull(n);
+	}
+	
+	@Override
+	public String getText() {
+		return node.getText();
+	}
+	
+	@Override
+	public T getNode() {
+		return node;
+	}
+	
+	public ExampleType getType() {
+		return type;
+	}
+	
+	@Override
+	public edu.utwente.vb.symbols.Id.IdType getIdType() {
+		return IdType.VARIABLE;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(node, type);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof VariableId){
+			VariableId that = (VariableId)obj;
+			return Objects.equal(this.node, that.node) && Objects.equal(this.type, that.type);
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(VariableId.class).add("name", getText()).add("type",type).add("constant", constant).toString();
+	}
+	
+	@Override
+	public boolean equalsSignature(String name, ExampleType... params) {
+		return Objects.equal(this.node.getText(), name) && (params == null || params.length == 0);
+	}
+	
+	public boolean isConstant() {
+		return constant;
+	}
+	
+	public void setConstant(boolean c){
+		constant = c;
+	}
+	
+	@Override
+	public void updateType(ExampleType t) {
+		checkArgument(!constant, "Trying to update the type of a constant");
+		checkArgument(ExampleType.UNKNOWN.equals(this.type), "Trying to update the type of a variable which is not Type.UNKNOWN");
+		checkArgument(!ExampleType.UNKNOWN.equals(t), "Can not update to Type.UNKNOWN");
+		this.type = t;
+	}
+}
+
+\end{lstlisting}
+\subsection{SymbolTable.java}
+\begin{lstlisting}[language=Java]
+package edu.utwente.vb.symbols;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.List;
+import java.util.Set;
+
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableList;
+
+import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
+import edu.utwente.vb.exceptions.SymbolTableException;
+
+public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
+	private Logger log = LoggerFactory.getLogger(SymbolTable.class);
+	private Env inner;
+	private int level;
+	
+	public SymbolTable(){
+		inner = new Env();
+		level = 0;
+	}
+	
+	public void openScope(){
+		log.info("openScope() " + level + " -> " + (level + 1));
+		inner = new Env(inner);		
+		level++;
+	}
+	
+	public void closeScope() throws SymbolTableException{
+		log.info("closeScope() " + level + " -> " + (level - 1));
+		if(level <= 0)
+			throw new SymbolTableException("Can not close level 0 - unbalanced indents");
+		inner = inner.prev;
+		level--;
+	}
+	
+	@Override
+	public void put(VariableId<T> i) throws IllegalVariableDefinitionException {
+		inner.put(i);
+	}
+	
+	@Override
+	public void put(FunctionId<T> i) throws IllegalFunctionDefinitionException {
+		inner.put(i);
+	}
+	
+	@Override
+	public List<Id<T>> get(String w) {
+		return inner.get(w);
+	}
+	
+	public FunctionId<T> apply(String w, List<ExampleType> applied) throws SymbolTableException{
+		return apply(w, ExampleType.asArray(applied));
+	}
+	
+	public FunctionId<T> apply(String w, ExampleType... applied) throws SymbolTableException{
+		return inner.apply(w, applied);
+	}
+	
+	public VariableId<T> apply(String n) throws SymbolTableException{
+		return inner.apply(n);
+	}
+	
+	public int getCurrentScope() {
+		return level;
+	}
+}
+\end{lstlisting}

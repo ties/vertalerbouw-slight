@@ -1,11 +1,6 @@
 package edu.utwente.vb.symbols;
 
-import java.util.List;
-
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
-
-import com.google.common.collect.Lists;
 
 public interface Id<T extends BaseTree> {
 	public enum IdType{VARIABLE, FUNCTION, BUILTIN, VARARGS}
