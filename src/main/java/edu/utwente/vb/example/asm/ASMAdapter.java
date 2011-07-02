@@ -340,7 +340,7 @@ public class ASMAdapter implements Opcodes {
 	private void loadPlaceholder() {
 		if (currentVar.getNodeType() == ExampleType.STRING) {
 			// Load een Object als placeholder
-			mg.loadThis();
+			mg.newInstance(Type.getType(Object.class));
 			Method m = Method.getMethod("void <init> ()");
 			mg.invokeConstructor(Type.getType(Object.class), m);
 		} else {
