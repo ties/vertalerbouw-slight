@@ -86,6 +86,34 @@ testCheckerWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   
 >>
 
+testCodegenPreparation(filename, testname, rule, uitleg) ::= <<
+  /**
+  <uitleg>
+  */
+  @Test
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname>");
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    CodegenPreparation prepare = createCodegenPreparation(asCharStream(f), createParser(asCharStream(f)));
+    prepare.<rule>();
+  }
+  
+>>
+/**
+  <uitleg>
+  */
+testCodegenPreparationWithExpected(filename, testname, rule, expected, uitleg) ::= <<
+  @Test(expected=<expected>.class)
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+    log.debug("test<testname> expected: <expected>");
+    File f = new File(getClass().getResource("/<filename>").toURI());
+    CodegenPreparation prepare = createCodegenPreparation(asCharStream(f), createParser(asCharStream(f)));
+    prepare.<rule>();
+  }
+  
+>>
+
+
 testCodegen(filename, testname, rule, uitleg) ::= <<
   /**
   <uitleg>
