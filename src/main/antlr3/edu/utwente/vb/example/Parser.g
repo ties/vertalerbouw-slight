@@ -108,9 +108,8 @@ public void displayRecognitionError(String[] tokenNames, RecognitionException e)
  */
 program
   :
-  content EOF
-    ->
-      ^(PROGRAM content)
+  content EOF -> ^(PROGRAM content)
+  | EOF -> ^(PROGRAM)
   ;
 
 content
@@ -118,7 +117,7 @@ content
   (
     declaration
     | functionDef
-  )*
+  )+
   ;
 
 declaration
