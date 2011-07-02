@@ -115,7 +115,7 @@ functionDef
   
 parameterDef returns [TypedNode id_node]
 	@init{
-		int parameterNumber = 1;// parameter 0 = this bij func call van non-static
+		int parameterNumber = 0;// parameter 0 = this bij func call van non-static
 	}
   : ^(FORMAL primitive IDENTIFIER){ aa.visitArgument($IDENTIFIER, parameterNumber++); $id_node = $IDENTIFIER; }
   ; 
@@ -180,7 +180,7 @@ whileStatement
     Label loopBegin = new Label();
     Label loopEnd   = new Label();
   }
-  : ^(WHILE cond=expression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); } closedCompoundExpression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); })
+  : ^(WHILE cond=expression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); } closedCompoundExpression { aa.visitWhileEnd($cond.tree, loopBegin, loopEnd); })
   ;    
     
 primitive
