@@ -130,7 +130,7 @@ public class Compiler {
 			Checker.program_return checker_result = null;
 			// Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
-				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
 
 				if (!opt_debug_checker) {
 					checker = new Checker(nodes, new BlankDebugEventListener());
@@ -157,7 +157,7 @@ public class Compiler {
 			}
 
 			if (!opt_no_codegen) { // run codegenerator
-				CommonTreeNodeStream codgPrepareNodes = new CommonTreeNodeStream((TypedNode) checker_result.getTree());
+				BufferedTreeNodeStream codgPrepareNodes = new BufferedTreeNodeStream((TypedNode) checker_result.getTree());
 				CodegenPreparation prepare;
 				if (!opt_debug_preparation) {
 					prepare = new CodegenPreparation(codgPrepareNodes,
@@ -169,7 +169,7 @@ public class Compiler {
 				CodegenPreparation.program_return prepare_result = prepare
 						.program();
 				
-				CommonTreeNodeStream codgNodes = new CommonTreeNodeStream(
+				BufferedTreeNodeStream codgNodes = new BufferedTreeNodeStream(
 						(TypedNode)prepare_result.getTree());
 				codgNodes.setTokenStream(tokens);
 				CodeGenerator codg;
