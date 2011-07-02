@@ -1,5 +1,4 @@
 # Test incorrect gebruik van een comment: commentaarregel wordt niet afgesloten
-# expected: RewriteEmptyStreamException
 
 /# This is a single line comment
 /# This
