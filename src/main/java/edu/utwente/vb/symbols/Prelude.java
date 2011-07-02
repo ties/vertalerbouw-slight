@@ -71,10 +71,10 @@ public class Prelude {
 		VarArgsFunctionId<TypedNode> varArgs = new VarArgsFunctionId<TypedNode>(readNode, ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING);
 		readNode.setBoundMethod(varArgs);
 		builder.add(varArgs);
-		//Sla op
-		builtins = builder.build();
 		
 		builder.add(createFunctionId("ensure", ExampleType.VOID,	createVariableId("expr", ExampleType.BOOL)));
+		//Sla op
+		builtins = builder.build();
 	}
 	
 	public void inject(SymbolTable<TypedNode> t) throws IllegalFunctionDefinitionException{

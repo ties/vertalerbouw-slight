@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 public class Builtins {
 	BufferedReader reader;
 	
@@ -74,6 +72,7 @@ public class Builtins {
 	}
 	
 	protected void ensure(boolean expr){
-		checkArgument(expr);
+		if(!expr)
+			throw new Error("[Example] runtime error - ensure failed");
 	}
 }
