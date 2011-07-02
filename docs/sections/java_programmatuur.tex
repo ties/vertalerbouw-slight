@@ -1,4 +1,30 @@
 \chapter{Hulpklassen in Java}
 De implementatie van alle hieronder genoemde Java-klassen zijn bijgevoegd in Appendix G.
+
+\section{Indenting}
+De Java-klasse BaseOffSideLexer is een subklasse van de standaard ANTLR-klasse Lexer en bevat methoden om om te gaan met whitespace-karakters als newlines en tabs op zo'n wijze dat Python-achtige indenting wordt gerealiseerd.
+
 \section{Symboltable}
-Een checker valt of staat met een goede en handige implementatie van een symboltable. Omdat het ontwikkelen van een goed functionerende en foutloze symboltable een vakgebied apart is en het de scope van dit vak te buiten gaat om grondig onderzoek te doen naar de optimale symboltable is er voor gekozen een bestaand symboltable-concept te gebruiken welke zijn waarde al heeft bewezen. In Aho~\cite[p.85-90]{aho2007compilers} staat een concept van een symboltable welke bruikbaar is binnen talen met een platte of geneste blokstructuur. Gezien dit hiermee goed aansluit aansluit bij onze taal hebben is deze symboltable gebruikt. Omdat een kant-en-klaar implementatie van deze symboltable ontbreekt en omdat implementatie nuttig is voor het verkrijgen van inzicht in de werking van de symboltable is deze symboltable zelfstandig ge\"{i}mplementeerd. 
+Een checker valt of staat met een goede en handige implementatie van een symboltable. Omdat het ontwikkelen van een goed functionerende en foutloze symboltable een vakgebied apart is en het de scope van dit vak te buiten gaat om grondig onderzoek te doen naar de optimale symboltable is er voor gekozen een bestaand symboltable-concept te gebruiken welke zijn waarde al heeft bewezen. In Aho~\cite[p.85-90]{aho2007compilers} staat een concept van een symboltable welke bruikbaar is binnen talen met een platte of geneste blokstructuur. Gezien dit hiermee goed aansluit aansluit bij onze taal hebben is deze symboltable gebruikt. Omdat een kant-en-klaar implementatie van deze symboltable ontbreekt en omdat implementatie nuttig is voor het verkrijgen van inzicht in de werking van de symboltable is deze symboltable zelfstandig ge\"{i}mplementeerd.
+
+\section{Exceptionhandling}
+Foutafhandeling is een essentieel onderdeel van een compiler. Informatieve en sturende foutmeldingen geven de gebruiker van de programmeertaal een beeld van het soort fout dat is gemaakt en waar deze fout is opgetreden. Om informatieve foutmeldingen in Example te ondersteunen is de klasse SymboltableException en zijn drie subklassen IncompatibleTypesException, IllegalVariableDefinitionException en IllegalFunctionDefinitionException ge\"{i}mplementeerd. Deze zijn een subklasse van de standaard ANTLR exceptieklasse RecognitionException en vullen deze klasse in door de standaard errormessage vooraf te laten gaan door het regelnummer en de karakterpositie van de token waarop de fout is ontstaan. Het voorzien van gebruikers van de programmeertaal met de positie van de fouten faciliteert immers enorm in het oplossen van fouten. Tevens zijn de members van de grammaticabronnen parser.g en checker.g ontwikkeld op zo'n wijze dat alle fouten achter elkaar worden verzameld, zodat meerdere fouten genummerd onder elkaar kunnen worden weergegeven. Door in de members van de parser ook de methode displayRecognitionError() te overriden zijn de foutmeldingen die bij alle typen RecognitionException worden weergegeven op maat gemaakt voor de Example taal.
+
+\section{Ingebouwde functies}
+Zowel de checker als de codegenerator behoeven te weten welke functies standaard in de Example programmeertaal zijn ingebouwd. De checker moet immers kunnen controleren of een functie die in een programma wordt aangeroepen wel is gedefinieerd. De codegenerator moet weten welke instructies uitgevoerd moeten worden bij een aanroep van een van de ingebouwde functies. Bij de javaklassen in appendix G is in de sectie Symboltable de klasse Prelude te vinden, deze klasse definieerd voor de checker alle standaard ingebouwde functies van Example met bijbehorende parametertypen en typen van de teruggeefwaarde. Voor de codegenerator is de klasse Builtins geschreven, welke een in Java gedefinieerde library van functies is voor de Example programmeertaal.
+
+\section{De klasse Compiler}
+De klasse compiler is de aan te roepen klassen voor het gebruik van de Example compiler. Bij aanroep doorloopt Compiler de verschillende lagen van de Example compiler met de megegeven programmacode, van Lexer totaan de Codegenerator. De compiler klasse kan vanaf de commandline worden aangeroepen en kent daarbij enkele mogelijke commandlineparameters:
+\begin{description}
+    \item[--opt\_ast]                   Optie om de Abstract Syntax Tree behorend bij dit testprogramma terug te geven in codenotatie
+    \item[--opt\_debug]                 Zet het gooien van Excepties aan, deze optie is nodig zodat de testsuite fouten kan herkennen
+    \item[--opt\_debug\_checker]        Start een debug sessie voor de checker, welke vanaf ANTLR-works benaderbaar is
+    \item[--opt\_debug\_codegen]        Start een debug sessie voor de codegenerator, welke vanaf ANTLR-works benaderbaar is
+    \item[--opt\_debug\_parser]         Start een debug sessie voor de parser, welke vanaf ANTLR-works benaderbaar is
+    \item[--opt\_debug\_preparation]    Start een debug sessie voor de codegeneratie voorbereidingsfase, welke vanaf ANTLR-works benaderbaar is
+    \item[--opt\_dot]                   Optie om de Abstract Syntax Tree behorend bij dit testprogramma terug te geven in DOT-notatie
+    \item[--opt\_file\_input]           Hier kan de inputfile voor de compiler mee worden aangegeven
+    \item[--opt\_no\_checker]           Zorgt voor uitvoer van enkel de parserlaag
+    \item[--opt\_no\_codegen]           Zorgt voor uitvoer tot en met de checkerlaag
+    \item[--opt\_no\_interpreter]       Zorgt voor uitvoer tot en met de codegeneratielaag
+\end{description}
