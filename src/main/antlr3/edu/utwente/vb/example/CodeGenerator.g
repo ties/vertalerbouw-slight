@@ -133,12 +133,12 @@ expression
   //Assignment
   : ^(BECOMES base=expression expression { aa.visitBecomes($base.tree); })
   //Comparisons
-  | ^(LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFLE, $base.tree,$sec.tree); })
-  | ^(GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFGE, $base.tree,$sec.tree); })
-  | ^(GT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFGT, $base.tree,$sec.tree); })
-  | ^(LT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFLT, $base.tree,$sec.tree); })
-  | ^(EQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IFEQ, $base.tree,$sec.tree); })
-  | ^(NOTEQ base=expression sec=expression { aa.visitCompareOperator(Opcodes.IFNE, $base.tree,$sec.tree); })
+  | ^(LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLE, $base.tree,$sec.tree); })
+  | ^(GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGE, $base.tree,$sec.tree); })
+  | ^(GT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGT, $base.tree,$sec.tree); })
+  | ^(LT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLT, $base.tree,$sec.tree); })
+  | ^(EQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPEQ, $base.tree,$sec.tree); })
+  | ^(NOTEQ base=expression sec=expression { aa.visitCompareOperator(Opcodes.IF_ICMPNE, $base.tree,$sec.tree); })
   //Binary operators
   | ^(OR base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IOR, $base.tree, $sec.tree); }) 
   | ^(AND base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IAND, $base.tree, $sec.tree); }) 

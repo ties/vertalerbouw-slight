@@ -379,7 +379,8 @@ public class ASMAdapter implements Opcodes {
 		//Type van expressiezijden opvragen
 		Type type = node.getNodeType().toASM();
 		// Jump naar ifEnd als true
-		mg.ifCmp(type, GeneratorAdapter.EQ, ifEnd);
+		mg.visitJumpInsn(IFEQ, ifEnd);
+		//mg.ifCmp(type, GeneratorAdapter.EQ, ifEnd);
 	}
 	
 	/**
@@ -432,12 +433,12 @@ public class ASMAdapter implements Opcodes {
 			mg.visitInsn(ICONST_1);
 			mg.visitLabel(l4);
 		} else {
-			checkArgument(opcode == Opcodes.IFNE || opcode == Opcodes.IFEQ);
+			checkArgument(opcode == Opcodes.IF_ICMPNE || opcode == Opcodes.IF_ICMPEQ);
 			switch(opcode){
-				case Opcodes.IFNE:
+				case Opcodes.IF_ICMPNE:
 					mg.invokeVirtual(superClassName, new Method("stringEQ", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
 					break;
-				case Opcodes.IFEQ:
+				case Opcodes.IF_ICMPEQ:
 					mg.invokeVirtual(superClassName, new Method("stringNE", Type.BOOLEAN_TYPE, new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
 					break;
 			}
