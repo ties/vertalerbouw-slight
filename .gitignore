@@ -3,6 +3,7 @@
 # Ignores
 #
 #
+output
 target
 target/**
 bin
