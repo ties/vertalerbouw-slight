@@ -71,6 +71,7 @@ public class ASMAdapter implements Opcodes {
 	/** The method adapter */
 	private GeneratorAdapter mg;
 	private GeneratorAdapter mainFunctionMethodGenerator;
+	private boolean loadArguments = true;
 
 	/**
 	 * De classVisitor, hier roep je alles op aan. Delegeert het door
@@ -86,7 +87,7 @@ public class ASMAdapter implements Opcodes {
 	private final Logger log = LoggerFactory.getLogger(ASMAdapter.class);
 
 	private List<String> toInstantiate = new ArrayList<String>();
-	
+
 	public ASMAdapter(String className, String sourceName) {
 		this(className);
 		cv.visitSource(sourceName, null);
@@ -94,7 +95,7 @@ public class ASMAdapter implements Opcodes {
 
 	public ASMAdapter(String cn) {
 		this.internalClassType = Type.getObjectType(cn.replace('.', '/'));
-		
+
 		log.debug("instantiating ASMAdapter for {}", internalClassType);
 		// Instantieer een ClassWriter
 		$__cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -105,7 +106,6 @@ public class ASMAdapter implements Opcodes {
 		// En een CheckClassAdapter die controleert of de bytecode geldig is.
 		CheckClassAdapter checkAdapter = new CheckClassAdapter(tcv);
 		cv = checkAdapter;
-
 
 		/*
 		 * version - the class version. access - the class's access flags (see
@@ -119,10 +119,10 @@ public class ASMAdapter implements Opcodes {
 		 * names of the class's interfaces (see getInternalName). May be null.
 		 */
 		superClassName = Type.getType(Builtins.class);
-		cv.visit(V1_5, ACC_PUBLIC, internalClassType.getInternalName(), null, superClassName.getInternalName(),
-				null);
+		cv.visit(V1_5, ACC_PUBLIC, internalClassType.getInternalName(), null,
+				superClassName.getInternalName(), null);
 		// Constructor stub
-		// Code hieronder komt uit javadoc van ASM GeneratorAdapter		
+		// Code hieronder komt uit javadoc van ASM GeneratorAdapter
 		Method m = Method.getMethod("void <init> ()");
 		constructorMethodGenerator = new GeneratorAdapter(ACC_PUBLIC, m, null,
 				null, cv);
@@ -131,21 +131,24 @@ public class ASMAdapter implements Opcodes {
 		constructorMethodGenerator.invokeConstructor(
 				Type.getType(Builtins.class), m);
 		constructorMethodGenerator.loadThis();
-		
+
 		Method mainMethod = Method.getMethod("void main(String[])");
-		mainFunctionMethodGenerator = new GeneratorAdapter(ACC_PUBLIC | ACC_STATIC, mainMethod, null, null, cv);
+		mainFunctionMethodGenerator = new GeneratorAdapter(ACC_PUBLIC
+				| ACC_STATIC, mainMethod, null, null, cv);
 		mainFunctionMethodGenerator.visitCode();
 		mainFunctionMethodGenerator.newInstance(internalClassType);
-		mainFunctionMethodGenerator.dup(); // Not needed if main is not there, but nm for now.
+		mainFunctionMethodGenerator.dup(); // Not needed if main is not there,
+											// but nm for now.
 		mainFunctionMethodGenerator.invokeConstructor(internalClassType, m);
 	}
-	
+
 	/**
 	 * Initialises Example builtin-functions like print() and read()
 	 */
-	private void builtinFunctions(){
-		{	//print(String)mg = 
-			MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "print", "(Ljava/lang/String;)V", null, null);
+	private void builtinFunctions() {
+		{ // print(String)mg =
+			MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "print",
+					"(Ljava/lang/String;)V", null, null);
 			mv.visitCode();
 			mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out",
 					"Ljava/io/PrintStream;");
@@ -157,8 +160,7 @@ public class ASMAdapter implements Opcodes {
 			mv.visitEnd();
 		}
 	}
-	
-	
+
 	/**
 	 * Einde van de visit - Debug bytecode + sluit constructor af
 	 */
@@ -166,9 +168,10 @@ public class ASMAdapter implements Opcodes {
 		log.debug("visitEnd(), bytecode:");
 		/* Sluit de constructor af */
 		constructorMethodGenerator.returnValue();
-		constructorMethodGenerator.visitMaxs(1000, 1000); // maxStack door classWriter
+		constructorMethodGenerator.visitMaxs(1000, 1000); // maxStack door
+															// classWriter
 		constructorMethodGenerator.visitEnd();
-		
+
 		mainFunctionMethodGenerator.returnValue();
 		mainFunctionMethodGenerator.visitMaxs(2, 1);
 		mainFunctionMethodGenerator.visitEnd();
@@ -215,31 +218,34 @@ public class ASMAdapter implements Opcodes {
 
 		log.debug("visitFuncDef {} {}", name, Type.getMethodDescriptor(node
 				.getNodeType().toASM(), ExampleType.nodeListToASM(params)));
-		
-		// Now check if this is the main. 
-		// If so, add a call to the main function to the classes main[] in order to actually execute the code
-		// Adding MAIN to the Lexer causes some trouble (FUNC DEF/FUNC DEF need to be specified for both IDENTIFIER and MAIN, etc
+
+		// Now check if this is the main.
+		// If so, add a call to the main function to the classes main[] in order
+		// to actually execute the code
+		// Adding MAIN to the Lexer causes some trouble (FUNC DEF/FUNC DEF need
+		// to be specified for both IDENTIFIER and MAIN, etc
 		// The other option (IDENTIFIED : MAIN | ...) is also ugly
-		if("main".equals(name)) {
+		if ("main".equals(name)) {
 			mainFunctionMethodGenerator.dup();
-			mainFunctionMethodGenerator.invokeVirtual(internalClassType, funcId.asMethod());
+			mainFunctionMethodGenerator.invokeVirtual(internalClassType,
+					funcId.asMethod());
 		}
 	}
-	
-	public void visitArgument(TypedNode id, int n){
+
+	public void visitArgument(TypedNode id, int n) {
 		checkArgument(id instanceof BindingOccurrenceNode);
-		BindingOccurrenceNode node = (BindingOccurrenceNode)id;
+		BindingOccurrenceNode node = (BindingOccurrenceNode) id;
 		node.setVariableType(VariableType.ARGUMENT);
 		node.setNumber(n);
 	}
 
 	public void visitEndFuncDef() {
 		log.debug("visitEndFuncDef, in function before? {}", inFunction);
-		
+
 		mg.returnValue();
 		mg.visitMaxs(1000, 1000);
 		mg.visitEnd();
-		
+
 		mg = null;
 	}
 
@@ -247,27 +253,30 @@ public class ASMAdapter implements Opcodes {
 		checkArgument(node instanceof AppliedOccurrenceNode);
 		AppliedOccurrenceNode appNode = (AppliedOccurrenceNode) node;
 		checkArgument(appNode.getBindingNode() instanceof BindingOccurrenceNode);
-		BindingOccurrenceNode bindingOccurrence = (BindingOccurrenceNode) appNode.getBindingNode();
-		
-		switch(bindingOccurrence.getVariableType()){
-			case LOCAL:
-				mg.storeLocal(bindingOccurrence.getNumber());
-				break;
-			case ARGUMENT:
-				mg.storeArg(bindingOccurrence.getNumber());
-				break;
-			case FIELD:
-				mg.loadThis();
-				mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed zolang wij geen long/double primitieven hebben ...
-				mg.putField(internalClassType, appNode.getText(), appNode.getNodeType().toASM());
-				break;
+		BindingOccurrenceNode bindingOccurrence = (BindingOccurrenceNode) appNode
+				.getBindingNode();
+
+		switch (bindingOccurrence.getVariableType()) {
+		case LOCAL:
+			mg.storeLocal(bindingOccurrence.getNumber());
+			break;
+		case ARGUMENT:
+			mg.storeArg(bindingOccurrence.getNumber());
+			break;
+		case FIELD:
+			mg.loadThis();
+			mg.swap(); // swap Object/Value voor PUTFIELD instructie. Gaat goed
+						// zolang wij geen long/double primitieven hebben ...
+			mg.putField(internalClassType, appNode.getText(), appNode
+					.getNodeType().toASM());
+			break;
 		}
 	}
 
 	public void visitDecl(TypedNode node) {
 		checkArgument(mg == null || inFunction);
 		checkArgument(node instanceof BindingOccurrenceNode);
-		
+
 		currentVar = (BindingOccurrenceNode) node;
 
 		if (!inFunction) {// Initialisatie van variabele in constructor
@@ -276,9 +285,9 @@ public class ASMAdapter implements Opcodes {
 			cv.visitField(ACC_PUBLIC, node.getText(),
 					node.getNodeType().toASM().getDescriptor(), null, null)
 					.visitEnd();
-			
+
 			currentVar.setVariableType(VariableType.FIELD);
-			
+
 			mg = constructorMethodGenerator;
 		} else {
 			/*
@@ -289,7 +298,7 @@ public class ASMAdapter implements Opcodes {
 			currentVar.setNumber(i);
 			currentVar.setVariableType(VariableType.LOCAL);
 		}
-		
+
 		assert currentVar.getVariableType() != null;
 	}
 
@@ -302,33 +311,59 @@ public class ASMAdapter implements Opcodes {
 		boolean hasValue = node != null;
 
 		if (!inFunction) {
-			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(), currentVar);
+			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(),
+					currentVar);
 
-			if (hasValue) {
-				mg.loadThis();
-				mg.swap();
-				mg.visitFieldInsn(PUTFIELD, internalClassType.getInternalName(),
-						currentVar.getText(), currentVar.getNodeType().toASM()
-								.getDescriptor());
+			if (!hasValue) {
+				loadPlaceholder();
 			}
-			
+			mg.loadThis();
+			mg.swap();
+			mg.visitFieldInsn(PUTFIELD, internalClassType.getInternalName(),
+					currentVar.getText(), currentVar.getNodeType().toASM()
+							.getDescriptor());
 			// Remove the pointer to the constructor
 			mg = null;
 		} else {
 			log.debug("VarInsn {} {}", currentVar.getNodeType().toASM()
 					.getOpcode(ISTORE), currentVar);
 
-			if (hasValue) {
-				mg.storeLocal(currentVar.getNumber());
+			if (!hasValue) {
+				loadPlaceholder();
 			}
+			mg.storeLocal(currentVar.getNumber());
 		}
-		
+
 		currentVar = null;
 	}
-	
-	public void visitFuncCallBegin(TypedNode n, List<TypedNode> params){
+
+	private void loadPlaceholder() {
+		if (currentVar.getNodeType() == ExampleType.STRING) {
+			// Load een Object als placeholder
+			mg.loadThis();
+			Method m = Method.getMethod("void <init> ()");
+			mg.invokeConstructor(Type.getType(Object.class), m);
+		} else {
+			// Primitive -> 0 is goed
+			mg.visitInsn(ICONST_0);
+		}
+
+	}
+
+	public void visitFuncCallBegin(TypedNode n, List<TypedNode> params) {
+		// Special handling of VarArgs/READ function
+		checkArgument(n instanceof AppliedOccurrenceNode);
+
+		FunctionNode func = (FunctionNode) ((AppliedOccurrenceNode)n).getBindingNode();
+		if (IdType.VARARGS.equals(func.getBoundMethod().getIdType())) {
+			loadArguments = false;
+		} else {
+			loadArguments = true;
+		}
+		log.debug("Loading arguments? {}", loadArguments);
 		// Load this onto the stack
-		// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]  => ...
+		// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]
+		// => ...
 		mg.loadThis();
 		log.debug("visitFuncCallBegin");
 	}
@@ -336,100 +371,114 @@ public class ASMAdapter implements Opcodes {
 	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
 		log.debug("visit function call: " + n);
 		checkArgument(n instanceof AppliedOccurrenceNode);
-		
-		AppliedOccurrenceNode an = (AppliedOccurrenceNode)n;
-		
+
+		AppliedOccurrenceNode an = (AppliedOccurrenceNode) n;
+
 		checkArgument(an.getBindingNode() instanceof FunctionNode);
-		
-		FunctionNode node = (FunctionNode)an.getBindingNode();
-		
-		checkArgument(!node.getBoundMethod().getIdType().equals(IdType.VARIABLE));
-		
+
+		FunctionNode node = (FunctionNode) an.getBindingNode();
+
+		checkArgument(!node.getBoundMethod().getIdType()
+				.equals(IdType.VARIABLE));
+
 		String name = node.getText();
 		Method target;
-		
-		switch(node.getBoundMethod().getIdType()){
-			case BUILTIN:
-				log.debug("Builtin function "  + name);
-				target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
+
+		switch (node.getBoundMethod().getIdType()) {
+		case BUILTIN:
+			log.debug("Builtin function " + name);
+			target = new Method(name, node.getNodeType().toASM(),
+					ExampleType.nodeListToASM(params));
+			mg.invokeVirtual(superClassName, target);
+			break;
+		case FUNCTION:
+			log.debug("User-Defined function " + name);
+			// The difference between the invokespecial and the invokevirtual
+			// instructions is that invokevirtual invokes a method based on the
+			// class of the object.
+			// The invokespecial instruction is used to invoke instance
+			// initialization methods (§3.9) as well as private methods and
+			// methods of a superclass of the current class.
+			target = new Method(name, node.getNodeType().toASM(),
+					ExampleType.nodeListToASM(params));
+			mg.invokeVirtual(internalClassType, target);
+			break;
+		case VARARGS:
+			// For each argument: dispatch a [functionname] call for the given
+			// argument
+			// then save it into the variable
+			boolean first = true;
+			for (TypedNode arg : params) {
+				if (!first)
+					mg.loadThis();
+
+				target = new Method(name, arg.getNodeType().toASM(),
+						new Type[] { arg.getNodeType().toASM() });
+				log.debug("Dispatching read to " + target);
 				mg.invokeVirtual(superClassName, target);
-				break;
-			case FUNCTION:
-				log.debug("User-Defined function " + name);
-				// The difference between the invokespecial and the invokevirtual instructions is that invokevirtual invokes a method based on the class of the object. 
-				// The invokespecial instruction is used to invoke instance initialization methods (§3.9) as well as private methods and methods of a superclass of the current class.
-				target = new Method(name,  node.getNodeType().toASM(), ExampleType.nodeListToASM(params));
-				mg.invokeVirtual(internalClassType, target);
-				break;
-			case VARARGS:
-				// For each argument: dispatch a [functionname] call for the given argument
-				// then save it into the variable
-				log.debug("VarArgs dispatch");
-				boolean first = true;
-				for(TypedNode arg : params){
-					if(!first)
-						mg.loadThis();
-					
-					target = new Method(name, arg.getNodeType().toASM(), new Type[]{ arg.getNodeType().toASM()});
-					log.debug("Dispatching read to " + target);
-					mg.invokeVirtual(superClassName, target);
-					visitBecomes(arg);
-					
-					first = false;
-				}				
-				break;
+				visitBecomes(arg);
+
+				first = false;
+			}
+			break;
 		}
 	}
-	
-	public void visitIfBegin(TypedNode node, Label ifEnd){
-		//Type van expressiezijden opvragen
+
+	public void visitIfBegin(TypedNode node, Label ifEnd) {
+		// Type van expressiezijden opvragen
 		Type type = node.getNodeType().toASM();
 		// Jump naar ifEnd als true
 		mg.visitJumpInsn(IFEQ, ifEnd);
 		//mg.ifCmp(type, GeneratorAdapter.EQ, ifEnd);
 	}
-	
+
 	/**
-	 * Mark het label dat het einde van de de TRUE expressies definiteert en GOTO het label aan het einde van de else.
+	 * Mark het label dat het einde van de de TRUE expressies definiteert en
+	 * GOTO het label aan het einde van de else.
 	 */
-	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd){
+	public void visitIfHalf(TypedNode node, Label ifEnd, Label elseEnd) {
 		mg.goTo(elseEnd);
-		mg.mark(ifEnd); 
-	} 
-	
-	public void visitIfEnd(TypedNode node, Label elseEnd){
+		mg.mark(ifEnd);
+	}
+
+	public void visitIfEnd(TypedNode node, Label elseEnd) {
 		mg.mark(elseEnd);
 	}
 
 	public void visitWhileBegin(TypedNode node, Label loopBegin, Label loopEnd) {
-		//Backpatchen
+		// Backpatchen
 		mg.mark(loopBegin);
-		//0 (false) op de stack
+		// 0 (false) op de stack
 		mg.visitInsn(ICONST_0);
-		//Jumpen naar loopEnd als gelijk, later backpatchen
+		// Jumpen naar loopEnd als gelijk, later backpatchen
 		mg.ifICmp(IFEQ, loopEnd);
 	}
 
 	public void visitWhileEnd(TypedNode node, Label loopBegin, Label loopEnd) {
-		//Backpatchen
+		// Backpatchen
 		mg.mark(loopEnd);
-		//1 (true) op de stack
+		// 1 (true) op de stack
 		mg.visitInsn(ICONST_1);
-		//Jumpen naar loopBegin als gelijk, later backpatchen
+		// Jumpen naar loopBegin als gelijk, later backpatchen
 		mg.ifICmp(IFEQ, loopBegin);
 	}
 
-	public void visitBinaryOperator(/* Opcode */ int opcode, TypedNode lhs, TypedNode rhs){
-		if(!ExampleType.STRING.equals(lhs.getNodeType())){
+	public void visitBinaryOperator(/* Opcode */int opcode, TypedNode lhs,
+			TypedNode rhs) {
+		if (!ExampleType.STRING.equals(lhs.getNodeType())) {
 			mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));
 		} else {
-			checkArgument(opcode == Opcodes.IADD, "Invalid binary operator on a string");
-			mg.invokeVirtual(superClassName, new Method("stringAppend", Type.getType(String.class), new Type[]{lhs.getNodeType().toASM(), rhs.getNodeType().toASM()}));
-		}	
+			checkArgument(opcode == Opcodes.IADD,
+					"Invalid binary operator on a string");
+			mg.invokeVirtual(superClassName,
+					new Method("stringAppend", Type.getType(String.class),
+							new Type[] { lhs.getNodeType().toASM(),
+									rhs.getNodeType().toASM() }));
+		}
 	}
-	
-	public void visitCompareOperator(int opcode, TypedNode lhs, TypedNode rhs){
-		if(!ExampleType.STRING.equals(lhs.getNodeType())){
+
+	public void visitCompareOperator(int opcode, TypedNode lhs, TypedNode rhs) {
+		if (!ExampleType.STRING.equals(lhs.getNodeType())) {
 			Label l3 = new Label();
 			Label l4 = new Label();
 			mg.visitJumpInsn(opcode, l3);
@@ -450,33 +499,39 @@ public class ASMAdapter implements Opcodes {
 			}
 		}
 	}
-	
-	public void visitReturn(TypedNode expr){
+
+	public void visitReturn(TypedNode expr) {
 		mg.visitInsn(expr.getNodeType().toASM().getOpcode(IRETURN));
 	}
-	
-	public void visitNot(){
+
+	public void visitNot() {
 		mg.not();
 	}
-	
-	public void visitVariable(TypedNode n){
+
+	public void visitVariable(TypedNode n) {
 		checkArgument(n instanceof AppliedOccurrenceNode);
-		
-		BindingOccurrenceNode node = (BindingOccurrenceNode)((AppliedOccurrenceNode)n).getBindingNode();
-		switch(node.getVariableType()){
-			case ARGUMENT:
+
+		BindingOccurrenceNode node = (BindingOccurrenceNode) ((AppliedOccurrenceNode) n)
+				.getBindingNode();
+		switch (node.getVariableType()) {
+		case ARGUMENT:
+			if (loadArguments) {
 				mg.loadArg(node.getNumber());
-				break;
-			case LOCAL:
-				mg.loadLocal(node.getNumber());
-				break;
-			case FIELD:
-				mg.loadThis();
-				mg.getField(internalClassType, node.getText(), node.getNodeType().toASM());
-				break;
+			}
+			log.debug("loading argument {} #{}? {}",
+					new Object[] { node, node.getNumber(), loadArguments });
+			break;
+		case LOCAL:
+			mg.loadLocal(node.getNumber());
+			break;
+		case FIELD:
+			mg.loadThis();
+			mg.getField(internalClassType, node.getText(), node.getNodeType()
+					.toASM());
+			break;
 		}
 	}
-	
+
 	public void visitCharAtom(TypedNode node) {
 		visitAtom(node.getNodeType().toASM(), (int) node.getText().charAt(0));
 	}
@@ -534,5 +589,5 @@ public class ASMAdapter implements Opcodes {
 			}
 		}
 	}
-	
+
 }
