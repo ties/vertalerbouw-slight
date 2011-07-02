@@ -71,7 +71,7 @@ public class ASMAdapter implements Opcodes {
 	/** The method adapter */
 	private GeneratorAdapter mg;
 	private GeneratorAdapter mainFunctionMethodGenerator;
-	private boolean loadArguments = true;
+	private boolean loadVars = true;
 
 	/**
 	 * De classVisitor, hier roep je alles op aan. Delegeert het door
@@ -356,11 +356,11 @@ public class ASMAdapter implements Opcodes {
 
 		FunctionNode func = (FunctionNode) ((AppliedOccurrenceNode)n).getBindingNode();
 		if (IdType.VARARGS.equals(func.getBoundMethod().getIdType())) {
-			loadArguments = false;
+			loadVars = false;
 		} else {
-			loadArguments = true;
+			loadVars = true;
 		}
-		log.debug("Loading arguments? {}", loadArguments);
+		log.debug("Loading arguments? {}", loadVars);
 		// Load this onto the stack
 		// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]
 		// => ...
@@ -371,7 +371,7 @@ public class ASMAdapter implements Opcodes {
 	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
 		log.debug("visit function call: " + n);
 		// Load arguments
-		loadArguments = true;
+		loadVars = true;
 		
 		checkArgument(n instanceof AppliedOccurrenceNode);
 
@@ -448,23 +448,21 @@ public class ASMAdapter implements Opcodes {
 	public void visitIfEnd(TypedNode node, Label elseEnd) {
 		mg.mark(elseEnd);
 	}
-
-	public void visitWhileBegin(TypedNode node, Label loopBegin, Label loopEnd) {
-		// Backpatchen
-		mg.mark(loopBegin);
-		// 0 (false) op de stack
-		mg.visitInsn(ICONST_0);
-		// Jumpen naar loopEnd als gelijk, later backpatchen
-		mg.ifICmp(IFEQ, loopEnd);
+	
+	public void visitWhileCond(Label condBegin){
+		mg.mark(condBegin);
 	}
 
-	public void visitWhileEnd(TypedNode node, Label loopBegin, Label loopEnd) {
+	public void visitWhileBegin(Label loopEnd) {
+		// Jumpen naar loopEnd als gelijk, later backpatchen
+		mg.visitJumpInsn(Opcodes.IFNE, loopEnd);
+	}
+
+	public void visitWhileEnd(Label condBegin, Label loopEnd) {
+		// Jumpen naar loopBegin als gelijk, later backpatchen
+		mg.goTo(condBegin);
 		// Backpatchen
 		mg.mark(loopEnd);
-		// 1 (true) op de stack
-		mg.visitInsn(ICONST_1);
-		// Jumpen naar loopBegin als gelijk, later backpatchen
-		mg.ifICmp(IFEQ, loopBegin);
 	}
 
 	public void visitBinaryOperator(/* Opcode */int opcode, TypedNode lhs,
@@ -517,7 +515,7 @@ public class ASMAdapter implements Opcodes {
 
 		BindingOccurrenceNode node = (BindingOccurrenceNode) ((AppliedOccurrenceNode) n)
 				.getBindingNode();
-		if(loadArguments){
+		if(loadVars){
 			switch (node.getVariableType()) {
 			case ARGUMENT:
 				mg.loadArg(node.getNumber());
@@ -532,7 +530,11 @@ public class ASMAdapter implements Opcodes {
 				break;
 			}
 		}
-		log.debug("loading argument {} #{}? {}", new Object[] { node, node.getNumber(), loadArguments });
+		log.debug("loading argument {} #{}? {}", new Object[] { node, node.getNumber(), loadVars });
+	}
+	
+	public void loadVars(boolean state){
+		loadVars = state;
 	}
 
 	public void visitCharAtom(TypedNode node) {

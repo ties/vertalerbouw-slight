@@ -131,7 +131,7 @@ compoundExpression
   
 expression
   //Assignment
-  : ^(BECOMES base=expression expression { aa.visitBecomes($base.tree); })
+  : ^(BECOMES { aa.loadVars(false); } base=expression { aa.loadVars(true); } expression { aa.visitBecomes($base.tree); })
   //Comparisons
   | ^(LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLE, $base.tree,$sec.tree); })
   | ^(GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGE, $base.tree,$sec.tree); })
@@ -177,10 +177,10 @@ ifStatement
     
 whileStatement
   @init{
-    Label loopBegin = new Label();
+  	Label condBegin = new Label();
     Label loopEnd   = new Label();
   }
-  : ^(WHILE cond=expression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); } closedCompoundExpression { aa.visitWhileBegin($cond.tree, loopBegin, loopEnd); })
+  : ^(WHILE { aa.visitWhileCond(condBegin); } cond=expression { aa.visitWhileBegin(loopEnd); } closedCompoundExpression { aa.visitWhileEnd(condBegin, loopEnd); })
   ;    
     
 primitive
