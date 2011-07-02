@@ -213,6 +213,7 @@ public class ASMAdapter implements Opcodes {
 
 		mg = new GeneratorAdapter(ACC_PUBLIC, funcId.asMethod(), null, null, cv);
 		mg.visitCode();
+		mg.visitLineNumber(node.token.getLine(), mg.mark());
 		// Laad this - sowieso nodig voor de return
 		mg.loadThis();
 
