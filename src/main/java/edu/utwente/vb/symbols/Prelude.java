@@ -73,6 +73,8 @@ public class Prelude {
 		builder.add(varArgs);
 		//Sla op
 		builtins = builder.build();
+		
+		builder.add(createFunctionId("ensure", ExampleType.VOID,	createVariableId("expr", ExampleType.BOOL)));
 	}
 	
 	public void inject(SymbolTable<TypedNode> t) throws IllegalFunctionDefinitionException{
