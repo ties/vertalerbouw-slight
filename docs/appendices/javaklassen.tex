@@ -66,32 +66,41 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	/**
-	 * Put a variable into the symbol table, checking if it's name is unique at 
-     * the current level
+	 * Put a variable into the symbol table, checking if it's 
+     * name is unique at the current level
 	 * @throws IllegalVariableDefinitionException 
 	 */
-	public void put(final VariableId<T> i) throws IllegalVariableDefinitionException{
-		checkNotNull(i); checkNotNull(i.getText());
-		if(variables.containsKey(i.getText())){//duplicate definition in this scope level
-			throw new IllegalVariableDefinitionException("duplicate definition of variable
-                 \"" + i.getText() + "\" in the current scope");
-		}
-		variables.put(i.getText(), i);
+	public void put(final VariableId<T> i) 
+        throws IllegalVariableDefinitionException{
+    		checkNotNull(i); checkNotNull(i.getText());
+    		if(variables.containsKey(i.getText()))
+                {//duplicate definition in this scope level
+        			throw new IllegalVariableDefinitionException("duplicate
+                         definition of variable\"" + i.getText()    
+                         + "\" in the current scope");
+    		}
+    		variables.put(i.getText(), i);
 	}
 	
 	/**
-	 * Put a function into the symbol table, checking if it's name is unique at the current 
-     * level w/ the same type of operands
+	 * Put a function into the symbol table, checking if it's name is unique 
+     * at the current level w/ the same type of operands
 	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public void put(final FunctionId<T> i) throws IllegalFunctionDefinitionException{
-		checkNotNull(i); checkNotNull(i.getText());
-		if(functions.containsKey(i.getText())){//duplicate definition in this scope level
-			for(FunctionId<T> potential : functions.get(i.getText())){
-				if(potential.equalsSignature(i.getText(), ExampleType.asArray(i.getTypeParameters())))
-					throw new IllegalFunctionDefinitionException("Function " + i.getText() 
-                        + " with signature " + i.getTypeParameters().toString() 
-                        + " is already defined in the current scope");		
+	public void put(final FunctionId<T> i) 
+        throws IllegalFunctionDefinitionException{
+    		checkNotNull(i); checkNotNull(i.getText());
+    		if(functions.containsKey(i.getText())){
+    			for(FunctionId<T> potential : functions.get(i.getText())){
+    				if(potential.equalsSignature(i.getText(), 
+                        ExampleType.asArray(i.getTypeParameters())))
+        					throw new 
+                            IllegalFunctionDefinitionException(
+                                "Function " + i.getText() 
+                                + " with signature " 
+                                + i.getTypeParameters().toString() 
+                                + " is already defined in"+
+                                + "the current scope");		
 			}
 		}
 		functions.put(i.getText(), i);
@@ -121,7 +130,8 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 	 * *: Invariant: *als* er een match was die gelijk was op hetzelfde niveau, 
      * was die gevonden bij put
 	 * lijkt veel op get, maar kan de Set van daar niet hergebruiken, want geen 
-     * garanties over order daarnaast is dit efficienter, hij springt er eerder uit
+     * garanties over order daarnaast is dit efficienter, hij springt er 
+     * eerder uit
 	 */
 	@Override
 	public FunctionId<T> apply(final String n, final ExampleType... applied) 
@@ -129,9 +139,10 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 		    log.debug("applyFunction {} ({})", n, Arrays.toString(applied));
 		    //zie (*)
 		    for(Env e = this; e != null; e = e.prev){
-			    for(FunctionId<T> id : (Set<FunctionId<T>>)e.functions.get(n)){
-			    	if(id.equalsSignature(n, applied))
-			    		return id;
+			    for(FunctionId<T> id : (Set<FunctionId<T>>)
+                    e.functions.get(n)){
+			    	    if(id.equalsSignature(n, applied))
+			    		    return id;
 			    }
 		    }
 		    log.debug("Function not found for {} ({})", n, applied);
@@ -145,7 +156,8 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 			if(e.variables.containsKey(n))
 				return (VariableId<T>) e.variables.get(n);
 		}
-		throw new SymbolTableException("No matching entry for variable name " + n);
+		throw new SymbolTableException("No matching entry for variable name "
+            + n);
 	}
 	
 }
@@ -175,12 +187,14 @@ public interface EnvApi<T extends BaseTree> {
 	 * Voeg een functie aan de Environment toe
 	 * @param i
 	 */
-	public void put(final FunctionId<T> i) throws IllegalFunctionDefinitionException;
+	public void put(final FunctionId<T> i) 
+        throws IllegalFunctionDefinitionException;
 	
 	/**
 	 * 
 	 */
-	public void put(final VariableId<T> var) throws IllegalVariableDefinitionException;
+	public void put(final VariableId<T> var) 
+        throws IllegalVariableDefinitionException;
 	
 	/**
 	 * Haal alle mappings van de tekst van dit ID op
@@ -195,7 +209,8 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param applied applied parameter types
 	 * @return the id
 	 */
-	public VariableId<T> apply(final String n) throws SymbolTableException;
+	public VariableId<T> apply(final String n) 
+        throws SymbolTableException;
 	
 	/**
 	 * Apply a function
@@ -203,7 +218,8 @@ public interface EnvApi<T extends BaseTree> {
 	 * @param applied types of the parameters
 	 * @return
 	 */
-	public FunctionId<T> apply(final String n, final ExampleType... applied) throws SymbolTableException;
+	public FunctionId<T> apply(final String n, final ExampleType... applied) 
+        throws SymbolTableException;
 }
 \end{lstlisting}
 \subsection{FunctionId.java}
@@ -238,7 +254,8 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * A function identifier
 	 * 
 	 * Function identifiers can return Type.VOID
-	 * If a function identifier has no formal parameters, it's parameters will be the empty list
+	 * If a function identifier has no formal parameters, 
+     * it's parameters will be the empty list
 	 * The formal parameters can NOT contain Type.VOID
 	 * 
 	 * @param t Node
@@ -246,22 +263,26 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * @param p formal parameters.
 	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public FunctionId(T t, ExampleType r, VariableId<T>... p) throws IllegalFunctionDefinitionException{
-		this.node = checkNotNull(t);
-		this.returnType = checkNotNull(r);
+	public FunctionId(T t, ExampleType r, VariableId<T>... p) 
+        throws IllegalFunctionDefinitionException{
+    		this.node = checkNotNull(t);
+    		this.returnType = checkNotNull(r);
 		
-		formalParameters = ImmutableList.copyOf(checkNotNull(p));
-		if(formalParameters.contains(ExampleType.VOID))
-			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
+    		formalParameters = ImmutableList.copyOf(checkNotNull(p));
+    		if(formalParameters.contains(ExampleType.VOID))
+    			throw new IllegalFunctionDefinitionException("A function 
+                argument can not have the VOID type");
 	}
 	
-	public FunctionId(T t, ExampleType r, List<VariableId<T>> p) throws IllegalFunctionDefinitionException{
-		this.node = checkNotNull(t);
-		this.returnType = checkNotNull(r);
+	public FunctionId(T t, ExampleType r, List<VariableId<T>> p) 
+        throws IllegalFunctionDefinitionException{
+    		this.node = checkNotNull(t);
+    		this.returnType = checkNotNull(r);
 		
-		formalParameters = ImmutableList.copyOf(checkNotNull(p));
-		if(extractTypes(formalParameters).contains(ExampleType.VOID))
-			throw new IllegalFunctionDefinitionException("A function argument can not have the VOID type");
+    		formalParameters = ImmutableList.copyOf(checkNotNull(p));
+    		if(extractTypes(formalParameters).contains(ExampleType.VOID))
+    			throw new IllegalFunctionDefinitionException("A function 
+                    argument can not have the VOID type");
 	}
 	
 	public void setIdType(IdType idType) {
@@ -300,14 +321,17 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public String toString() {
-		return node.getText() + " (" + Objects.toStringHelper(formalParameters) + ") -> " + returnType;
+		return node.getText() + " (" + Objects.toStringHelper(
+            formalParameters) + ") -> " + returnType;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof FunctionId){
 			FunctionId that = (FunctionId)obj;
-			return Objects.equal(this.node, that.node) && Objects.equal(this.returnType, that.returnType) && Objects.equal(this.formalParameters, that.formalParameters);
+			return Objects.equal(this.node, that.node) && Objects.equal(
+                this.returnType, that.returnType) && 
+                Objects.equal(this.formalParameters, that.formalParameters);
 		}
 		return false;
 	}
@@ -315,7 +339,9 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	
 	@Override
 	public boolean equalsSignature(String name, ExampleType... applied) {
-		return Objects.equal(this.node.getText(), name) && Arrays.deepEquals(applied, ExampleType.asArray(extractTypes(formalParameters)));
+		return Objects.equal(this.node.getText(), name) && 
+            Arrays.deepEquals(applied, ExampleType.asArray(
+            extractTypes(formalParameters)));
 	}
 
 	/**
@@ -323,30 +349,36 @@ public class FunctionId<T extends BaseTree> implements Id<T>{
 	 * @return
 	 */
 	public Method asMethod(){
-		return new Method(getText(), returnType.toASM(), ExampleType.listToASM(extractTypes(formalParameters)));
+		return new Method(getText(), returnType.toASM(), 
+            ExampleType.listToASM(extractTypes(formalParameters)));
 	}
 	
 	/**
-	 * Transformeer een Lijst van VariableId's in een lijst van de Type's die in de VariableId's zitten
+	 * Transformeer een Lijst van VariableId's in een lijst van de Type's
+     *  die in de VariableId's zitten
 	 * @param params 
 	 * @return
 	 */
-	private static <Q extends BaseTree> List<ExampleType> extractTypes(List<VariableId<Q>> params){
-		return Lists.transform(params, new Function<VariableId<Q>, ExampleType>() {
-			@Override
-			public ExampleType apply(VariableId<Q> input) {
-				return input.getType();
-			}
-		});
-	}
+	private static <Q extends BaseTree> List<ExampleType> 
+        extractTypes(List<VariableId<Q>> params){
+    		return Lists.transform(params, new Function<VariableId<Q>, 
+                ExampleType>() {
+        			@Override
+        			public ExampleType apply(VariableId<Q> input) {
+        				return input.getType();
+        			}
+        		});
+    }
 	
 	/**
 	 * Update het return type van deze methode 
 	 */
 	@Override
 	public void updateType(ExampleType t) {
-		checkArgument(ExampleType.UNKNOWN.equals(this.returnType), "Return type is not unknown");
-		checkArgument(!ExampleType.UNKNOWN.equals(t), "Can not update to type UNKNOWN");
+		checkArgument(ExampleType.UNKNOWN.equals(this.returnType), 
+            "Return type is not unknown");
+		checkArgument(!ExampleType.UNKNOWN.equals(t), 
+            "Can not update to type UNKNOWN");
 		this.returnType = t;
 	}
 }
@@ -411,7 +443,8 @@ public class Prelude {
 	
 	@SuppressWarnings("unchecked")
 	public Prelude() throws IllegalFunctionDefinitionException{
-		ImmutableSet.Builder<FunctionId<TypedNode>> builder = ImmutableSet.builder();
+		ImmutableSet.Builder<FunctionId<TypedNode>> builder 
+            = ImmutableSet.builder();
 		//Voeg operatoren toe
 		// apply/becomes varianten
 		builder.add(createBuiltin("=", BOOL, BOOL, BOOL));
@@ -423,7 +456,8 @@ public class Prelude {
 		builder.add(createBuiltin("!=", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("and", BOOL, BOOL, BOOL));
 		builder.add(createBuiltin("or", BOOL, BOOL, BOOL));
-		builder.add(createFunctionId("!", ExampleType.BOOL, createVariableId("rhs", ExampleType.BOOL)));
+		builder.add(createFunctionId("!", ExampleType.BOOL, 
+            createVariableId("rhs", ExampleType.BOOL)));
 		// int
 		builder.add(createBuiltin("+", INT, INT, INT));
 		builder.add(createBuiltin("-", INT, INT, INT));
@@ -452,25 +486,34 @@ public class Prelude {
 		builder.add(createBuiltin(">", BOOL, CHAR, CHAR));
 		builder.add(createBuiltin(">=", BOOL, CHAR, CHAR));
 		//Builting functions
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.BOOL)));
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	
+            createVariableId("str", ExampleType.STRING)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	
+            createVariableId("str", ExampleType.BOOL)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	
+            createVariableId("str", ExampleType.INT)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	
+            createVariableId("str", ExampleType.CHAR)));
 		
 		FunctionNode readNode = byToken("read", ExampleType.VOID);
-		VarArgsFunctionId<TypedNode> varArgs = new VarArgsFunctionId<TypedNode>(readNode, ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING);
+		VarArgsFunctionId<TypedNode> varArgs = 
+            new VarArgsFunctionId<TypedNode>(
+                readNode, ExampleType.VOID, ExampleType.CHAR, 
+                    ExampleType.INT, ExampleType.STRING);
 		readNode.setBoundMethod(varArgs);
 		builder.add(varArgs);
 		
-		builder.add(createFunctionId("ensure", ExampleType.VOID,	createVariableId("expr", ExampleType.BOOL)));
+		builder.add(createFunctionId("ensure", ExampleType.VOID,	
+            createVariableId("expr", ExampleType.BOOL)));
 		//Sla op
 		builtins = builder.build();
 	}
 	
-	public void inject(SymbolTable<TypedNode> t) throws IllegalFunctionDefinitionException{
-		for(FunctionId<TypedNode> node : builtins){
-			t.put(node);
-		}
+	public void inject(SymbolTable<TypedNode> t) 
+        throws IllegalFunctionDefinitionException{
+		    for(FunctionId<TypedNode> node : builtins){
+		    	t.put(node);
+		    }
 	}
 }
 
@@ -497,31 +540,36 @@ public class VarArgsFunctionId<T extends BaseTree> extends FunctionId<T>{
 	private Set<ExampleType> acceptableTypes;
 	
 	/**
-	 * A function identifier that accept any number of arguments that match the list of allowed types.
+	 * A function identifier that accept any number of arguments that 
+     * match the list of allowed types.
 	 * 
 	 * @param t Node
 	 * @param r return type
 	 * @param acceptable acceptable types
 	 * @throws IllegalFunctionDefinitionException 
 	 */
-	public VarArgsFunctionId(T t, ExampleType r, ExampleType... acceptable) throws IllegalFunctionDefinitionException{
-		super(t, r);
-		acceptableTypes = Sets.newHashSet(acceptable);
+	public VarArgsFunctionId(T t, ExampleType r, ExampleType... acceptable) 
+        throws IllegalFunctionDefinitionException{
+    		super(t, r);
+    		acceptableTypes = Sets.newHashSet(acceptable);
 	}
 	
 	@Override
 	public Method asMethod() {
-		throw new UnsupportedOperationException("Can not convert varArgs to fixed args");
+		throw new UnsupportedOperationException("Can not convert varArgs 
+            to fixed args");
 	}
 	
 	@Override
 	public boolean equalsSignature(String name, ExampleType... applied) {
-		return getText().equals(name) && acceptableTypes.containsAll(Lists.newArrayList(applied));
+		return getText().equals(name) && acceptableTypes.containsAll(
+            Lists.newArrayList(applied));
 	}
 	
 	@Override
 	public List<ExampleType> getTypeParameters() {
-		throw new UnsupportedOperationException("Can not get type parameters");
+		throw new UnsupportedOperationException("Can not get type 
+            parameters");
 	}
 	
 	@Override
@@ -589,19 +637,23 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	public boolean equals(Object obj) {
 		if(obj instanceof VariableId){
 			VariableId that = (VariableId)obj;
-			return Objects.equal(this.node, that.node) && Objects.equal(this.type, that.type);
+			return Objects.equal(this.node, that.node) && Objects.equal(
+                this.type, that.type);
 		}
 		return false;
 	}
 	
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(VariableId.class).add("name", getText()).add("type",type).add("constant", constant).toString();
+		return Objects.toStringHelper(VariableId.class).add("name", 
+            getText()).add("type",type).add("constant", constant)
+            .toString();
 	}
 	
 	@Override
 	public boolean equalsSignature(String name, ExampleType... params) {
-		return Objects.equal(this.node.getText(), name) && (params == null || params.length == 0);
+		return Objects.equal(this.node.getText(), name) 
+            && (params == null || params.length == 0);
 	}
 	
 	public boolean isConstant() {
@@ -615,8 +667,10 @@ public class VariableId<T extends BaseTree> implements Id<T>{
 	@Override
 	public void updateType(ExampleType t) {
 		checkArgument(!constant, "Trying to update the type of a constant");
-		checkArgument(ExampleType.UNKNOWN.equals(this.type), "Trying to update the type of a variable which is not Type.UNKNOWN");
-		checkArgument(!ExampleType.UNKNOWN.equals(t), "Can not update to Type.UNKNOWN");
+		checkArgument(ExampleType.UNKNOWN.equals(this.type), "Trying to 
+            update the type of a variable which is not Type.UNKNOWN");
+		checkArgument(!ExampleType.UNKNOWN.equals(t), 
+            "Can not update to Type.UNKNOWN");
 		this.type = t;
 	}
 }
@@ -661,19 +715,22 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	public void closeScope() throws SymbolTableException{
 		log.info("closeScope() " + level + " -> " + (level - 1));
 		if(level <= 0)
-			throw new SymbolTableException("Can not close level 0 - unbalanced indents");
+			throw new SymbolTableException(
+                "Can not close level 0 - unbalanced indents");
 		inner = inner.prev;
 		level--;
 	}
 	
 	@Override
-	public void put(VariableId<T> i) throws IllegalVariableDefinitionException {
-		inner.put(i);
+	public void put(VariableId<T> i) 
+        throws IllegalVariableDefinitionException {
+    		inner.put(i);
 	}
 	
 	@Override
-	public void put(FunctionId<T> i) throws IllegalFunctionDefinitionException {
-		inner.put(i);
+	public void put(FunctionId<T> i) 
+        throws IllegalFunctionDefinitionException {
+    		inner.put(i);
 	}
 	
 	@Override
@@ -681,12 +738,14 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 		return inner.get(w);
 	}
 	
-	public FunctionId<T> apply(String w, List<ExampleType> applied) throws SymbolTableException{
-		return apply(w, ExampleType.asArray(applied));
+	public FunctionId<T> apply(String w, List<ExampleType> applied) 
+        throws SymbolTableException{
+    		return apply(w, ExampleType.asArray(applied));
 	}
 	
-	public FunctionId<T> apply(String w, ExampleType... applied) throws SymbolTableException{
-		return inner.apply(w, applied);
+	public FunctionId<T> apply(String w, ExampleType... applied) 
+        throws SymbolTableException{
+    		return inner.apply(w, applied);
 	}
 	
 	public VariableId<T> apply(String n) throws SymbolTableException{
