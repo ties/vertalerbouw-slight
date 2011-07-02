@@ -2,9 +2,10 @@
 #
 # If statement without parentheses
 #
+bool a
 def main():
 	if False:
-		#4 voor P1
-		print("af")
+		a = True
 	else:
-		print("win")
+		a = False
+    ensure(!a)

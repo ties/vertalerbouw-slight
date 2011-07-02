@@ -8,3 +8,4 @@ int i = 10
 def main():
 	while(i > 0):
 		i = i - 1
+    ensure(i==0)

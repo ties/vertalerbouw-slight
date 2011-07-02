@@ -6,7 +6,7 @@
 const int a = 0
 
 def main():
-	print(a)
+	ensure(a==0)
 		const char a = 'b'
-		print(a)
+		ensure(a=='b')
 

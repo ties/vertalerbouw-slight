@@ -3,9 +3,11 @@
 # If statement with parentheses
 #
 #
+bool a
 def main():
 	if (True):
-		print(2)
+		a = True
 	else:
-		print(3)
+		a = False
+    ensure(a)
 
