@@ -115,7 +115,7 @@ functionDef
   
 parameterDef returns [TypedNode id_node]
 	@init{
-		int parameterNumber = 1;// parameter 0 = this bij func call van non-static
+		int parameterNumber = 0;// parameter 0 = this bij func call van non-static
 	}
   : ^(FORMAL primitive IDENTIFIER){ aa.visitArgument($IDENTIFIER, parameterNumber++); $id_node = $IDENTIFIER; }
   ; 
