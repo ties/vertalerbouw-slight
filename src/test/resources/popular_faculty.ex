@@ -14,4 +14,4 @@ int a = 5
 
 def main():
 	print("5!: " + faculty(a))
-    ensures(faculty(5)==120)
+    ensure(faculty(5)==120)
