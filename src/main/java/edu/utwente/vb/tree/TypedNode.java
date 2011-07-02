@@ -31,6 +31,7 @@ public class TypedNode extends CommonTree {
 	public TypedNode(TypedNode node) {
 		super(node);
 		this.type = node.getNodeType();
+		this.constantExpression = node.constantExpression;
 	}
 
 	public TypedNode(Token t) {
