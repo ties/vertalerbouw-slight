@@ -11,6 +11,6 @@ bool f = b and !b
 string g = d + d
 
 def main():
-    ensure(e==1 && a==0)
-    ensure(!f && b)
+    ensure(e==1 and a==0)
+    ensure(!f and b)
     ensure(g=="StrStr")
