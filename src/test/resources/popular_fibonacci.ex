@@ -15,7 +15,8 @@ def fibonacci(int n) -> int:
 
 def main():
 	int i = 0
-	while(i > 0):
+    ensure(fibonacci(9)==34)	
+    while(i > 0):
 		print("Fibonacci(" + i + ")" + fibonacci(i))
 		i = i-1
-
+    

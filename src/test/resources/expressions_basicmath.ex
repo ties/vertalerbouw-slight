@@ -4,9 +4,8 @@
 #
 #
 def main():
-	if(1 + 1 == 2):
-		print("correct!")
+	ensure(1 + 1 == 2)
+		   
+	ensure(1 - -1 == 0)
     
-	print(1 - -1)
-    
-	100 % 25
+	ensure(100%25==0)

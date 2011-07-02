@@ -9,9 +9,4 @@ def main():
 	int b = 0
 	if(a==b):
 		int a = 1
-		if(a==b):
-			print("Incorrect: variable a is redefined in new scope")
-		else:
-			print("Correct")
-	else:
-		print("Incorrect: A and B both initialised to value 0")
+		ensure(a!=b)

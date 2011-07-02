@@ -5,12 +5,13 @@
 
 bool a = True
 bool b = True
+bool c = False
 
 def main():
 	if(a):
 		if(b):
 			if(a==b):
 				if(a!=(!b)):
-					if(!a==b):
-						print("Correcte werking van boolean")
+				    c = True
+    ensure(c)
 

@@ -10,3 +10,6 @@ def hoger(int a, int b):
 
 var c = hoger(1, 2)
 
+def main():
+    ensure(c==2)
+

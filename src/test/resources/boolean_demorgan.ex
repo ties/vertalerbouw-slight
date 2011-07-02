@@ -12,7 +12,7 @@ def deMorgan(bool a, bool b):
 		return False
 
 def main():
-	deMorgan(True, True)
-	deMorgan(False, False)
-	deMorgan(True, False)
-	deMorgan(False, True)
+	ensure(!deMorgan(True, True))
+	ensure(deMorgan(False, False))
+	ensure(deMorgan(True, False))
+	ensure(deMorgan(False, True))

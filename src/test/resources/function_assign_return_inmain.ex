@@ -10,4 +10,4 @@ def hoger(int a, int b):
 
 def main():
     int c = hoger(1, 2)
-
+    ensure(c==2)
