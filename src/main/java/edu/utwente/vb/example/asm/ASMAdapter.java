@@ -569,9 +569,8 @@ public class ASMAdapter implements Opcodes {
 	 * @param node
 	 * @param negative
 	 */
-	public void visitIntegerAtom(TypedNode node, boolean negative) {
+	public void visitIntegerAtom(TypedNode node) {
 		int value = Integer.valueOf(node.getText());
-		value = negative ? -value : value;
 
 		visitAtom(node.getNodeType().toASM(), value);
 	}

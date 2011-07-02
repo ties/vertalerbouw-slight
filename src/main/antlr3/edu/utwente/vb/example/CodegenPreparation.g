@@ -131,7 +131,6 @@ primitive
 
 atom
   : INT_LITERAL { $INT_LITERAL.setConstantExpression(true); }
-  | NEGATIVE INT_LITERAL { $NEGATIVE.setConstantExpression(true); }
   | CHAR_LITERAL { $CHAR_LITERAL.setConstantExpression(true); }
   | STRING_LITERAL { $STRING_LITERAL.setConstantExpression(true); }
   | TRUE { $TRUE.setConstantExpression(true); }

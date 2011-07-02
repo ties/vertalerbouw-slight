@@ -290,8 +290,8 @@ atom
   //Negative wordt gebruikt om onderscheid te maken tussen MINUS bij een negatief getal en MINUS bij aftrekken
   :
   PLUS! INT_LITERAL
-  | MINUS INT_LITERAL
-    -> NEGATIVE INT_LITERAL
+  | MINUS INT_LITERAL { $INT_LITERAL.setText("-" + $INT_LITERAL.getText()); }
+    -> INT_LITERAL
   | INT_LITERAL
   | CHAR_LITERAL { Utils.stripQuotes($CHAR_LITERAL); }
   | STRING_LITERAL { Utils.stripQuotes($STRING_LITERAL); }

@@ -260,7 +260,6 @@ primitive
 
 atom
   : INT_LITERAL           { ch.setNodeType(ExampleType.INT, $INT_LITERAL);}
-  | NEGATIVE INT_LITERAL  { ch.setNodeType(ExampleType.INT, $NEGATIVE, $INT_LITERAL);}
   | CHAR_LITERAL          { ch.setNodeType(ExampleType.CHAR, $CHAR_LITERAL);}
   | STRING_LITERAL        { ch.setNodeType(ExampleType.STRING, $STRING_LITERAL);}
   | TRUE                  { ch.setNodeType(ExampleType.BOOL, $TRUE);}
