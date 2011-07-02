@@ -25,6 +25,7 @@ options {
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
+  import edu.utwente.vb.example.util.Utils;
 
   
   /** Logger */
@@ -59,8 +60,10 @@ content
 declaration
   : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
   | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
-  | ^(INFERVAR IDENTIFIER run=valueDeclaration?) 
   | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
+  | { !Utils.isUnknownVarNode(input.LT(3)) }? ^(INFERVAR IDENTIFIER run=valueDeclaration?)
+  | { Utils.isUnknownVarNode(input.LT(3)) }? ^(INFERVAR id=IDENTIFIER)
+  //ANTLR bug, delete van node (door transformatie van ^(...) -> \n is stuk, zie http://www.antlr.org/wiki/display/ANTLR3/Tree+construction en http://www.antlr.org/pipermail/antlr-interest/2009-November/036711.html
   ;
   
 valueDeclaration

@@ -23,6 +23,7 @@ tokens {
   NEGATIVE;
   PAREN;
   SYNTHETIC;
+  UNUSEDVAR;
 }
 
 @header{

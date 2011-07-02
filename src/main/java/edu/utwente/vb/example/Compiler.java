@@ -26,8 +26,7 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 
 public class Compiler {
 	private final static PrintStream out = System.out;
-	
-	
+
 	private static boolean opt_ast = false, opt_dot = false,
 			opt_no_checker = false, opt_no_codegen = false,
 			opt_no_interpreter = false, opt_file_input = false,
@@ -71,7 +70,7 @@ public class Compiler {
 				i++;
 				filename = args[i];
 				out.println("// using filename: " + filename);
-			}else if (args[i].equals("-debug")) {
+			} else if (args[i].equals("-debug")) {
 				opt_debug = true;
 			} else {
 				System.err
@@ -118,20 +117,20 @@ public class Compiler {
 			} else {
 				parser = new Parser(tokens);
 			}
-			
-			if(opt_debug)
+
+			if (opt_debug)
 				parser.setDebug();
 			parser.setTreeAdaptor(new TypedNodeAdaptor());
 
 			Parser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
-			
+
 			Checker checker;
-			
+
 			Checker.program_return checker_result = null;
 			// Let op: Aanpak voor checker staat op pagina 227 van ANTLR boek
 			if (!opt_no_checker) { // check the AST
-				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
+				CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
 
 				if (!opt_debug_checker) {
 					checker = new Checker(nodes, new BlankDebugEventListener());
@@ -140,9 +139,9 @@ public class Compiler {
 				} else {
 					checker = new Checker(nodes);
 				}
-				if(opt_debug)
+				if (opt_debug)
 					checker.setDebug();
-				
+
 				/* TODO: Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 				Prelude pre = new Prelude();
@@ -158,36 +157,36 @@ public class Compiler {
 			}
 
 			if (!opt_no_codegen) { // run codegenerator
-				{
-					BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(
-							(TypedNode) checker_result.getTree());
-					CodegenPreparation prepare;
-					if (!opt_debug_preparation) {
-						prepare = new CodegenPreparation(nodes,
-								new BlankDebugEventListener());
-					} else {
-						prepare = new CodegenPreparation(nodes);
-					}
-					prepare.setTreeAdaptor(new TypedNodeAdaptor());
-					CodegenPreparation.program_return prepare_result = prepare
-							.program();
+				CommonTreeNodeStream codgPrepareNodes = new CommonTreeNodeStream((TypedNode) checker_result.getTree());
+				CodegenPreparation prepare;
+				if (!opt_debug_preparation) {
+					prepare = new CodegenPreparation(codgPrepareNodes,
+							new BlankDebugEventListener());
+				} else {
+					prepare = new CodegenPreparation(codgPrepareNodes);
 				}
-				BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(tree);
-				nodes.setTokenStream(tokens);
+				prepare.setTreeAdaptor(new TypedNodeAdaptor());
+				CodegenPreparation.program_return prepare_result = prepare
+						.program();
+				
+				CommonTreeNodeStream codgNodes = new CommonTreeNodeStream(
+						(TypedNode)prepare_result.getTree());
+				codgNodes.setTokenStream(tokens);
 				CodeGenerator codg;
 				if (opt_debug_codegen) {
-					codg = new CodeGenerator(nodes);
+					codg = new CodeGenerator(codgNodes);
 				} else {
-					codg = new CodeGenerator(nodes,
+					codg = new CodeGenerator(codgNodes,
 							new BlankDebugEventListener());
 				}
-				String className = Utils.camelCaseName(new File(filename).getName());
-				
+				String className = Utils.camelCaseName(new File(filename)
+						.getName());
+
 				codg.setTreeAdaptor(new TypedNodeAdaptor());
 				codg.setOutputMode(OutputMode.FILE);
 				codg.setFile(new File(className.concat(".class")));
 				codg.setASMAdapter(new ASMAdapter(className, filename));
-				
+
 				CodeGenerator.program_return res = codg.program();
 			}
 

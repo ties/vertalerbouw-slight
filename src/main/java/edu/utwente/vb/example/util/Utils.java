@@ -1,21 +1,32 @@
 package edu.utwente.vb.example.util;
 
 import java.io.File;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.antlr.runtime.CommonToken;
 import org.objectweb.asm.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.BaseTree;
+import org.antlr.runtime.tree.CommonTree;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import edu.utwente.vb.symbols.ExampleType;
+import edu.utwente.vb.symbols.Prelude;
+import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
 
 public class Utils {
-
+	private static Logger log = LoggerFactory.getLogger(Utils.class);
+	
 	public static String camelCaseName(String fileName){
 		List<String> words = Lists.newArrayList();
 		StringBuffer word = new StringBuffer();
@@ -49,5 +60,14 @@ public class Utils {
     	CommonToken t = ((CommonToken)token);
         t.setStartIndex(t.getStartIndex() + 1);
         t.setStopIndex(t.getStopIndex() - 1);
+	}
+	
+	public static boolean isUnknownVarNode(Object node){
+		if(!(node instanceof BindingOccurrenceNode))
+			return false;
+		
+		log.debug("Is unknown? {}", ((BindingOccurrenceNode)node).getNodeType());
+		
+		return ExampleType.UNKNOWN.equals(((BindingOccurrenceNode)node).getNodeType());	
 	}
 }
