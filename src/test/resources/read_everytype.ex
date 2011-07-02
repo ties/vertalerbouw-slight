@@ -12,7 +12,6 @@ def main():
     int     a2
     string  b2
     char    c2    
-
     read(a1)
     read(a2)
     read(b1)
