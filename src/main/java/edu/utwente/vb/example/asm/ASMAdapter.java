@@ -456,8 +456,8 @@ public class ASMAdapter implements Opcodes {
 	}
 
 	public void visitWhileBegin(Label loopEnd) {
-		// Jumpen naar loopEnd als gelijk, later backpatchen
-		mg.visitJumpInsn(Opcodes.IFNE, loopEnd);
+		// Jumpen naar loopEnd als false/gelijk aan 0 (ifEQ vergelijkt immers met 0)
+		mg.visitJumpInsn(Opcodes.IFEQ, loopEnd);
 	}
 
 	public void visitWhileEnd(Label condBegin, Label loopEnd) {
