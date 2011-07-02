@@ -55,6 +55,11 @@ public class CodegenTestGenerator {
 				functionTemplate = group
 						.getInstanceOf("testCodegen");
 			}
+			if(values.get("testname").toLowerCase().contains("read")){
+				values.put("run", "false");
+			} else {
+				values.put("run", "true");
+			}
 			functionTemplate.setAttributes(values);
 
 			out.println("- " + values.get("testname") + " for " + f);

@@ -23,6 +23,8 @@ import edu.utwente.vb.exceptions.*;
 import edu.utwente.vb.example.util.Utils;
 import edu.utwente.vb.example.asm.ASMAdapter;
 import edu.utwente.vb.example.CodeGenerator.OutputMode;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 public class <classname> extends AbstractGrammarTest {
 <functions>
@@ -117,7 +119,7 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
   <uitleg>
   */
   @Test
-  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, SecurityException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException{
     log.debug("test<testname>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
@@ -127,6 +129,13 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
     gen.setASMAdapter(adap);
     gen.setFile(new File(new File(getClass().getResource("/<filename>").toURI()).getParentFile(), Utils.camelCaseName("<filename>") + ".class"));
     gen.<rule>();
+    // Load the newly compiled class & invoke the generated method
+    if(<run>){    
+	    Class compiled = Class.forName(Utils.camelCaseName("<filename>"));
+	    Object instance = compiled.newInstance();
+	    Method main = compiled.getMethod("main");
+	    main.invoke(instance);
+    }
   }
   
 >>
@@ -135,7 +144,7 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
   */
 testCodegenWithExpected(filename, testname, rule, expected, uitleg) ::= <<
   @Test(expected=<expected>.class)
-  public void test<testname>() throws IOException, RecognitionException, URISyntaxException{
+  public void test<testname>() throws IOException, RecognitionException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, SecurityException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException{
     log.debug("test<testname> expected: <expected>");
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
@@ -145,6 +154,13 @@ testCodegenWithExpected(filename, testname, rule, expected, uitleg) ::= <<
     gen.setASMAdapter(adap);
     gen.setFile(new File(new File(getClass().getResource("/<filename>").toURI()).getParentFile(), Utils.camelCaseName("<filename>") + ".class"));
     gen.<rule>();
+	// Load the newly compiled class & invoke the generated method    
+    if(<run>){
+	    Class compiled = Class.forName(Utils.camelCaseName("<filename>"));
+	    Object instance = compiled.newInstance();
+	    Method main = compiled.getMethod("main");
+	    main.invoke(instance);
+	}
   }
   
 >>
