@@ -474,6 +474,14 @@ public class ASMAdapter implements Opcodes {
 		} else {
 			checkArgument(opcode == Opcodes.IADD,
 					"Invalid binary operator on a string");
+			int temp1 = mg.newLocal(lhs.getNodeType().toASM());
+			int temp2 = mg.newLocal(rhs.getNodeType().toASM());
+			//Switcheroo - er is geen swap_n
+			mg.storeLocal(temp2);
+			mg.storeLocal(temp1);
+			mg.loadThis();
+			mg.loadLocal(temp1);
+			mg.loadLocal(temp2);
 			mg.invokeVirtual(superClassName,
 					new Method("stringAppend", Type.getType(String.class),
 							new Type[] { lhs.getNodeType().toASM(),
