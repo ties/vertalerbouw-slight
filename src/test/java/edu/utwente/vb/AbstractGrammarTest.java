@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import edu.utwente.vb.example.CodeGenerator;
 import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import edu.utwente.vb.example.Checker;
+import edu.utwente.vb.example.CodegenPreparation;
 import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.example.Parser;
 import edu.utwente.vb.example.util.CheckerHelper;
@@ -78,11 +79,22 @@ public abstract class AbstractGrammarTest{
 		return checker;
 	}
 	
-	protected CodeGenerator createCodegenerator(CharStream stream, Parser parser) throws IOException, RecognitionException{
-		Checker chk = createChecker(stream, parser);
-		Checker.program_return checker_result = chk.program();
+	protected CodegenPreparation createCodegenPreparation(CharStream stream, Parser parser) throws IOException, RecognitionException{
+		Checker checker = createChecker(stream, parser);
+		Checker.program_return checker_result = checker.program();
 		
-		BufferedTreeNodeStream cg_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
+		BufferedTreeNodeStream checker_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
+		CodegenPreparation prepare = new CodegenPreparation(checker_nodes, new BlankDebugEventListener());
+		prepare.setTreeAdaptor(new TypedNodeAdaptor());
+		
+		return prepare;
+	}
+	
+	protected CodeGenerator createCodegenerator(CharStream stream, Parser parser) throws IOException, RecognitionException{
+		CodegenPreparation prep = createCodegenPreparation(stream, parser);
+		CodegenPreparation.program_return prep_result = prep.program();
+		
+		BufferedTreeNodeStream cg_nodes = new BufferedTreeNodeStream((TypedNode)prep_result.getTree());
 		CodeGenerator gen = new CodeGenerator(cg_nodes, new BlankDebugEventListener());
 		gen.setTreeAdaptor(new TypedNodeAdaptor());
 		gen.setOutputMode(OutputMode.FILE);
