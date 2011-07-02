@@ -17,6 +17,7 @@ options {
 package edu.utwente.vb.example;
   import edu.utwente.vb.example.*;
   import edu.utwente.vb.tree.*;
+  import edu.utwente.vb.example.util.Utils;
 }
 
 // Alter code generation so catch-clauses get replaced with this action.
@@ -293,8 +294,8 @@ atom
   | MINUS INT_LITERAL
     -> NEGATIVE INT_LITERAL
   | INT_LITERAL
-  | CHAR_LITERAL
-  | STRING_LITERAL
+  | CHAR_LITERAL { Utils.stripQuotes($CHAR_LITERAL); }
+  | STRING_LITERAL { Utils.stripQuotes($STRING_LITERAL); }
   | TRUE
   | FALSE
   ;
