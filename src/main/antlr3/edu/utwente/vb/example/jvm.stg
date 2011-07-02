@@ -1,0 +1,37 @@
+// [file: jvm.stg]
+// Template for Example codegenerator emitting JVM ByteCode.
+
+group ExampleGenerator;
+
+jvmFile(instructions) ::= <<
+.assembly hello{}
+.assembly extern mscorlib {}
+.class public hello 
+	{
+	.method static void main()
+	{
+    		.entrypoint
+    		<instructions; separator="\n">
+    		ret
+	}
+>>
+
+
+
+declareVar(id, addr, value) ::= <<
+>>
+
+assign(var, addr, expr) ::= <<
+>>
+
+print(expr) ::= <<
+>>
+
+binexpr(x, y, instr) ::= <<
+>>
+
+loadvar(var, addr) ::= <<
+>>
+
+loadnum(val) ::= <<
+>>
