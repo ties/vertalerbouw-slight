@@ -481,14 +481,14 @@ public class ASMAdapter implements Opcodes {
 
 	public void visitCompareOperator(int opcode, TypedNode lhs, TypedNode rhs) {
 		if (!ExampleType.STRING.equals(lhs.getNodeType())) {
-			Label l3 = new Label();
-			Label l4 = new Label();
-			mg.visitJumpInsn(opcode, l3);
+			Label exprTrue = new Label();
+			Label exprFalse = new Label();
+			mg.visitJumpInsn(opcode, exprTrue);
 			mg.visitInsn(ICONST_0);
-			mg.visitJumpInsn(GOTO, l4);
-			mg.visitLabel(l3);
+			mg.goTo(exprFalse);
+			mg.mark(exprTrue);
 			mg.visitInsn(ICONST_1);
-			mg.visitLabel(l4);
+			mg.mark(exprFalse);
 		} else {
 			checkArgument(opcode == Opcodes.IF_ICMPNE || opcode == Opcodes.IF_ICMPEQ);
 			switch(opcode){

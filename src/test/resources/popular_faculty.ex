@@ -6,7 +6,7 @@
 #
 def faculty(int a) -> int:
 	if(a > 0):
-		return faculty(a - 1)
+		return a * faculty(a - 1)
 	else:
 		return 1
 

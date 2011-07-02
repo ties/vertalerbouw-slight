@@ -43,6 +43,10 @@ public class Builtins {
 		System.out.println(line);
 	}
 	
+	protected void print(boolean b){
+		System.out.println(b);
+	}
+	
 	protected String stringAppend(String lhs, String rhs){
 		return lhs + rhs;
 	}
@@ -52,6 +56,10 @@ public class Builtins {
 	}
 	
 	protected String stringAppend(String lhs, int rhs){
+		return lhs + rhs;
+	}
+	
+	protected String stringAppend(String lhs, boolean rhs){
 		return lhs + rhs;
 	}
 	

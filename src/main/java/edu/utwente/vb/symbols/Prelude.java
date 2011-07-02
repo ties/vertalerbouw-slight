@@ -51,6 +51,7 @@ public class Prelude {
 		builder.add(createBuiltin("+", STRING, STRING, STRING));
 		builder.add(createBuiltin("+", STRING, STRING, CHAR));
 		builder.add(createBuiltin("+", STRING, STRING, INT));
+		builder.add(createBuiltin("+", STRING, STRING, BOOL));
 		builder.add(createBuiltin("==", BOOL, STRING, STRING));
 		builder.add(createBuiltin("!=", BOOL, STRING, STRING));
 		// char
@@ -62,6 +63,7 @@ public class Prelude {
 		builder.add(createBuiltin(">=", BOOL, CHAR, CHAR));
 		//Builting functions
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
+		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.BOOL)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
 		
