@@ -1,14 +1,12 @@
 package edu.utwente.vb.symbols;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.Arrays;
 
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+
+import static junit.framework.Assert.*;
 
 public class TestType {
 	@Test

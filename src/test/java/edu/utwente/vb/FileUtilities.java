@@ -5,6 +5,8 @@ import java.io.FileFilter;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Ignore;
+
 import com.google.common.collect.Lists;
 
 public class FileUtilities {
