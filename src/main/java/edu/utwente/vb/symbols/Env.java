@@ -1,24 +1,34 @@
 package edu.utwente.vb.symbols;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.exceptions.SymbolTableException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 /**
  * A Symbol Table in the style of Aho, Sethi and Ullman - Compilers: Principles, Techniques, and Tools [pg. 85, 970]
  * @author Ties

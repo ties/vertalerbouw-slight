@@ -1,18 +1,12 @@
 package edu.utwente.vb.example;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.debug.BlankDebugEventListener;
-import org.antlr.runtime.tree.BufferedTreeNodeStream;
-import org.antlr.runtime.tree.DOTTreeGenerator;
-import org.antlr.stringtemplate.StringTemplate;
-
+import edu.utwente.vb.*;
+import edu.utwente.vb.example.Checker.program_return;
 import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import edu.utwente.vb.example.asm.ASMAdapter;
 import edu.utwente.vb.example.util.CheckerHelper;
@@ -21,6 +15,14 @@ import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
+
+import org.antlr.runtime.*;
+import org.antlr.runtime.tree.*;
+
+import org.antlr.runtime.debug.BlankDebugEventListener;
+
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
 
 public class Compiler {
 	private final static PrintStream out = System.out;

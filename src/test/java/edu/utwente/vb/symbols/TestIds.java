@@ -1,14 +1,10 @@
 package edu.utwente.vb.symbols;
 
-import static edu.utwente.vb.example.util.CheckerHelper.createBuiltin;
-import static edu.utwente.vb.example.util.CheckerHelper.createVariableId;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import org.junit.Test;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import static edu.utwente.vb.example.util.CheckerHelper.*;
+import static junit.framework.Assert.*;
 
 public class TestIds {
 	@Test

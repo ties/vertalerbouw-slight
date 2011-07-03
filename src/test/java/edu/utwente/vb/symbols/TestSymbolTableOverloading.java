@@ -1,14 +1,12 @@
 package edu.utwente.vb.symbols;
 
-import static edu.utwente.vb.example.util.CheckerHelper.createBuiltin;
-import static edu.utwente.vb.example.util.CheckerHelper.createVariableId;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.tree.TypedNode;
+import static edu.utwente.vb.example.util.CheckerHelper.*;
 
 public class TestSymbolTableOverloading {
 	private SymbolTable<TypedNode> symtab;

@@ -1,13 +1,14 @@
 package edu.utwente.vb.tree;
 
-import static junit.framework.Assert.assertTrue;
-
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.junit.Before;
 import org.junit.Test;
+
+import junit.framework.TestCase;
+import static junit.framework.Assert.*;
 
 public class TestTypedNodeAdaptor{
 	private Token testToken;

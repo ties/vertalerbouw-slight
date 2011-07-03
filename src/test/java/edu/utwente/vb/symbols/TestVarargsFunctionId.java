@@ -1,13 +1,14 @@
 package edu.utwente.vb.symbols;
 
-import static edu.utwente.vb.example.util.CheckerHelper.byToken;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.antlr.runtime.tree.CommonTree;
+import org.junit.Before;
 import org.junit.Test;
+import org.objectweb.asm.Type;
+import static org.junit.Assert.*;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+
+import static edu.utwente.vb.example.util.CheckerHelper.*;
 
 public class TestVarargsFunctionId {
 	@Test

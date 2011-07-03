@@ -1,13 +1,13 @@
 package edu.utwente.vb.asm;
 
-import static junit.framework.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
 
 import edu.utwente.vb.example.asm.ASMAdapter;
+
+import static junit.framework.Assert.*;
 
 public class TestASMAdapter {
 	@Test

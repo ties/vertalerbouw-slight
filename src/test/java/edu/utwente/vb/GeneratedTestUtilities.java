@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;

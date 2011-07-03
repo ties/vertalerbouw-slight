@@ -2,6 +2,9 @@ package edu.utwente.vb.symbols;
 
 import java.util.Map;
 
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+
 import com.google.common.collect.Maps;
 
 import edu.utwente.vb.tree.TypedNode;
