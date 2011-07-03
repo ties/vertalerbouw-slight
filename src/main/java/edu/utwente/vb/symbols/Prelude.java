@@ -14,6 +14,7 @@ import java.util.Set;
 import com.google.common.collect.ImmutableSet;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
+import edu.utwente.vb.symbols.Id.IdType;
 import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
 
@@ -68,8 +69,14 @@ public class Prelude {
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
 		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
 		
+		for(ExampleType type : new ExampleType[]{INT, CHAR, STRING}){
+		    FunctionId<TypedNode> r = createFunctionId("read", type, 	createVariableId("str", type));
+		    r.setIdType(IdType.VARARGS);
+		    builder.add(r);
+		}
+		
 		FunctionNode readNode = byToken("read", ExampleType.VOID);
-		VarArgsFunctionId<TypedNode> varArgs = new VarArgsFunctionId<TypedNode>(readNode, ExampleType.VOID, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING);
+		VarArgsFunctionId<TypedNode> varArgs = new VarArgsFunctionId<TypedNode>(readNode, ExampleType.VOID, 2, ExampleType.CHAR, ExampleType.INT, ExampleType.STRING);
 		readNode.setBoundMethod(varArgs);
 		builder.add(varArgs);
 		

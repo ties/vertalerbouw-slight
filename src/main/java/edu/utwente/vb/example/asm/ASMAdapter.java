@@ -402,6 +402,8 @@ public class ASMAdapter implements Opcodes {
 				log.debug("Dispatching read to " + target);
 				visitVariable(arg);
 				mg.invokeVirtual(superClassName, target);
+				if(arg.getNodeType() != ExampleType.VOID)
+				    mg.dup();//Leave result on stack
 				visitBecomes(arg);
 
 				first = false;
@@ -454,14 +456,18 @@ public class ASMAdapter implements Opcodes {
 		} else {
 			checkArgument(opcode == Opcodes.IADD,
 					"Invalid binary operator on a string");
-			int temp1 = mg.newLocal(lhs.getNodeType().toASM());
-			int temp2 = mg.newLocal(rhs.getNodeType().toASM());
-			//Switcheroo - er is geen swap_n
-			mg.storeLocal(temp2);
-			mg.storeLocal(temp1);
+			// Stack protocol
+			mg.swap();
+			// [rhs] [lhs]
 			mg.loadThis();
-			mg.loadLocal(temp1);
-			mg.loadLocal(temp2);
+			// [rhs] [lhs]] [this]
+			mg.swap();
+			// [rhs] [this] [lhs]
+			mg.dup2X1();
+			// [this] [lhs] [rhs] [this] [lhs]
+			mg.pop2();
+			// [this] [lhs] [rhs]
+			// invokeVirtual
 			mg.invokeVirtual(superClassName,
 					new Method("stringAppend", Type.getType(String.class),
 							new Type[] { lhs.getNodeType().toASM(),
