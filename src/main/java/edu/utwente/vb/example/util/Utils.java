@@ -19,8 +19,10 @@ import org.antlr.runtime.tree.CommonTree;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
+import edu.utwente.vb.example.CodegenPreparation.Usage;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.Prelude;
+import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.TypedNode;
 
@@ -69,5 +71,25 @@ public class Utils {
 		log.debug("Is unknown? {}", ((BindingOccurrenceNode)node).getNodeType());
 		
 		return ExampleType.UNKNOWN.equals(((BindingOccurrenceNode)node).getNodeType());	
+	}
+	
+	public static void updateUsage(TypedNode node, Usage usage){
+	    BindingOccurrenceNode binding;
+	    if(node instanceof AppliedOccurrenceNode){
+		binding = (BindingOccurrenceNode)((AppliedOccurrenceNode)node).getBindingNode();
+	    } else {
+		binding = (BindingOccurrenceNode)node;
+	    }
+	    
+	    switch(usage){
+	    	case READ:
+	    	    binding.incReadCount();
+	    	    break;
+	    	case WRITE:
+	    	    binding.incAssignCount();
+	    	    break;
+	    }
+	    
+	    log.debug("Status of {}", binding);
 	}
 }

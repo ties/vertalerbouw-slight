@@ -44,6 +44,10 @@ options {
 
 @members{
   private Logger log = LoggerFactory.getLogger(CodegenPreparation.class);
+  
+  public enum Usage{READ, WRITE}
+  
+  private Usage mode = Usage.READ;
 }
 
 program 
@@ -55,10 +59,10 @@ content
   ;
   
 declaration
-  : ^(VAR primitive IDENTIFIER valueDeclaration?) 
-  | ^(CONST primitive IDENTIFIER valueDeclaration) 
-  | ^(INFERCONST IDENTIFIER valueDeclaration) 
-  | ^(INFERVAR IDENTIFIER valueDeclaration?)
+  : ^(VAR primitive IDENTIFIER vd=valueDeclaration? { if($vd.tree != null){ Utils.updateUsage($IDENTIFIER, Usage.WRITE); } }) 
+  | ^(CONST primitive IDENTIFIER valueDeclaration { Utils.updateUsage($IDENTIFIER, Usage.WRITE); }) 
+  | ^(INFERCONST IDENTIFIER valueDeclaration { Utils.updateUsage($IDENTIFIER, Usage.WRITE); }) 
+  | ^(INFERVAR IDENTIFIER vd=valueDeclaration? { if($vd.tree != null){ Utils.updateUsage($IDENTIFIER, Usage.WRITE); } })
   //ANTLR bug, delete van node (door transformatie van ^(...) -> \n is stuk, zie http://www.antlr.org/wiki/display/ANTLR3/Tree+construction en http://www.antlr.org/pipermail/antlr-interest/2009-November/036711.html
   ;
   
@@ -84,7 +88,7 @@ compoundExpression
   ;
   
 expression
-  : ^(BECOMES expression expression) 
+  : ^(BECOMES {mode = Usage.WRITE;} variable {mode = Usage.READ;} expression) 
   | ^(OR expression expression) 
   | ^(AND expression expression) 
   | ^((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) expression expression)
@@ -138,7 +142,7 @@ paren
   ;
   
 variable
-  : IDENTIFIER
+  : IDENTIFIER { Utils.updateUsage($IDENTIFIER, mode); }
   ;
   
 functionCall

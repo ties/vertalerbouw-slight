@@ -67,4 +67,17 @@ public class BindingOccurrenceNode extends TypedNode{
 	public void incAssignCount(){
 	    assignCount++;
 	}
+	
+	public int getReadCount() {
+	    return readCount;
+	}
+	
+	public int getAssignCount() {
+	    return assignCount;
+	}
+	
+	@Override
+	public String toString() {
+	    return "Status of " + this.getText() + " " + readCount + "/" + assignCount + " R/W";
+	}
 }
