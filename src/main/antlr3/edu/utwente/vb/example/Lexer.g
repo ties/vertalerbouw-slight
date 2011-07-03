@@ -17,10 +17,8 @@ tokens {
   SCOPE;
   CALL;
   FORMAL;
-  INFER;
   INFERVAR;
   INFERCONST;
-  NEGATIVE;
   PAREN;
   SYNTHETIC;
   UNUSEDVAR;
@@ -28,7 +26,6 @@ tokens {
 
 @header{
   package edu.utwente.vb.example;
-  import edu.utwente.vb.example.*;
 }
 
 @members{
@@ -85,11 +82,13 @@ RETURN    : 'return';
 
 //Variable & Const definition
 CONST   : 'const';
-VAR     : 'var';  
+VAR     : 'var';
+  
 //True/False
 TRUE    : 'True';
 FALSE   : 'False';
 
+//primitieve datatypes
 VOID    : 'void';
 BOOLEAN : 'bool';
 CHAR    : 'char';

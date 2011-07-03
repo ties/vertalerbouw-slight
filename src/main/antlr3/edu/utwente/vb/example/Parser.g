@@ -15,7 +15,6 @@ options {
 
 @header {
 package edu.utwente.vb.example;
-  import edu.utwente.vb.example.*;
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.example.util.Utils;
 }
@@ -39,32 +38,47 @@ package edu.utwente.vb.example;
 }
 
 @members {
-//TODO: In Compiler.java integreren: als deze op debug mode, dan ook Checker op debug mode. 
+/**
+ * debug_mode==true impliceert debug_mode==true in checker. 
+ * Zorgt voor doorgooien excepties, zodat testsuite deze kan waarnemen. 
+ */
 private static boolean debug_mode = false;
 
 /** Binnen een assignment mag geen return meer staan aan de RHS */
 private boolean inAssignment = false;
 
 /**
- * In de sectie hieronder word de afhandeling van excepties geregeld.
- *
+ * BEGIN SECTIE VOOR NETTE AFHANDELING EXCEPTIES
  */
 
 public String getTokenErrorDisplay(Token t) {
 	return t.toString();
 }
 
+/** Teller voor het aantal waargenomen fouten in het Example-programma **/
 protected int nrErr = 0;
 
+/**
+ * getmethode voor aantal fouten in testprogramma
+ * @return aantal fouten in ingevoerde programma
+ */
 public int nrErrors() {
 	return nrErr;
 }
+
 
 public void displayRuntimeError(RuntimeException e){
   nrErr += 1;
   emitErrorMessage("[Example] error [" + nrErr + "] - char " + e.getMessage());
 }
 
+/**
+ * @override
+ * Eigen implementatie van de methode die ANTLR standaard aanroept bij waarneming van een RecognitionException
+ * of een van haar subklassen.
+ * Bij elke veelvoorkomende subklasse van RecognitionException wordt een zo nuttig mogelijke foutmelding geprint.
+ * @ ensure nrErrors() == \old(nrErrors()) + 1 
+ */
 public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
 	nrErr += 1;
 	if (e instanceof RecognitionException) {
@@ -96,7 +110,11 @@ public void displayRecognitionError(String[] tokenNames, RecognitionException e)
 	} else
 		super.displayRecognitionError(tokenNames, e);
 }
-
+  
+  /**
+   * Zet debug_mode aan. Dit heeft tot gevolg excepties worden doorgegooid zodat de testsuite deze kan detecteren.
+   * Deze methode wordt in Compiler.java aangeroepen na het aanmaken van de Parser 
+   */
   public void setDebug(){
     debug_mode = true;
   }
