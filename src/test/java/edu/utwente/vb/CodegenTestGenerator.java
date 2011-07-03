@@ -37,20 +37,12 @@ public class CodegenTestGenerator {
 			values.put("rule", "program");
 			values.put("filename", f.getName());
 			//
-			if (values.containsKey("expected")
-					|| values.containsKey("checkerexpected")
-					|| values.containsKey("preparationexpected")) {
-				if (values.containsKey("checkerexpected")) {
-					values.put("expected", values.get("checkerexpected"));
-				}
-				if (values.containsKey("preparationexpected")) {
-					values.put("expected", values.get("preparationexpected"));
-				}
-				if (values.containsKey("codegenexpected")) {
-					values.put("expected", values.get("codegenexpected"));
-				}
-				functionTemplate = group
-						.getInstanceOf("testCodegenWithExpected");
+			if(values.containsKey("expected") || values.containsKey("checkerexpected") || values.containsKey("preparationexpected")){
+				continue;
+			}
+			if (values.containsKey("codegenexpected")) {
+				values.put("expected", values.get("codegenexpected"));
+				functionTemplate = group.getInstanceOf("testCodegenWithExpected");
 			} else {
 				functionTemplate = group
 						.getInstanceOf("testCodegen");

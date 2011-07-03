@@ -36,9 +36,11 @@ public class CheckerTestGenerator{
 			values.put("rule", "program");
 			values.put("filename", f.getName());
 			//
-			if(values.containsKey("expected") || values.containsKey("checkerexpected")){
-				if(values.containsKey("checkerexpected"))
-					values.put("expected", values.get("checkerexpected"));
+			if(values.containsKey("expected")){
+				continue;
+			}
+			if(values.containsKey("checkerexpected")){
+				values.put("expected", values.get("checkerexpected"));
 				 functionTemplate = group.getInstanceOf("testCheckerWithExpected");
 			} else {
 				functionTemplate = group.getInstanceOf("testChecker");
