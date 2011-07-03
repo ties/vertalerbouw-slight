@@ -1,14 +1,8 @@
 \chapter{Contexbeperkingen}
-\section{Wat zijn contextbeperkingen?}
 Contextbeperkingen zijn contextuele beperkingen welke bovenop de al geldende syntactische eisen voor de taal worden gedefinieerd. De checker is het geldeelte van de compiler die controleert of aan alle voor de taal geldende contextuele beperkingen zijn voldaan.
 
-\section{Contextbeperkingen in Example}
-\subsection{Program}
-{\bf program}                     ::= (declaration | functionDef)*
-Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van declaration en functionDef regels. In eerste instantie voelt dit tegennatuurlijk, hoe wordt er immers ooit iets aangeroepen als een program slechts uit definities bestaat? Dit wordt veroorzaakt door de definitie van een main methode in Example. Wil men in Example een programma schrijven welke bij uitvoer direct acties uitvoert en niet enkel functies, variabelen en constanten definieerd dan moet er in het programma een main() worden opgenomen. Een main methode wordt bij uitvoer van Example programma bij uitvoer automatisch aangeroepen.
-
-\subsection{Declaraties}
-    \subsubsection{Syntax}    
+\section{Declaraties}
+    \subsection{Syntax}    
         \begin{tabbing}
             {\bf declaration}         ::= \=primitive IDENTIFIER valueDeclaration\\
                                       \>| primitive IDENTIFIER\\
@@ -19,28 +13,28 @@ Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van de
             \\
             {\bf valueDeclaration}    ::= \textbf{=} compoundExpression\\
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
         \item De syntaxregel 'primitive IDENTIFIER valueDeclaration' kent de volgende contextuele beperkingen:
             \begin{itemize}
-            \item primitive is \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char.
+            \item primitive is niet van type void
             \item valueDeclaration bevat een compoundExpression welke evalueerd naar een waarde van hetzelfde datatype als primitive.
             \item IDENTIFIER is op de huidige scope niet eerder als variabele of constante gedefinieerd.
             \end{itemize}        
         \item De syntaxregel 'primitive IDENTIFIER' kent de volgende contextuele beperkingen:
             \begin{itemize}
-            \item primitive is \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char.
+            \item primitive is niet van type void
             \item IDENTIFIER is op de huidige scope niet eerder als variabele of constante gedefinieerd.
             \end{itemize}  
         \item De syntaxregel 'const primitive IDENTIFIER valueDeclaration' kent de volgende contextuele beperkingen:
             \begin{itemize}
-            \item primitive is \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char.
+            \item primitive is niet van type void
             \item valueDeclaration bevat een expressie welke evalueerd naar een waarde van hetzelfde datatype als primitive.
             \item IDENTIFIER is op de huidige scope niet eerder als variabele of constante gedefinieerd.
             \end{itemize}  
         \item De syntaxregel 'var IDENTIFIER valueDeclaration' kent de volgende contextuele beperkingen:
             \begin{itemize}
-            \item valueDeclaration bevat een compoundExpression welke evalueerd naar een waarde van \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char.
+            \item valueDeclaration bevat een compoundExpression welke evalueerd naar een waarde van \"{e}\"{e}n van de primitieve Example datatypen: int, bool, char of String.
             \item IDENTIFIER is op de huidige scope niet eerder als variabele of constante gedefinieerd.
             \end{itemize}  
         \item De syntaxregel 'var IDENTIFIER' kent de volgende contextuele beperkingen:
@@ -49,14 +43,14 @@ Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van de
             \end{itemize}  
         \item De syntaxregel 'const IDENTIFIER valueDeclaration' kent de volgende contextuele beperkingen:
             \begin{itemize}
-            \item valueDeclaration bevat een compoundExpression welke evalueerd naar een waarde van \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char.
+            \item valueDeclaration bevat een compoundExpression welke evalueerd naar een waarde van \"{e}\"{e}n van de primitieve Example datatypen: int, bool, char of String.
             \item IDENTIFIER is op de huidige scope niet eerder als variabele of constante gedefinieerd.
             \end{itemize}  
         \end{itemize}
 
-\subsection{Functiedefinities}
+\section{Functiedefinities}
 Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameters en teruggeeftype, welke gebonden is aan de opgegeven identifier.
-    \subsubsection{Syntax}
+    \subsection{Syntax}
         \begin{tabbing}
             {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
                                                   \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
@@ -70,55 +64,71 @@ Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameter
             {\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
                                                   \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
         \item De syntaxregel 'def IDENTIFIER parameterDef -> primitive $\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
             \begin{itemize}
                 \item IDENTIFIER is op de niet eerder als functie gedefinieerd met dezelfde parametertypen in parameterDef.
-                \item primitive is \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char.
-                \item 
+                \item closedCompoundExpression bevat in elk mogelijke pad een return-statement die een waarde teruggeeft van het primitieve type van primitive. Indien primitive void is bevat de closedCompoundExpression geen return-statements.
+                \item IDENTIFIER is voor elk parameter binnen parameterDef uniek.
+                \item primitive is voor elke parameter niet void.
             \end{itemize}
         \item De syntaxregel 'def IDENTIFIER parameterDef $\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
             \begin{itemize}
+                \item IDENTIFIER is op de niet eerder als functie gedefinieerd met dezelfde parametertypen in parameterDef.
+                \item Indien closedCompoundExpression return-statement(s) bevat, bevat closedCompoundExpression in elk pad mogelijke pad een return-statement welke een waarde teruggeeft van \"{e}\"{e}n van de primitieve Example datatypen: int, bool of char. Deze returnstatements geven allen een waarde van hetzelfde primitieve datatype terug. Het is ook mogelijk dat closedCompoundExpression geen enkel return-statement bevat.
+                \item IDENTIFIER is voor elk parameter binnen parameterDef uniek.
+                \item primitive is voor elke parameter niet void.
             \end{itemize}
-        \item De syntaxregel 'parameterFirstElem parameterOtherElems' kent de volgende contextuele beperkingen:
-            \begin{itemize}
-            \end{itemize}        
-        \item De syntaxregel 'parameterFirstElem' kent de volgende contextuele beperkingen:
-            \begin{itemize}
-            \end{itemize}        
-        \item De syntaxregel ',primitive IDENTIFIER' kent de volgende contextuele beperkingen:
-            \begin{itemize}
-            \end{itemize}  
-        \item De syntaxregel ',primitive IDENTIFIER parameterOtherElems' kent de volgende contextuele beperkingen:        
-            \begin{itemize}
-            \end{itemize}  
         \end{itemize}
 
-\subsection{Statements}
+\section{Statements}
 Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van instructies te beinvloeden. Twee soorten statements die zijn ge\"{i}mplementeerd in de Example programeertaal zijn het if-statement en het while-statement.
-    \subsubsection{Syntax}
+    \subsection{Syntax}
         \begin{tabbing}
         {\bf statements}                  ::= \=ifStatement\\
                                           \>| whileStatement\\
         \\
-        {\bf ifStatement}                 ::= \=\textbf{if} \=\textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression \textbf    {else} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{if} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression \textbf{else} $\colon$ closedCompoundExpression\\
-                                      \>| \textbf{if} expression $\colon$ closedCompoundExpression\\
+        {\bf ifStatement}                 ::= \=\textbf{if} \=\textbf{(}expression\textbf{)}$\colon$ closedCompoundExpression \textbf    {else} $\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} \textbf{(}expression\textbf{)}$\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression$\colon$ closedCompoundExpression \textbf{else}$\colon$ closedCompoundExpression\\
+                                      \>| \textbf{if} expression$\colon$ closedCompoundExpression\\
         \\
         {\bf whileStatement}              ::= \=\textbf{while} \textbf{(} expression \textbf{)} $\colon$ closedCompoundExpression\\
                                       \>| \textbf{while} expression $\colon$ closedCompoundExpression\\
         \\ 
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
-        \item 
+        \item De syntaxregel 'if(expression)$\colon$ closedCompoundExpression else$\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar een waarde van het primitieve type bool.
+            \end{itemize}
+        \item De syntaxregel 'if(expression)$\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar een waarde van het primitieve type bool.
+            \end{itemize}
+        \item De syntaxregel 'if expression$\colon$ closedCompoundExpression else$\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar een waarde van het primitieve type bool.
+            \end{itemize}
+        \item De syntaxregel 'if expression$\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar een waarde van het primitieve type bool.
+            \end{itemize}
+        \item De syntaxregel 'while(expression)$\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar een waarde van het primitieve type bool.
+            \end{itemize}
+        \item De syntaxregel 'while expression $\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar een waarde van het primitieve type bool.
+            \end{itemize}
         \end{itemize}
 
-\subsection{Expressies}
+\section{Expressies}
 Een expressie wordt ge\"{e}evalueerd en zal mogelijk, maar in de meeste gevallen, een waarde opleveren.
-    \subsubsection{Syntax}
+    \subsection{Syntax}
         \begin{tabbing} 
             {\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundMultiExpression \textbf{DEDENT}\\
             \\ 
@@ -177,7 +187,79 @@ Een expressie wordt ge\"{e}evalueerd en zal mogelijk, maar in de meeste gevallen
             \\ 
             {\bf paren}                       ::= \textbf{(} expression \textbf{)}\\
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
-        \item 
+        \item De syntaxregel 'return expression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item expression evalueerd naar type bool, int, char of string.
+            \end{itemize}
+        \item De syntaxregel 'orExpression = expression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item orExpression is een IDENTIFIER die eerder is gedefinieerd als variabele.
+            \item Indien deze variabele een type heeft komt het type van de variabele overeen met het type van de waarde waar expression naar evalueerd. Het type van de waarde van de expressie waar expression naar evalueerd is bool, int, char of string.
+            \end{itemize}
+        \item De syntaxregel 'andExpression or orExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+             \item andExpression en orExpression evalueren beide naar een waarde van type bool.
+            \end{itemize}
+        \item De syntaxregel 'equationExpression and andExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item andExpression en orExpression evalueren beide naar een waarde van type bool.
+            \end{itemize}
+        \item De syntaxregel 'plusExpression \textless{}= equationExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item plusExpression en equationExpression evalueren beide naar een waarde van hetzelfde type, dit type is char of int.
+            \end{itemize}
+        \item De syntaxregel 'plusExpression \textgreater{}= equationExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item plusExpression en equationExpression evalueren beide naar een waarde van hetzelfde type, dit type is char of int.
+            \end{itemize}
+        \item De syntaxregel 'plusExpression \textgreater{} equationExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item plusExpression en equationExpression evalueren beide naar een waarde van hetzelfde type, dit type is char of int.
+            \end{itemize}
+        \item De syntaxregel 'plusExpression \textless{} equationExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item plusExpression en equationExpression evalueren beide naar een waarde van hetzelfde type, dit type is char of int.
+            \end{itemize}
+        \item De syntaxregel 'plusExpression == equationExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item plusExpression en equationExpression evalueren beide naar een waarde van hetzelfde type, dit type is char, int of string.
+            \end{itemize}
+        \item De syntaxregel 'plusExpression != equationExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item plusExpression en equationExpression evalueren beide naar een waarde van hetzelfde type, dit type is char, int of string.
+            \end{itemize}
+        \item De syntaxregel 'multiplyExpression + plusExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item Indien multiplyExpression niet evalueerd naar een waarde van type string evalueren multiplyExpression en plusExpression beide naar een waarde van type int. Indien multiplyExpression evalueerd naar een waarde van type string evalueert plusExpression naar een waarde van type char, int, string of bool.
+            \end{itemize}
+        \item De syntaxregel 'multiplyExpression - plusExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+             \item multiplyExpression en plusExpression evalueren beide naar een waarde van type int.
+            \end{itemize}
+        \item De syntaxregel 'unaryExpression * multiplyExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item multiplyExpression en plusExpression evalueren beide naar een waarde van type int.
+            \end{itemize}
+        \item De syntaxregel 'unaryExpression / multiplyExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item multiplyExpression en plusExpression evalueren beide naar een waarde van type int.
+            \end{itemize}
+        \item De syntaxregel 'unaryExpression \% multiplyExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item multiplyExpression en plusExpression evalueren beide naar een waarde van type int.
+            \end{itemize}
+        \item De syntaxregel '! simpleExpression' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item simpleExpression evalueert naar een waarde van type bool.
+            \end{itemize}
+        \item De syntaxregel 'IDENTIFIER(params)' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item IDENTIFIER met de meegegeven parametertypen op deze scope gedefinieerd als functie.
+            \end{itemize}
+        \item De syntaxregel 'IDENTIFIER' kent de volgende contextuele beperkingen:
+            \begin{itemize}
+            \item IDENTIFIER is op deze scope gedefinieerd als constante of variabele.
+            \end{itemize}
         \end{itemize}
