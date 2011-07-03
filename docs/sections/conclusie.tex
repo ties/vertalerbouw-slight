@@ -1,1 +1,19 @@
 \chapter{Conclusie en future work}
+
+\section{Conclusie hudige implementatie Example}
+
+\section{Future Work}
+Hoewel de Example programmeertaal ruim voltooid is binnen het niveau van uitwerking wat van een programmeertaal binnen het vak vertalerbouw verwacht mag worden zijn er nog vele optimalisaties en uitbreidingen die gedaan kunnen worden om Example gebruiksvriendelijker en effici\:{e}nter processor- en geheugengebruik te maken. Enkele optimalisaties en uitbreidingen die boven alle worden aanbevolen zullen in een aantal secties worden behandeld.
+
+\subsection{Optimalisatie ongebruikte variabelen}
+De Example programmeertaal staat toe dat gebruikers variabelen definieren zonder daarbij direct een waarde toe te kennen aan deze variabelen. In het geval dat een onervaren programmeur aan het werk gaat met de programmeertaal of in het geval dat er een complexere/onoverzichtelijkere applicatie wordt geschreven is het denkbaar dat de programmeur per abuis varabelen declareert die vervolgens nooit worden aangeroepen. Omdat dit ten gevolge heeft dat deze variabele gedurende de gehele executie van het programma ruimte op de stack innemen is dit vanuit een oogpunt van geheugenverbruik onwenselijk. In de codegeneratie voorbereidingsfase kan een algoritme worden ge\"{i}mplementeerd die gebruik van variabelen analyseert en de volgende soorten variabelen onderscheidt:
+\begin{description}
+\item[nooit gelezen en nooit aan toegekend] deze variabelen hoeven nooit in het geheugen en op de stack geladen te worden gezien deze overbodig zijn.
+\item[\'{e}\'{e}nmaal gelezen en nooit aan toegekend] deze variabelen hoeven ook nooit in het geheugen en de stack te worden geladen, op de plaats waar deze wordt gelezen kan de betreffende waarde rechtstreeks op de stack worden geladen.
+\item[meermaal gelezen en nooit aan toegekend] deze variabelen kunnen als constante in het geheugen worden geladen, aangezien JVM constanten sneller verwerkt dan variabelen.
+\item[minstens eenmaal aan toegekend] deze variabelen moeten daadwerkelijk als variabelen worden behandeld.
+\end{description}
+Deze optimalisatie kan een behoorlijke winst in geheugengebruik bewerkstelligen.
+
+\subsection{Uitbreiding met datatype array}
+In het dagelijks gebruik van programmeertalen is de dataconstructie array bijna niet meer weg te denken. Een array is geheugeneffici\"{e}nt en biedt een hoop functionaliteit aan een programmeur. Een combinatie van een loop-constructie in een programmeertaal met een array biedt een programmeur mogelijkheden om vele algoritmen op elegant, overzichtelijke en effici\"{e}nte wijze te implementeren.
