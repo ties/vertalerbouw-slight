@@ -1,7 +1,9 @@
 #
 #
+# expected: MismatchedTokenException
+# tests conditional assignment -> wij staan dit niet toe
 #
-# tests conditional assignment
+#
 
 int a
 bool b = true
