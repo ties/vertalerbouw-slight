@@ -210,7 +210,7 @@ closedCompoundExpression returns [ReturnData return_type = null;]
 									            // - unconditional gezien -> die staat er
 									            // else: andere
 									            if($return_type != null){ 
-										            if(!$return_type.isConditional){
+										            if(!$return_type.isConditional && !($return_type.type == ExampleType.VOID)){
 										            	throw new IllegalFunctionDefinitionException("Unreachable code");
 										            } 
 										            
@@ -282,11 +282,16 @@ ifStatement returns [ ReturnData return_type;]
 												  { 	ch.setNodeType(ExampleType.VOID, $IF);
 													    ch.checkTypes(ExampleType.BOOL, $cond.start.getNodeType());
 													    if($elseExpr.tree != null){
-													    	ch.checkTypes($ifExpr.return_type.type, $elseExpr.return_type.type);
-													    	$return_type = new ReturnData($ifExpr.return_type);
+													    	if($elseExpr.return_type.type == ExampleType.VOID){
+													    		$return_type = new ReturnData($ifExpr.return_type, true); 
+													    	} else{
+														    	ch.checkTypes($ifExpr.return_type.type, $elseExpr.return_type.type);
+														    	$return_type = new ReturnData($ifExpr.return_type);
+													    	}
 													    } else {
 													    	$return_type = new ReturnData($ifExpr.return_type, true);
-													    } 
+													    }
+													    log.debug("Detected IF return type of {} with IF {} and ELSE {}", new Object[]{$return_type, $ifExpr.return_type, $elseExpr.return_type}); 
 												    }
   ;  
     

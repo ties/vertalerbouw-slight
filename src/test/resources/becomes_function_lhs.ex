@@ -2,7 +2,7 @@
 #
 #
 # Becomes with function lhs
-# checkerexpected: SymbolTableException
+# checkerexpected: MismatchedTreeNodeException
 
 def hoi():
 	int i = 5
