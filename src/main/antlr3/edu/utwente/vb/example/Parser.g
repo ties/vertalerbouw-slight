@@ -19,9 +19,6 @@ package edu.utwente.vb.example;
   import edu.utwente.vb.example.util.Utils;
 }
 
-// Alter code generation so catch-clauses get replaced with this action.
-// This disables ANTLR error handling;
-
 @rulecatch {
 	catch (RecognitionException e) {
 	  if(debug_mode==true) 
@@ -139,12 +136,11 @@ content
   ;
 
 declaration
-  // Regels herschrijven naar consistente vorm
+  // Regels herschrijven naar consistente vorm. BindingOccurrenceNode maken voor binding occurrence IDENTIFIERS.
   :
   primitive IDENTIFIER valueDeclaration?
     ->
       ^(VAR primitive IDENTIFIER<BindingOccurrenceNode> valueDeclaration?)
-  // Constanten kunnen alleen van primitive typen zijn
   | (CONST primitive) => CONST primitive IDENTIFIER valueDeclaration
     ->
       ^(CONST primitive IDENTIFIER<BindingOccurrenceNode> valueDeclaration)
@@ -256,7 +252,6 @@ simpleExpression
   :
   atom
   //Voorrangsregel, bij dubbelzinnigheid voor functionCall kiezen. Zie ANTLR reference paginga 58.
-  //Functioncall zou gevoelsmatig meer onder 'statements' thuishoren. In dat geval werkt de voorrangsregel echter niet meer.
   | (IDENTIFIER LPAREN) => functionCall
   | variable
   | paren
@@ -271,7 +266,6 @@ statements
   ;
 
 ifStatement
-  /* Geen COLON? omdat je colons wel moet matchen */
   :
   (IF LPAREN) => IF LPAREN expression RPAREN COLON closedCompoundExpression (ELSE COLON closedCompoundExpression)?
     ->
@@ -305,7 +299,6 @@ primitive
   ;
 
 atom
-  //Negative wordt gebruikt om onderscheid te maken tussen MINUS bij een negatief getal en MINUS bij aftrekken
   :
   PLUS! INT_LITERAL
   | MINUS INT_LITERAL { $INT_LITERAL.setText("-" + $INT_LITERAL.getText()); }
