@@ -26,6 +26,8 @@ import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
+import edu.utwente.vb.example.NonBlockingBuiltins;
+
 public class <classname> extends AbstractGrammarTest {
 <functions>
 }
@@ -124,23 +126,21 @@ testCodegen(filename, testname, rule, uitleg) ::= <<
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
     //Adapter
-    ASMAdapter adap = new ASMAdapter(Utils.camelCaseName("<filename>"));
+    ASMAdapter adap = new ASMAdapter(Utils.camelCaseName("<filename>"), NonBlockingBuiltins.class);
     gen.setOutputMode(OutputMode.FILE);
     gen.setASMAdapter(adap);
     gen.setFile(new File(new File(getClass().getResource("/<filename>").toURI()).getParentFile(), Utils.camelCaseName("<filename>") + ".class"));
     gen.<rule>();
-	if(<run>){
-    	try{
-		    Class compiled = Class.forName(Utils.camelCaseName("<filename>"));
-		    Object instance = compiled.newInstance();
-		    Method main = compiled.getMethod("main");
-		    main.invoke(instance);
-		} catch(NoSuchMethodException e){
-			//	klasse zonder main - niet uitvoerbaar dus ook niet draaien
-		} catch(InvocationTargetException e){
-			// InvocationTargetException bevat een gewrapte exceptie uit onze compiler - die gooien
-			throw e.getCause();
-		}
+   	try{
+	    Class compiled = Class.forName(Utils.camelCaseName("<filename>"));
+	    Object instance = compiled.newInstance();
+	    Method main = compiled.getMethod("main");
+	    main.invoke(instance);
+	} catch(NoSuchMethodException e){
+		//	klasse zonder main - niet uitvoerbaar dus ook niet draaien
+	} catch(InvocationTargetException e){
+		// InvocationTargetException bevat een gewrapte exceptie uit onze compiler - die gooien
+		throw e.getCause();
 	}
   }
   
@@ -155,24 +155,22 @@ testCodegenWithExpected(filename, testname, rule, expected, uitleg) ::= <<
     File f = new File(getClass().getResource("/<filename>").toURI());
     CodeGenerator gen = createCodegenerator(asCharStream(f), createParser(asCharStream(f)));
     //Adapter
-    ASMAdapter adap = new ASMAdapter(Utils.camelCaseName("<filename>"));
+    ASMAdapter adap = new ASMAdapter(Utils.camelCaseName("<filename>"), NonBlockingBuiltins.class);
     gen.setOutputMode(OutputMode.FILE);
     gen.setASMAdapter(adap);
     gen.setFile(new File(new File(getClass().getResource("/<filename>").toURI()).getParentFile(), Utils.camelCaseName("<filename>") + ".class"));
     gen.<rule>();
 	// Load the newly compiled class & invoke the generated method    
-    if(<run>){
-    	try{
-		    Class compiled = Class.forName(Utils.camelCaseName("<filename>"));
-		    Object instance = compiled.newInstance();
-		    Method main = compiled.getMethod("main");
-		    main.invoke(instance);
-		} catch(NoSuchMethodException e){
-			//	klasse zonder main - niet uitvoerbaar dus ook niet draaien
-		} catch(InvocationTargetException e){
-			// InvocationTargetException bevat een gewrapte exceptie uit onze compiler - die gooien
-			throw e.getCause();
-		}
+   	try{
+	    Class compiled = Class.forName(Utils.camelCaseName("<filename>"));
+	    Object instance = compiled.newInstance();
+	    Method main = compiled.getMethod("main");
+	    main.invoke(instance);
+	} catch(NoSuchMethodException e){
+		//	klasse zonder main - niet uitvoerbaar dus ook niet draaien
+	} catch(InvocationTargetException e){
+		// InvocationTargetException bevat een gewrapte exceptie uit onze compiler - die gooien
+		throw e.getCause();
 	}
   }
   

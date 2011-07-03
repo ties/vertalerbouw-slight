@@ -90,11 +90,11 @@ public class ASMAdapter implements Opcodes {
 	private List<String> toInstantiate = new ArrayList<String>();
 
 	public ASMAdapter(String className, String sourceName) {
-		this(className);
+		this(className, Builtins.class);
 		cv.visitSource(sourceName, null);
 	}
 
-	public ASMAdapter(String cn) {
+	public ASMAdapter(String cn, Class superclass) {
 		this.internalClassType = Type.getObjectType(cn.replace('.', '/'));
 
 		log.debug("instantiating ASMAdapter for {}", internalClassType);
@@ -119,7 +119,7 @@ public class ASMAdapter implements Opcodes {
 		 * be null, but only for the Object class. interfaces - the internal
 		 * names of the class's interfaces (see getInternalName). May be null.
 		 */
-		superClassName = Type.getType(Builtins.class);
+		superClassName = Type.getType(superclass);
 		cv.visit(V1_5, ACC_PUBLIC, internalClassType.getInternalName(), null,
 				superClassName.getInternalName(), null);
 		// Constructor stub
@@ -130,7 +130,7 @@ public class ASMAdapter implements Opcodes {
 		constructorMethodGenerator.visitCode();
 		constructorMethodGenerator.loadThis();
 		constructorMethodGenerator.invokeConstructor(
-				Type.getType(Builtins.class), m);
+				superClassName, m);
 		constructorMethodGenerator.loadThis();
 
 		Method mainMethod = Method.getMethod("void main(String[])");
