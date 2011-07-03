@@ -58,10 +58,7 @@ declaration
   : ^(VAR primitive IDENTIFIER valueDeclaration?) 
   | ^(CONST primitive IDENTIFIER valueDeclaration) 
   | ^(INFERCONST IDENTIFIER valueDeclaration) 
-  |                           { !Utils.isUnknownVarNode(input.LT(3)) }? 
-    ^(INFERVAR IDENTIFIER valueDeclaration?)
-  |                           { Utils.isUnknownVarNode(input.LT(3)) }? 
-    ^(INFERVAR IDENTIFIER)
+  | ^(INFERVAR IDENTIFIER valueDeclaration?)
   //ANTLR bug, delete van node (door transformatie van ^(...) -> \n is stuk, zie http://www.antlr.org/wiki/display/ANTLR3/Tree+construction en http://www.antlr.org/pipermail/antlr-interest/2009-November/036711.html
   ;
   

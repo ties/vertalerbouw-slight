@@ -25,6 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class TypedNode extends CommonTree {
 	protected ExampleType type;
 	private boolean constantExpression = false;
+	private boolean resultUsed = false;
 	
 	public TypedNode() { }
 	
@@ -92,5 +93,13 @@ public class TypedNode extends CommonTree {
 	 */
 	public static List<ExampleType> extractTypes(TypedNode... params){
 		return extractTypes(ImmutableList.copyOf(params));
+	}
+	
+	public boolean isResultUsed() {
+	    return resultUsed;
+	}
+	
+	public void setResultUsed(boolean resultUsed) {
+	    this.resultUsed = resultUsed;
 	}
 }

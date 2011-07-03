@@ -2,7 +2,7 @@
 #
 #
 # Becomes with non-variable lhs
-# checkerexpected: SymbolTableException
+# checkerexpected: MismatchedTreeNodeException
 
 def main():
 	5=8

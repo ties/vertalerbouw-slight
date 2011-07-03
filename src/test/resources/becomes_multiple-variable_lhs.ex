@@ -2,7 +2,7 @@
 #
 #
 # no single variable on lhs
-# checkerexpected: SymbolTableException
+# checkerexpected: MismatchedTreeNodeException
 
 int x = 1
 int y = 2

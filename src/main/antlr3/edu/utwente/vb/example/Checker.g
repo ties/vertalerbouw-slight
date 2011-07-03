@@ -174,11 +174,15 @@ functionDef
 										      ch.closeScope();
 										      if(returnType == ExampleType.UNKNOWN){
 										        //return type is unknown -> niet ingevuld. geen geldige content voor primitive namelijk
-										        functionId.updateType(ch.setNodeType($returnTypeNode.return_type, $IDENTIFIER));
-										      } else if(!returnType.equals($returnTypeNode.return_type)){
+										        functionId.updateType(ch.setNodeType($returnTypeNode.return_type.type, $IDENTIFIER));
+										      } else if(!returnType.equals($returnTypeNode.return_type.type)){
 										        //typen ongelijk van definitie & body -> error.
 										        throw new IllegalFunctionDefinitionException("Return types do not match; " 
 										            + returnType + " and " + $returnTypeNode.return_type);
+										      } 
+										      
+										      if($returnTypeNode.return_type.type != ExampleType.VOID && $returnTypeNode.return_type.isConditional){
+										      	throw new IllegalFunctionDefinitionException("Function might not return; Please add a explicit return");
 										      }
 										    } 
   ;
@@ -191,42 +195,56 @@ parameterDef returns [TypedNode id_node]//kopieer de node van de applied occurre
                         { ch.copyNodeType($primitive.tree, $IDENTIFIER, $FORMAL); $id_node = $IDENTIFIER; }
   ; 
 
-closedCompoundExpression returns [ExampleType return_type = null;]
-  :                     { ch.openScope(); } 
+closedCompoundExpression returns [ReturnData return_type = null;]
+  :                     { ch.openScope(); }
     ^(SCOPE (ce=compoundExpression 
 									      { 
-									          if($ce.return_type != ExampleType.UNKNOWN){
+									          if($ce.return_type != ReturnData.UNKNOWN){
 									            log.debug("Detected return type {}", $ce.return_type);
-									            if($return_type != null && $ce.return_type != $return_type){
+									            if($return_type != null && $ce.return_type.type != $return_type.type){
 									              throw new IllegalFunctionDefinitionException("Incompatible return types; " 
 									                 + $return_type + " and " + $ce.return_type);
 									            }
-									            $return_type = $ce.return_type;
+									            // Kopieer het type als het conditional is of als het nog niet geset is
+									            // gevolg:
+									            // - unconditional gezien -> die staat er
+									            // else: andere
+									            if($return_type != null){ 
+										            if(!$return_type.isConditional && !($return_type.type == ExampleType.VOID)){
+										            	throw new IllegalFunctionDefinitionException("Unreachable code");
+										            } 
+										            
+										            if(!$ce.return_type.isConditional){
+										            	$return_type = $ce.return_type;
+										            } 						
+									            } else {
+									            	$return_type = $ce.return_type;
+									            }	            
 									          }
 									      }
       )*)
 										    { 
 										      if($return_type == null){
 										        //Als je geen return type ziet is het return type van de close compound void.
-										        $return_type = ExampleType.VOID;
+										        $return_type = ReturnData.VOID;
 										      }
 										      log.debug("Returning type {}", $return_type);
 										      ch.closeScope(); 
 										    }
   ;
 
-compoundExpression returns [ExampleType return_type = ExampleType.UNKNOWN;]
+compoundExpression returns [ReturnData return_type = ReturnData.UNKNOWN; ]
   : expr=expression       { $return_type = $expr.return_type; }
   | ^(RETURN expr=expression) 
-                          { $return_type = ch.copyNodeType($expr.tree, $RETURN); }
+                          { $return_type = new ReturnData(ch.copyNodeType($expr.tree, $RETURN)); }
   | declaration 
   ;
  
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
-expression  returns [ExampleType return_type = ExampleType.UNKNOWN;]
-  : ^(op=BECOMES base=expression sec=expression) 
-                          { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }//infer van type zit in CheckerHelper 
+expression  returns [ReturnData return_type = ReturnData.UNKNOWN;]
+  : ^(op=BECOMES lhvar=variable sec=expression) 
+                          { ch.applyBecomesAndSetType($op, $lhvar.tree, $sec.tree); }//infer van type zit in CheckerHelper 
   | ^(op=OR base=expression sec=expression) 
                           { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=AND base=expression sec=expression) 
@@ -243,7 +261,7 @@ expression  returns [ExampleType return_type = ExampleType.UNKNOWN;]
                           { $return_type = sim.return_type; }
   ;
   
-simpleExpression returns [ExampleType return_type = ExampleType.UNKNOWN;] 
+simpleExpression returns [ReturnData return_type = ReturnData.UNKNOWN;] 
   : atom
   | functionCall
   | variable
@@ -253,26 +271,35 @@ simpleExpression returns [ExampleType return_type = ExampleType.UNKNOWN;]
   | s=statements          { $return_type = $s.return_type; }
   ;
   
-statements returns [ExampleType return_type = ExampleType.UNKNOWN;]
+statements returns [ReturnData return_type; ]
   : ifState=ifStatement   { $return_type = $ifState.return_type; }
   | whileState=whileStatement 
                           { $return_type = $whileState.return_type; }
   ;
 
-ifStatement returns [ExampleType return_type = ExampleType.UNKNOWN;]
+ifStatement returns [ ReturnData return_type;]
   : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
-												  { ch.setNodeType(ExampleType.VOID, $IF);
-												    ch.checkTypes(ExampleType.BOOL, $cond.start.getNodeType());
-												    if($elseExpr.tree != null)
-												      ch.checkTypes($ifExpr.return_type, $elseExpr.return_type); 
-												    $return_type = $ifExpr.return_type; }
+												  { 	ch.setNodeType(ExampleType.VOID, $IF);
+													    ch.checkTypes(ExampleType.BOOL, $cond.start.getNodeType());
+													    if($elseExpr.tree != null){
+													    	if($elseExpr.return_type.type == ExampleType.VOID){
+													    		$return_type = new ReturnData($ifExpr.return_type, true); 
+													    	} else{
+														    	ch.checkTypes($ifExpr.return_type.type, $elseExpr.return_type.type);
+														    	$return_type = new ReturnData($ifExpr.return_type);
+													    	}
+													    } else {
+													    	$return_type = new ReturnData($ifExpr.return_type, true);
+													    }
+													    log.debug("Detected IF return type of {} with IF {} and ELSE {}", new Object[]{$return_type, $ifExpr.return_type, $elseExpr.return_type}); 
+												    }
   ;  
     
-whileStatement returns [ExampleType return_type = ExampleType.UNKNOWN;]
+whileStatement returns [ReturnData return_type; ]
   : ^(WHILE cond=expression loop=closedCompoundExpression)
 												  { ch.checkTypes(ExampleType.BOOL, $cond.start.getNodeType());
 												    ch.setNodeType(ExampleType.VOID, $WHILE); 
-												    $return_type = $loop.return_type; }
+												    $return_type = new ReturnData($loop.return_type, true); }
   ;    
     
 primitive
@@ -291,7 +318,7 @@ atom
   | FALSE                 { ch.setNodeType(ExampleType.BOOL, $FALSE); }
   ;
   
-paren returns [ExampleType return_type = ExampleType.UNKNOWN;]
+paren returns [ReturnData return_type; ]
   : ^(PAREN expression)   { ch.copyNodeType($expression.tree, $PAREN); $return_type = $expression.return_type; }
   ;
   

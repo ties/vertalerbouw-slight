@@ -36,6 +36,7 @@ import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
 import junit.framework.TestCase;
+import org.antlr.runtime.MismatchedTreeNodeException;
 
 public abstract class AbstractGrammarTest{
 	protected Logger log = LoggerFactory.getLogger(AbstractGrammarTest.class);
@@ -63,7 +64,7 @@ public abstract class AbstractGrammarTest{
 	}
 	
 	protected Checker createChecker(CharStream stream, Parser parser) throws IOException, RecognitionException{
-		CommonTreeNodeStream nodes = new CommonTreeNodeStream(parser.program().getTree());
+	    BufferedTreeNodeStream nodes = new BufferedTreeNodeStream(parser.program().getTree());
 		
 		Checker	checker = new Checker(nodes, new BlankDebugEventListener());
 		checker.setDebug();
@@ -83,7 +84,6 @@ public abstract class AbstractGrammarTest{
 	protected CodegenPreparation createCodegenPreparation(CharStream stream, Parser parser) throws IOException, RecognitionException{
 		Checker checker = createChecker(stream, parser);
 		Checker.program_return checker_result = checker.program();
-		
 		BufferedTreeNodeStream checker_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
 		CodegenPreparation prepare = new CodegenPreparation(checker_nodes, new BlankDebugEventListener());
 		prepare.setTreeAdaptor(new TypedNodeAdaptor());

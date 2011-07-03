@@ -8,6 +8,8 @@ public class BindingOccurrenceNode extends TypedNode{
 	private VariableType type;
 	private int varNumber = 0;
 	private int ttype;
+	private int assignCount = 0;
+	private int readCount = 0;
 	
 	/*
 	 * Extra constructor volgens
@@ -56,5 +58,13 @@ public class BindingOccurrenceNode extends TypedNode{
 	
 	public void setVariableType(VariableType type){
 		this.type = checkNotNull(type);
+	}
+	
+	public void incReadCount(){
+	    readCount++;
+	}
+	
+	public void incAssignCount(){
+	    assignCount++;
 	}
 }
