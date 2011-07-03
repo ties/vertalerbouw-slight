@@ -34,13 +34,6 @@ public class TestVarargsFunctionId {
 	}
 	
 	@Test(expected=UnsupportedOperationException.class)
-	public void testCanNotGetTypeParameters() throws IllegalFunctionDefinitionException{
-		VarArgsFunctionId<CommonTree> v1 = new VarArgsFunctionId<CommonTree>(byToken("read", ExampleType.INT), ExampleType.INT, ExampleType.INT, ExampleType.STRING);
-		
-		v1.getTypeParameters();
-	}
-	
-	@Test(expected=UnsupportedOperationException.class)
 	public void testCanNotUpdateType() throws IllegalFunctionDefinitionException{
 		VarArgsFunctionId<CommonTree> v1 = new VarArgsFunctionId<CommonTree>(byToken("read", ExampleType.INT), ExampleType.INT, ExampleType.INT, ExampleType.STRING);
 		

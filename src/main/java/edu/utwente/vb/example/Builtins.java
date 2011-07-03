@@ -31,20 +31,24 @@ public class Builtins {
 		}
 	}
 	
-	protected void print(int i){
+	protected int print(int i){
 		System.out.println(i);
+		return i;
 	}
 	
-	protected void print(char c){
+	protected char print(char c){
 		System.out.println(c);
+		return c;
 	}
 	
-	protected void print(String line){
+	protected String print(String line){
 		System.out.println(line);
+		return line;
 	}
 	
-	protected void print(boolean b){
+	protected boolean print(boolean b){
 		System.out.println(b);
+		return b;
 	}
 	
 	protected String stringAppend(String lhs, String rhs){
