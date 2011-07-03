@@ -20,7 +20,6 @@ options {
 
   import edu.utwente.vb.example.asm.*;
     
-  import edu.utwente.vb.example.*;
   import edu.utwente.vb.example.util.*;
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
