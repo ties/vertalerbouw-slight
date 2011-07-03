@@ -225,8 +225,8 @@ compoundExpression returns [ExampleType return_type = ExampleType.UNKNOWN;]
 //TODO: Constraint toevoegen, BECOMES mag alleen plaatsvinden wanneer orExpression een variable is
 // => misschien met INFERVAR/VARIABLE als LHS + een predicate? 
 expression  returns [ExampleType return_type = ExampleType.UNKNOWN;]
-  : ^(op=BECOMES base=expression sec=expression) 
-                          { ch.applyBecomesAndSetType($op, $base.tree, $sec.tree); }//infer van type zit in CheckerHelper 
+  : ^(op=BECOMES lhvar=variable sec=expression) 
+                          { ch.applyBecomesAndSetType($op, $lhvar.tree, $sec.tree); }//infer van type zit in CheckerHelper 
   | ^(op=OR base=expression sec=expression) 
                           { ch.applyFunctionAndSetType($op, $base.tree, $sec.tree); }
   | ^(op=AND base=expression sec=expression) 
