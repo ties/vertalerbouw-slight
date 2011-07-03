@@ -52,7 +52,7 @@ public class VarArgsFunctionId<T extends BaseTree> extends FunctionId<T> {
     public List<ExampleType> getTypeParameters() {
 	ImmutableList.Builder<ExampleType> builder = ImmutableList.builder();
 	for(ExampleType type : acceptableTypes){
-	    for(int i=0; i< minNumArgs; i++){
+	    for(int i=0; i< minNumArgs + 1; i++){
 		builder.add(type);
 	    }
 	}
