@@ -64,10 +64,10 @@ public class Prelude {
 		builder.add(createBuiltin(">", BOOL, CHAR, CHAR));
 		builder.add(createBuiltin(">=", BOOL, CHAR, CHAR));
 		//Builting functions
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.STRING)));
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.BOOL)));
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.INT)));
-		builder.add(createFunctionId("print", ExampleType.VOID, 	createVariableId("str", ExampleType.CHAR)));
+		builder.add(createFunctionId("print", ExampleType.STRING, 	createVariableId("str", ExampleType.STRING)));
+		builder.add(createFunctionId("print", ExampleType.BOOL, 	createVariableId("str", ExampleType.BOOL)));
+		builder.add(createFunctionId("print", ExampleType.INT, 	createVariableId("str", ExampleType.INT)));
+		builder.add(createFunctionId("print", ExampleType.CHAR, 	createVariableId("str", ExampleType.CHAR)));
 		
 		for(ExampleType type : new ExampleType[]{INT, CHAR, STRING}){
 		    FunctionId<TypedNode> r = createFunctionId("read", type, 	createVariableId("str", type));
