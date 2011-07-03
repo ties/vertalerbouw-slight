@@ -40,8 +40,6 @@ options {
   import static com.google.common.base.Preconditions.*;
 }
 
-// Alter code generation so catch-clauses get replaced with this action. 
-// This disables ANTLR error handling;
 @rulecatch { 
     catch (RecognitionException e) { 
        log.error("RecognitionException in codegen; Illegal internal state?", e);
@@ -51,23 +49,41 @@ options {
 }
 
 @members{
+  /** Printen JVM bytecode kan naar classfile of naar logfile **/
   public enum OutputMode{ FILE, LOG}
-
-  private ASMAdapter aa;
-  private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
   private OutputMode mode = OutputMode.LOG;
   private File target;
+
+  /** ASMAdapter bevat alle methoden om JVM bytecode te genereren **/
+  private ASMAdapter aa;
   
+  /** 
+   * Zorgt voor nette logfiles welke informatie geven over alle handelingen doorlopen in de checker (en indirect CheckerHelper). 
+   * Deze logging is zeer handig gedurende het debuggen van de Example Compiler
+   **/
+  private Logger log = LoggerFactory.getLogger(CodeGenerator.class);
+  
+  /**
+   * Zet de output mode naar FILE of LOG.
+   * Compiler.java gebruikt setOutputMode(FILE)
+   **/
   public void setOutputMode(OutputMode mode){
     log.debug("setOutputMode {}", mode);
     this.mode = checkNotNull(mode);
   }
   
+  /**
+   * Kent aan Codegenerator een ASMAdatper toe die Java-methoden bevat voor emitten JVM-code
+   * Constructie identiek aan Checker en CheckerHelper
+   **/
   public void setASMAdapter(ASMAdapter adap){
     log.debug("setASMAdapter {}", adap);
     this.aa = checkNotNull(adap);
   }
   
+   /**
+   * Stelt outputbestand in voor geval outputMode==FILE
+   **/
   public void setFile(File tgt){
     log.debug("setFile {}", tgt);
     this.target = checkNotNull(tgt);
@@ -76,23 +92,51 @@ options {
 
 //Program regel w/ check van precondities, uitvoeren van goede visitEnd regel
 program 
-  : { 
-      log.debug("Program: {} {} target:{}", new Object[]{aa, mode, target});
-      checkNotNull(aa); checkNotNull(mode); checkArgument(mode == OutputMode.LOG || target != null); 
-    } 
+	:                       { 
+											      log.debug("Program: {} {} target:{}", new Object[]{aa, mode, target});
+											      checkNotNull(aa); 
+											      checkNotNull(mode); 
+											      checkArgument(mode == OutputMode.LOG || target != null); 
+											    } 
       ^(PROGRAM content) 
-    { if(mode == OutputMode.FILE){ aa.visitEnd(target); } else {aa.visitEnd(); }}
+											    { if(mode == OutputMode.FILE){
+											        aa.visitEnd(target); } 
+											      else{
+											        aa.visitEnd();
+											      }
+											    }
   ;
 
 content
-  : (declaration | { aa.setInFunction(true); } functionDef { aa.setInFunction(false); } )*
+  : (declaration 
+  |                       { aa.setInFunction(true); } 
+    functionDef 
+                          { aa.setInFunction(false); } 
+    )*
   ;
   
-declaration									/* Let op: Geef $rvd etc mee om te kijken of er een value is */
-  : ^(VAR primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } rvd=valueDeclaration? {aa.visitDeclEnd($rvd.tree);})
-  | ^(CONST primitive IDENTIFIER { aa.visitDecl($IDENTIFIER); } cvd=valueDeclaration {aa.visitDeclEnd($cvd.tree);}) 
-  | ^(INFERVAR IDENTIFIER { aa.visitDecl($IDENTIFIER); } run=valueDeclaration? {aa.visitDeclEnd($run.tree);}) 
-  | ^(INFERCONST IDENTIFIER { aa.visitDecl($IDENTIFIER); } cons=valueDeclaration {aa.visitDeclEnd($cons.tree);})
+declaration
+  /* Let op: Geef $rvd etc mee om te kijken of er een value is */									
+  : ^(VAR primitive IDENTIFIER 
+                          { aa.visitDecl($IDENTIFIER); } 
+     rvd=valueDeclaration? 
+                          {aa.visitDeclEnd($rvd.tree);}
+     )
+  | ^(CONST primitive IDENTIFIER 
+                          { aa.visitDecl($IDENTIFIER); } 
+     cvd=valueDeclaration 
+                          {aa.visitDeclEnd($cvd.tree);}
+     ) 
+  | ^(INFERVAR IDENTIFIER 
+                          { aa.visitDecl($IDENTIFIER); } 
+     run=valueDeclaration? 
+                          {aa.visitDeclEnd($run.tree);}
+     ) 
+  | ^(INFERCONST IDENTIFIER 
+                          { aa.visitDecl($IDENTIFIER); } 
+      cons=valueDeclaration 
+                          {aa.visitDeclEnd($cons.tree);}
+      )
   ;
   
 valueDeclaration 
@@ -105,12 +149,12 @@ functionDef
     int parameterNumber = 0;// parameter 0 = this bij func call van non-static
   }
   : ^(FUNCTION (primitive?) IDENTIFIER 
-      (p=parameterDef[parameterNumber] {params.add($p.id_node); parameterNumber++;})* 
-      { 
-        aa.visitFuncDef($IDENTIFIER, params);
-      } 
+      (p=parameterDef[parameterNumber] 
+                            {params.add($p.id_node); parameterNumber++;}
+      )* 
+                            { aa.visitFuncDef($IDENTIFIER, params);} 
       closedCompoundExpression 
-      { aa.visitEndFuncDef(); })
+                            { aa.visitEndFuncDef(); })
   ;
   
 parameterDef[int parameterNumber] returns [TypedNode id_node]
