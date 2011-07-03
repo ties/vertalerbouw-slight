@@ -1,14 +1,8 @@
 \chapter{Contexbeperkingen}
-\section{Wat zijn contextbeperkingen?}
 Contextbeperkingen zijn contextuele beperkingen welke bovenop de al geldende syntactische eisen voor de taal worden gedefinieerd. De checker is het geldeelte van de compiler die controleert of aan alle voor de taal geldende contextuele beperkingen zijn voldaan.
 
-\section{Contextbeperkingen in Example}
-\subsection{Program}
-{\bf program}                     ::= (declaration | functionDef)*
-Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van declaration en functionDef regels. In eerste instantie voelt dit tegennatuurlijk, hoe wordt er immers ooit iets aangeroepen als een program slechts uit definities bestaat? Dit wordt veroorzaakt door de definitie van een main methode in Example. Wil men in Example een programma schrijven welke bij uitvoer direct acties uitvoert en niet enkel functies, variabelen en constanten definieerd dan moet er in het programma een main() worden opgenomen. Een main methode wordt bij uitvoer van Example programma bij uitvoer automatisch aangeroepen.
-
-\subsection{Declaraties}
-    \subsubsection{Syntax}    
+\section{Declaraties}
+    \subsection{Syntax}    
         \begin{tabbing}
             {\bf declaration}         ::= \=primitive IDENTIFIER valueDeclaration\\
                                       \>| primitive IDENTIFIER\\
@@ -19,7 +13,7 @@ Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van de
             \\
             {\bf valueDeclaration}    ::= \textbf{=} compoundExpression\\
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
         \item De syntaxregel 'primitive IDENTIFIER valueDeclaration' kent de volgende contextuele beperkingen:
             \begin{itemize}
@@ -54,9 +48,9 @@ Het valt in de syntax op dat een Program bestaat uit een aaneenschakeling van de
             \end{itemize}  
         \end{itemize}
 
-\subsection{Functiedefinities}
+\section{Functiedefinities}
 Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameters en teruggeeftype, welke gebonden is aan de opgegeven identifier.
-    \subsubsection{Syntax}
+    \subsection{Syntax}
         \begin{tabbing}
             {\bf functionDef}                 ::= \= \textbf{def} IDENTIFIER parameterDef \textbf{->} primitive \textbf{$\colon$} closedCompoundExpression\\
                                                   \>| \textbf{def} IDENTIFIER parameterDef \textbf{$\colon$} closedCompoundExpression\\
@@ -70,7 +64,7 @@ Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameter
             {\bf parameterOtherElems}         ::= \=\textbf{,}primitive IDENTIFIER\\
                                                   \>\textbf{,}primitive IDENTIFIER parameterOtherElems\\  
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
         \item De syntaxregel 'def IDENTIFIER parameterDef -> primitive $\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
             \begin{itemize}
@@ -88,9 +82,9 @@ Een definitie van een functie cre\"{e}ert een functie met de opgegeven parameter
             \end{itemize}
         \end{itemize}
 
-\subsection{Statements}
+\section{Statements}
 Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van instructies te beinvloeden. Twee soorten statements die zijn ge\"{i}mplementeerd in de Example programeertaal zijn het if-statement en het while-statement.
-    \subsubsection{Syntax}
+    \subsection{Syntax}
         \begin{tabbing}
         {\bf statements}                  ::= \=ifStatement\\
                                           \>| whileStatement\\
@@ -104,7 +98,7 @@ Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van 
                                       \>| \textbf{while} expression $\colon$ closedCompoundExpression\\
         \\ 
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
         \item De syntaxregel 'if(expression)$\colon$ closedCompoundExpression else$\colon$ closedCompoundExpression' kent de volgende contextuele beperkingen:
             \begin{itemize}
@@ -132,9 +126,9 @@ Statements zijn controle stucturen die gebruikt kunnen worden om de uitvoer van 
             \end{itemize}
         \end{itemize}
 
-\subsection{Expressies}
+\section{Expressies}
 Een expressie wordt ge\"{e}evalueerd en zal mogelijk, maar in de meeste gevallen, een waarde opleveren.
-    \subsubsection{Syntax}
+    \subsection{Syntax}
         \begin{tabbing} 
             {\bf closedCompoundExpression}    ::= \textbf{INDENT} compoundMultiExpression \textbf{DEDENT}\\
             \\ 
@@ -193,7 +187,7 @@ Een expressie wordt ge\"{e}evalueerd en zal mogelijk, maar in de meeste gevallen
             \\ 
             {\bf paren}                       ::= \textbf{(} expression \textbf{)}\\
         \end{tabbing}
-    \subsubsection{Contextuele beperkingen}
+    \subsection{Contextuele beperkingen}
         \begin{itemize}
         \item De syntaxregel 'return expression' kent de volgende contextuele beperkingen:
             \begin{itemize}
