@@ -1,0 +1,18 @@
+\chapter{Knelpunten en oplossingen}
+Het ontwikkelen van een programmeertaal is een lastige aangelegenheid. Hierbij is het onvermijdelijk dat er gedurende de ontwikkelfase problemen naar voren welke een grote hoeveelheid tijd kosten om op te lossen. In dit hoofdstuk zullen een aantal zaken uiteen worden gezet die gedurende de ontwikkelfase van de Example compiler de meeste problemen met zich mee hebben gebracht.
+
+\section{Return-statements}
+\"{E}\"{e}n van de ontwerpkeuzes van de Example programmameertaal behelst expliciete return-statements. Returnen van een waarde of variabele 'x' gebeurd dus door expliciet het statement 'return x' aan te roepen, dit in tegenstelling tot de basic expression language waar impliciet die waarde wordt gereturned die aan het einde van een closedcompound-expressie staat. Deze ontwerpkeuze heeft indirect tot gevolg dat voor elke functiedefinitie van een functie met returnwaarde een controle uitgevoerd dient te worden of elke mogelijke uitvoer van deze functie een return-statement uitvoert. Gebeurd dit niet, dan is het immers mogelijk dat de gebruiker van de taal verwacht dat een functie een waarde van een bepaald type teruggeeft terwijl de daadwerkelijke implementatie van deze functie anders is. Een voorbeeld van dit scenario is het volgende scenario:
+\begin{lstlisting}[language=Python]
+def getNumber(int n) -> int:
+	if n == 0:
+		return 0
+    if n == 1:
+        return 1
+
+def main():
+    int number = getNumber(5)
+\end{lstlisting}
+Omdat er door de ingevoerde waarde van parameter n beide if-statements niet zullen worden betreden wordt er nooit een return-statement uitgevoerd! Omdat dit een dit een fout van de gebruiker van de programmeertaal behelst is het wenselijk een dergelijke fout in de checker te detecteren en de gebruiker van de taal hier middels een compileerfout van op de hoogte te stellen. 
+
+
