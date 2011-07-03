@@ -25,11 +25,23 @@ standaardinvoer. Ook mogelijk en wellicht een pragmatischere oplossing is de
 compiler optie -file_input waarmee een bestand in de compiler kan worden 
 ingevoerd. Een complete lijst met compileropties volgt hieronder:
 
-	-debug_parser	Zet de parser in debug mode voor de parser, voor debug 
-                    met antlrworks. Hiervoor moet je de target-classes 
-                    directory van de compiler op je classpath toevoegen.
-	-debug_checker	Zet de checker in debug mode voor de checker, voor debug 
-                    met antlrworks. 
-	-file_input     Argument:[filenaam]. Lees invoer vanuit bestand.
-    -dot            Geeft uitvoer van de Abstract Syntax Tree in DOT formaat.
-    -no_checker     Voert de compilerstappen uit t/m de Parser.
+-ast                Optie om de Abstract Syntax Tree behorend bij dit 
+                    testprogramma terug te geven in code-notatie.
+-debug              Zet het gooien van Excepties aan, deze optie is nodig 
+                    zodat de testsuite fouten kan herkennen.
+-debug_checker      Start een debug sessie voor de checker, welke vanaf 
+                    ANTLR-works benaderbaar is.
+-debug_codegen      Start een debug sessie voor de codegenerator, welke vanaf
+                    ANTLR-works benaderbaar is.
+-debug_parser       Start een debug sessie voor de parser, welke vanaf 
+                    ANTLR-works benaderbaar is.
+-debug_preparation  Start een debug sessie voor de codegeneratie 
+                    voorbereidingsfase, welke vanaf ANTLR-works benaderbaar is.
+-dot                Optie om de Abstract Syntax Tree behorend bij dit 
+                    testprogramma terug te geven in DOT-notatie.
+-file_input         Hier kan een input-file voor de compiler aan worden     
+                    meegegeven.
+-no_checker         Zorgt voor uitvoer van enkel de parserlaag.
+-no_codegen         Zorgt voor uitvoer tot en met de checkerlaag.
+-no_interpreter     Zorgt voor uitvoer tot en met de codegeneratielaag.
+
