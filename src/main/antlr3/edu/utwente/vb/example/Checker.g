@@ -18,24 +18,23 @@ options {
 @header{ 
   package edu.utwente.vb.example;
   
+  import java.util.List;
+  
+  /** imports van gebruikte Java-hulpklassen **/
   import edu.utwente.vb.example.util.*;
   import edu.utwente.vb.symbols.*;
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.exceptions.*;
     
-  import java.util.List;
+    /** import van gebruikte Guava-library **/
   import com.google.common.collect.Lists;
+  import static com.google.common.base.Preconditions.checkNotNull;
   
   /** Logger */
   import org.slf4j.Logger;
   import org.slf4j.LoggerFactory;
-  
-  
-  import static com.google.common.base.Preconditions.checkNotNull;
 }
 
-// Alter code generation so catch-clauses get replaced with this action. 
-// This disables ANTLR error handling;
 @rulecatch { 
     catch (RecognitionException e) {
       nrErr += 1;
@@ -53,22 +52,41 @@ options {
 }
 
 @members{
+  /**
+   * Een instantie van CheckerHelper, welke alle hulpmethoden bevat voor Checker.g.
+   * De beoogde architectuur is er een met zo min mogelijk Java-code geintegreerd in de ANTLR-specificaties,
+   * het is hierbij van belang Java-code zoveel mogelijk in Java-klassen te plaatsen.
+   **/
   private CheckerHelper ch;
+  
+  /** 
+   * Zorgt voor nette logfiles welke informatie geven over alle handelingen doorlopen in de checker (en indirect CheckerHelper). 
+   * Deze logging is zeer handig gedurende het debuggen van de Example Compiler
+   **/
   private Logger log = LoggerFactory.getLogger(Checker.class);
+  
+  /** Zorgt voor doorgooien excepties, zodat testsuite deze kan waarnemen **/
   private static boolean debug_mode = false;
+  
+  /** Teller voor het aantal waargenomen fouten in het Example-programma **/
   protected int nrErr = 0;
 
+  /** Teller voor het aantal waargenomen fouten in het Example-programma **/
   public int nrErrors() {
     return nrErr;
   } 
   
+  /**
+   * Zet debug_mode aan. Dit heeft tot gevolg excepties worden doorgegooid zodat de testsuite deze kan detecteren.
+   * Deze methode wordt in Compiler.java aangeroepen na het aanmaken van de Parser 
+   */
   public void setDebug(){
     debug_mode = true;
   }
   
   /** 
-  * Compositie met hulp van een CheckerHelper. In members stoppen is onhandig;
-  * inheritance kan niet omdat hij wisselt tussen DebugTreeParser en TreeParser als super type
+  * Compositie met hulp van een CheckerHelper. Alle hulpfuncties in members stoppen is een slechte gewoonte.
+  * Inheritance is niet mogelijk omdat hij wisselt tussen DebugTreeParser en TreeParser als super type
   */ 
   public void setCheckerHelper(CheckerHelper h){
     checkNotNull(h);
