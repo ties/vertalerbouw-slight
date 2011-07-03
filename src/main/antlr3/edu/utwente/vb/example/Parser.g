@@ -154,9 +154,7 @@ declaration
 
 valueDeclaration
   :
-  { inAssignment = true; }
-  BECOMES compoundExpression 
-  { inAssignment = false; }
+  { inAssignment = true; } BECOMES compoundExpression { inAssignment = false; }
   ;
 
 functionDef
@@ -191,8 +189,8 @@ compoundExpression
 
 expression
   :
-  orExpression (BECOMES^ { inAssignment = true; }
-    expression { inAssignment = false; })?
+  orExpression (BECOMES^        { inAssignment = true; }
+    expression                  { inAssignment = false; })?
   ;
 
 orExpression
@@ -301,11 +299,11 @@ primitive
 atom
   :
   PLUS! INT_LITERAL
-  | MINUS INT_LITERAL { $INT_LITERAL.setText("-" + $INT_LITERAL.getText()); }
+  | MINUS INT_LITERAL         { $INT_LITERAL.setText("-" + $INT_LITERAL.getText()); }
     -> INT_LITERAL
-  | INT_LITERAL
-  | CHAR_LITERAL { Utils.stripQuotes($CHAR_LITERAL); }
-  | STRING_LITERAL { Utils.stripQuotes($STRING_LITERAL); }
+  | INT_LITERAL 
+  | CHAR_LITERAL              { Utils.stripQuotes($CHAR_LITERAL); }
+  | STRING_LITERAL            { Utils.stripQuotes($STRING_LITERAL); }
   | TRUE
   | FALSE
   ;

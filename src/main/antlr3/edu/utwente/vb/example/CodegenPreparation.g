@@ -35,8 +35,6 @@ options {
   import static com.google.common.base.Preconditions.checkNotNull;
 }
 
-// Alter code generation so catch-clauses get replaced with this action. 
-// This disables ANTLR error handling;
 @rulecatch { 
     catch (RecognitionException e) { 
        throw e; 
@@ -57,20 +55,22 @@ content
   ;
   
 declaration
-  : ^(VAR prim=primitive IDENTIFIER rvd=valueDeclaration?) 
-  | ^(CONST prim=primitive IDENTIFIER cvd=valueDeclaration) 
-  | ^(INFERCONST IDENTIFIER cons=valueDeclaration) 
-  | { !Utils.isUnknownVarNode(input.LT(3)) }? ^(INFERVAR IDENTIFIER run=valueDeclaration?)
-  | { Utils.isUnknownVarNode(input.LT(3)) }? ^(INFERVAR id=IDENTIFIER)
+  : ^(VAR primitive IDENTIFIER valueDeclaration?) 
+  | ^(CONST primitive IDENTIFIER valueDeclaration) 
+  | ^(INFERCONST IDENTIFIER valueDeclaration) 
+  |                           { !Utils.isUnknownVarNode(input.LT(3)) }? 
+    ^(INFERVAR IDENTIFIER valueDeclaration?)
+  |                           { Utils.isUnknownVarNode(input.LT(3)) }? 
+    ^(INFERVAR IDENTIFIER)
   //ANTLR bug, delete van node (door transformatie van ^(...) -> \n is stuk, zie http://www.antlr.org/wiki/display/ANTLR3/Tree+construction en http://www.antlr.org/pipermail/antlr-interest/2009-November/036711.html
   ;
   
 valueDeclaration
-  : BECOMES ce=compoundExpression
+  : BECOMES compoundExpression
   ;
  
 functionDef
-  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)* returnTypeNode=closedCompoundExpression) 
+  : ^(FUNCTION (t=primitive?) IDENTIFIER (p=parameterDef)* closedCompoundExpression) 
   ;
   
 parameterDef
@@ -78,46 +78,46 @@ parameterDef
   ; 
 
 closedCompoundExpression
-  : ^(SCOPE (ce=compoundExpression)*)
+  : ^(SCOPE (compoundExpression)*)
   ;
 
 compoundExpression
-  : expr=expression
-  | dec=declaration
+  : expression
+  | declaration
   ;
   
 expression
-  : ^(op=BECOMES base=expression sec=expression) 
-  | ^(op=OR base=expression sec=expression) 
-  | ^(op=AND base=expression sec=expression) 
-  | ^(op=(LTEQ | GTEQ | GT | LT | EQ | NOTEQ) base=expression sec=expression)
-  | ^(op=(PLUS|MINUS) base=expression sec=expression) 
-  | ^(op=(MULT | DIV | MOD) base=expression sec=expression) 
-  | ^(op=NOT base=expression)
-  | ^(ret=RETURN expr=expression)
-  | sim=simpleExpression
+  : ^(BECOMES expression expression) 
+  | ^(OR expression expression) 
+  | ^(AND expression expression) 
+  | ^((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) expression expression)
+  | ^((PLUS|MINUS) expression expression) 
+  | ^((MULT | DIV | MOD) expression expression) 
+  | ^(NOT expression)
+  | ^(RETURN expression)
+  | simpleExpression
   ;
   
 simpleExpression
   : atom                                     
-  | fc=functionCall                          
+  | functionCall                          
   | variable                                 
   | paren                                    
-  | cce=closedCompoundExpression             
-  | s=statements                             
+  | closedCompoundExpression             
+  | statements                             
   ;
   
 statements
-  : ifState=ifStatement
-  | whileState=whileStatement    
+  : ifStatement
+  | whileStatement    
   ;
 
 ifStatement
-  : ^(IF cond=expression ifExpr=closedCompoundExpression (elseExpr=closedCompoundExpression)?)
+  : ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
   ;  
     
 whileStatement
-  : ^(WHILE cond=expression loop=closedCompoundExpression)
+  : ^(WHILE expression closedCompoundExpression)
   ;    
     
 primitive
@@ -129,11 +129,11 @@ primitive
   ;
 
 atom
-  : INT_LITERAL { $INT_LITERAL.setConstantExpression(true); }
-  | CHAR_LITERAL { $CHAR_LITERAL.setConstantExpression(true); }
-  | STRING_LITERAL { $STRING_LITERAL.setConstantExpression(true); }
-  | TRUE { $TRUE.setConstantExpression(true); }
-  | FALSE { $FALSE.setConstantExpression(true); }
+  : INT_LITERAL               { $INT_LITERAL.setConstantExpression(true); }
+  | CHAR_LITERAL              { $CHAR_LITERAL.setConstantExpression(true); }
+  | STRING_LITERAL            { $STRING_LITERAL.setConstantExpression(true); }
+  | TRUE                      { $TRUE.setConstantExpression(true); }
+  | FALSE                     { $FALSE.setConstantExpression(true); }
   ;
   
 paren
@@ -141,9 +141,9 @@ paren
   ;
   
 variable
-  : id=IDENTIFIER
+  : IDENTIFIER
   ;
   
 functionCall
-  : ^(CALL id=IDENTIFIER (ex=expression)*)
+  : ^(CALL IDENTIFIER (expression)*)
   ; 
