@@ -322,8 +322,8 @@ variable
   ;
 
 functionCall
-  :
-  IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN
-    ->
-      ^(CALL IDENTIFIER<AppliedOccurrenceNode>[$IDENTIFIER] expression*)
+  : {!Utils.isRead(input.LT(1))}? IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN
+    -> ^(CALL IDENTIFIER<AppliedOccurrenceNode>[$IDENTIFIER] expression*)
+  | {Utils.isRead(input.LT(1))}? IDENTIFIER LPAREN (variable (COMMA variable)*)? RPAREN
+    -> ^(CALL IDENTIFIER<AppliedOccurrenceNode>[$IDENTIFIER] variable*)
   ;

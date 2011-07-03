@@ -88,8 +88,22 @@ public class Utils {
 	    	case WRITE:
 	    	    binding.incAssignCount();
 	    	    break;
+	    	case RW:
+	    	    binding.incReadCount();
+	    	    binding.incAssignCount();
+	    	    break;
 	    }
 	    
 	    log.debug("Status of {}", binding);
+	}
+	
+	public static boolean isRead(Object node){
+	    if(node instanceof CommonToken){
+		return "read".equals(((CommonToken)node).getText());
+	    }
+	    if(node instanceof CommonTree){
+		return "read".equals(((CommonTree)node).getText());
+	    }
+	    return false;
 	}
 }

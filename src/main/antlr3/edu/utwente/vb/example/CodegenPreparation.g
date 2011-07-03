@@ -45,7 +45,7 @@ options {
 @members{
   private Logger log = LoggerFactory.getLogger(CodegenPreparation.class);
   
-  public enum Usage{READ, WRITE}
+  public enum Usage{READ, WRITE, RW}
   
   private Usage mode = Usage.READ;
 }
@@ -146,5 +146,5 @@ variable
   ;
   
 functionCall
-  : ^(CALL IDENTIFIER (expression)*)
+  : ^(CALL IDENTIFIER { if(Utils.isRead($IDENTIFIER)){ mode = Usage.RW; } }(expression)* { mode = Usage.READ; } )
   ; 
