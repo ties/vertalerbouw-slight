@@ -28,6 +28,7 @@ import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import edu.utwente.vb.example.Checker;
 import edu.utwente.vb.example.CodegenPreparation;
 import edu.utwente.vb.example.Lexer;
+import edu.utwente.vb.example.NonBlockingBuiltins;
 import edu.utwente.vb.example.Parser;
 import edu.utwente.vb.example.util.CheckerHelper;
 import edu.utwente.vb.symbols.Prelude;
