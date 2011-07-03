@@ -1,5 +1,5 @@
-String a
-String b
+string a
+string b
 
 def main():
 	read(a,b)

@@ -337,11 +337,7 @@ public class ASMAdapter implements Opcodes {
 		checkArgument(n instanceof AppliedOccurrenceNode);
 
 		FunctionNode func = (FunctionNode) ((AppliedOccurrenceNode)n).getBindingNode();
-		if (IdType.VARARGS.equals(func.getBoundMethod().getIdType())) {
-			loadVars = false;
-		} else {
-			loadVars = true;
-		}
+		
 		log.debug("Loading arguments? {}", loadVars);
 		// Load this onto the stack
 		// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]
@@ -352,8 +348,6 @@ public class ASMAdapter implements Opcodes {
 
 	public void visitFuncCallEnd(TypedNode n, List<TypedNode> params) {
 		log.debug("visit function call: " + n);
-		// Load arguments
-		loadVars = true;
 		
 		checkArgument(n instanceof AppliedOccurrenceNode);
 
@@ -392,21 +386,18 @@ public class ASMAdapter implements Opcodes {
 			// For each argument: dispatch a [functionname] call for the given
 			// argument
 			// then save it into the variable
-			boolean first = true;
-			for (TypedNode arg : params) {
-				if (!first)
-					mg.loadThis();
-
-				target = new Method(name, arg.getNodeType().toASM(),
-						new Type[] { arg.getNodeType().toASM() });
-				log.debug("Dispatching read to " + target);
-				visitVariable(arg);
-				mg.invokeVirtual(superClassName, target);
-				if(arg.getNodeType() != ExampleType.VOID)
-				    mg.dup();//Leave result on stack
-				visitBecomes(arg);
-
-				first = false;
+			for(int i=0; i < params.size(); i++){
+			    boolean last = i == params.size() - 1;
+			    TypedNode arg = params.get(i);
+			    mg.loadThis();
+			    target = new Method(name, arg.getNodeType().toASM(),
+					new Type[] { arg.getNodeType().toASM() });
+			    mg.swap();
+			    mg.invokeVirtual(superClassName, target);
+			    if(arg.getNodeType() != ExampleType.VOID){
+				mg.dup();//Leave result on stack
+			    }
+			    visitBecomes(arg);
 			}
 			break;
 		}
