@@ -3,11 +3,9 @@ package edu.utwente.vb.example;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Lexer;
-import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 

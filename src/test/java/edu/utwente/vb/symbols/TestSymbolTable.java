@@ -1,10 +1,11 @@
 package edu.utwente.vb.symbols;
 
-import java.util.List;
-import java.util.Set;
+import static edu.utwente.vb.example.util.CheckerHelper.createBuiltin;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
-import static edu.utwente.vb.example.util.CheckerHelper.*;
-import static junit.framework.Assert.*;
+import java.util.List;
 
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
@@ -16,11 +17,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
-import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.exceptions.SymbolTableException;
-import edu.utwente.vb.symbols.SymbolTable;
-
-import junit.framework.TestCase;
 
 public class TestSymbolTable{
 	private List<VariableId> variables1 = Lists.newArrayList();

@@ -1,24 +1,13 @@
 package edu.utwente.vb;
 
-import java.io.BufferedReader;
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
 import org.junit.Test;
 
-import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.example.Parser;
-import edu.utwente.vb.example.Parser.program_return;
 
 public class TestParser extends AbstractGrammarTest{
 	@Test

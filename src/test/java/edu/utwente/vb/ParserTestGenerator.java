@@ -10,8 +10,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import org.antlr.runtime.tree.RewriteEmptyStreamException;
-
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 

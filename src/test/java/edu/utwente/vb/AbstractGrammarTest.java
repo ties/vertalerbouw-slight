@@ -1,12 +1,7 @@
 package edu.utwente.vb;
 
 import java.io.File;
-
-import static junit.framework.Assert.*;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRStringStream;
@@ -19,13 +14,9 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-
+import edu.utwente.vb.example.Checker;
 import edu.utwente.vb.example.CodeGenerator;
 import edu.utwente.vb.example.CodeGenerator.OutputMode;
-import edu.utwente.vb.example.Checker;
 import edu.utwente.vb.example.CodegenPreparation;
 import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.example.Parser;
@@ -34,7 +25,6 @@ import edu.utwente.vb.symbols.Prelude;
 import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.tree.TypedNode;
 import edu.utwente.vb.tree.TypedNodeAdaptor;
-import junit.framework.TestCase;
 
 public abstract class AbstractGrammarTest{
 	protected Logger log = LoggerFactory.getLogger(AbstractGrammarTest.class);

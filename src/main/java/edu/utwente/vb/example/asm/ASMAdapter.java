@@ -15,7 +15,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -28,15 +27,14 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.Files;
 
 import edu.utwente.vb.example.Builtins;
-import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.symbols.ExampleType;
 import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.Id.IdType;
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.BindingOccurrenceNode;
+import edu.utwente.vb.tree.BindingOccurrenceNode.VariableType;
 import edu.utwente.vb.tree.FunctionNode;
 import edu.utwente.vb.tree.TypedNode;
-import edu.utwente.vb.tree.BindingOccurrenceNode.VariableType;
 
 /**
  * Adapter voor de ASM library, scheelt code in de grammar & testbaarheid

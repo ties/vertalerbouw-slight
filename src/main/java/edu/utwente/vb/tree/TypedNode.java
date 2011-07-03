@@ -1,21 +1,17 @@
 package edu.utwente.vb.tree;
 
-import java.util.ArrayList;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.BaseTree;
 import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import edu.utwente.vb.symbols.ExampleType;
-import edu.utwente.vb.symbols.VariableId;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A tree node that saves it's type

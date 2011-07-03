@@ -1,16 +1,16 @@
 package edu.utwente.vb.tree;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+
 import org.antlr.runtime.CommonToken;
-import junit.framework.TestCase;
-import static junit.framework.Assert.*;
 import org.antlr.runtime.Token;
 import org.junit.Before;
 import org.junit.Test;
 
 import edu.utwente.vb.symbols.ExampleType;
-
-
-import junit.framework.TestCase;
 
 public class TestTypedNode{
 	private Token testToken;

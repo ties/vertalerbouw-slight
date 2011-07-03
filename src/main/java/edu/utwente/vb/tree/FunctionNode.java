@@ -1,9 +1,8 @@
 package edu.utwente.vb.tree;
 
-import org.antlr.runtime.Token;
-
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import org.antlr.runtime.Token;
 
 import edu.utwente.vb.symbols.FunctionId;
 

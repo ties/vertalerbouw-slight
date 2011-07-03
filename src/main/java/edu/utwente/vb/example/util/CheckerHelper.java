@@ -1,32 +1,27 @@
 package edu.utwente.vb.example.util;
 
-import java.util.ArrayList;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.tree.CommonTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkArgument;
 
 import edu.utwente.vb.example.Lexer;
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
 import edu.utwente.vb.exceptions.IllegalVariableDefinitionException;
 import edu.utwente.vb.exceptions.IncompatibleTypesException;
 import edu.utwente.vb.exceptions.SymbolTableException;
-import edu.utwente.vb.symbols.FunctionId;
-import edu.utwente.vb.symbols.Id;
-import edu.utwente.vb.symbols.SymbolTable;
 import edu.utwente.vb.symbols.ExampleType;
-import edu.utwente.vb.symbols.VariableId;
+import edu.utwente.vb.symbols.FunctionId;
 import edu.utwente.vb.symbols.Id.IdType;
+import edu.utwente.vb.symbols.SymbolTable;
+import edu.utwente.vb.symbols.VariableId;
 import edu.utwente.vb.tree.AppliedOccurrenceNode;
 import edu.utwente.vb.tree.BindingOccurrenceNode;
 import edu.utwente.vb.tree.FunctionNode;

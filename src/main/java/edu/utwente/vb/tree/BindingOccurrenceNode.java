@@ -1,7 +1,8 @@
 package edu.utwente.vb.tree;
 
-import org.antlr.runtime.Token;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import org.antlr.runtime.Token;
 
 public class BindingOccurrenceNode extends TypedNode{
 	public enum VariableType { LOCAL, FIELD, ARGUMENT }

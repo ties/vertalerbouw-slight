@@ -1,6 +1,5 @@
 package edu.utwente.vb.exceptions;
 
-import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 
 
