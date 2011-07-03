@@ -83,7 +83,6 @@ public abstract class AbstractGrammarTest{
 	protected CodegenPreparation createCodegenPreparation(CharStream stream, Parser parser) throws IOException, RecognitionException{
 		Checker checker = createChecker(stream, parser);
 		Checker.program_return checker_result = checker.program();
-		
 		BufferedTreeNodeStream checker_nodes = new BufferedTreeNodeStream((TypedNode)checker_result.getTree());
 		CodegenPreparation prepare = new CodegenPreparation(checker_nodes, new BlankDebugEventListener());
 		prepare.setTreeAdaptor(new TypedNodeAdaptor());
