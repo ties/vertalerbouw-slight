@@ -261,6 +261,9 @@ public class ASMAdapter implements Opcodes {
 		checkArgument(node instanceof BindingOccurrenceNode);
 		currentVar = (BindingOccurrenceNode) node;
 		
+		if(currentVar.getAssignCount() == 0)
+		    return;
+		
 		if (!inFunction) {// Initialisatie van variabele in constructor
 			log.debug("declVar {} {}", node.getText(), node.getNodeType()
 					.toASM().getDescriptor());
@@ -293,6 +296,11 @@ public class ASMAdapter implements Opcodes {
 		checkNotNull(currentVar);
 		// Moeten we storen? -> heeft ie een expressie
 		boolean hasValue = node != null;
+		
+		if(currentVar.getAssignCount() == 0){
+		    currentVar = null;
+		    return;
+		}
 
 		if (!inFunction) {
 			log.debug("visitDeclEnd LOCAL {} @ {}", currentVar.getText(),
