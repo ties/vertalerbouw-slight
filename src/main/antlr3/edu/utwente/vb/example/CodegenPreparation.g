@@ -59,15 +59,15 @@ content
   ;
   
 declaration
-  : ^(VAR primitive IDENTIFIER vd=valueDeclaration? { if($vd.tree != null){ Utils.updateUsage($IDENTIFIER, Usage.WRITE); } }) 
+  : ^(VAR primitive IDENTIFIER vd=valueDeclaration? { if($vd.tree != null){ $vd.tree.setResultUsed(); Utils.updateUsage($IDENTIFIER, Usage.WRITE); } }) 
   | ^(CONST primitive IDENTIFIER valueDeclaration { Utils.updateUsage($IDENTIFIER, Usage.WRITE); }) 
   | ^(INFERCONST IDENTIFIER valueDeclaration { Utils.updateUsage($IDENTIFIER, Usage.WRITE); }) 
-  | ^(INFERVAR IDENTIFIER vd=valueDeclaration? { if($vd.tree != null){ Utils.updateUsage($IDENTIFIER, Usage.WRITE); } })
+  | ^(INFERVAR IDENTIFIER vd=valueDeclaration? { if($vd.tree != null){ $vd.tree.setResultUsed(); Utils.updateUsage($IDENTIFIER, Usage.WRITE); } })
   //ANTLR bug, delete van node (door transformatie van ^(...) -> \n is stuk, zie http://www.antlr.org/wiki/display/ANTLR3/Tree+construction en http://www.antlr.org/pipermail/antlr-interest/2009-November/036711.html
   ;
   
 valueDeclaration
-  : BECOMES compoundExpression
+  : BECOMES compoundExpression { $compoundExpression.tree.setResultUsed(); }
   ;
  
 functionDef
@@ -75,7 +75,7 @@ functionDef
   ;
   
 parameterDef
-  : ^(FORMAL primitive IDENTIFIER)
+  : ^(FORMAL primitive IDENTIFIER {$IDENTIFIER.setResultUsed(); })
   ; 
 
 closedCompoundExpression
@@ -88,14 +88,14 @@ compoundExpression
   ;
   
 expression
-  : ^(BECOMES {mode = Usage.WRITE;} variable {mode = Usage.READ;} expression) 
-  | ^(OR expression expression) 
-  | ^(AND expression expression) 
-  | ^((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) expression expression)
-  | ^((PLUS|MINUS) expression expression) 
-  | ^((MULT | DIV | MOD) expression expression) 
-  | ^(NOT expression)
-  | ^(RETURN expression)
+  : ^(BECOMES {mode = Usage.WRITE;} variable {mode = Usage.READ;} rhs=expression { $rhs.tree.setResultUsed(); }) 
+  | ^(OR lhs=expression rhs=expression { $lhs.tree.setResultUsed(); $rhs.tree.setResultUsed(); })
+  | ^(AND lhs=expression rhs=expression { $lhs.tree.setResultUsed(); $rhs.tree.setResultUsed(); })
+  | ^((LTEQ | GTEQ | GT | LT | EQ | NOTEQ) lhs=expression rhs=expression { $lhs.tree.setResultUsed(); $rhs.tree.setResultUsed(); })
+  | ^((PLUS|MINUS) lhs=expression rhs=expression { $lhs.tree.setResultUsed(); $rhs.tree.setResultUsed(); }) 
+  | ^((MULT | DIV | MOD) lhs=expression rhs=expression { $lhs.tree.setResultUsed(); $rhs.tree.setResultUsed(); })  
+  | ^(NOT rhs=expression { $rhs.tree.setResultUsed(); })
+  | ^(RETURN rhs=expression { $rhs.tree.setResultUsed(); })
   | simpleExpression
   ;
   
@@ -114,11 +114,11 @@ statements
   ;
 
 ifStatement
-  : ^(IF expression closedCompoundExpression (closedCompoundExpression)?)
+  : ^(IF expression closedCompoundExpression (closedCompoundExpression)? { $expression.tree.setResultUsed(); })
   ;  
     
 whileStatement
-  : ^(WHILE expression closedCompoundExpression)
+  : ^(WHILE expression closedCompoundExpression { $expression.tree.setResultUsed(); }) 
   ;    
     
 primitive
@@ -146,5 +146,5 @@ variable
   ;
   
 functionCall
-  : ^(CALL IDENTIFIER { if(Utils.isRead($IDENTIFIER)){ mode = Usage.RW; } }(expression)* { mode = Usage.READ; } )
+  : ^(CALL IDENTIFIER { if(Utils.isRead($IDENTIFIER)){ mode = Usage.RW; } }(expression {if(!Utils.isRead($IDENTIFIER)){$expression.tree.setResultUsed();}})* { mode = Usage.READ; } )
   ; 

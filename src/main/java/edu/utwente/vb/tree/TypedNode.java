@@ -7,6 +7,8 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -23,6 +25,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public class TypedNode extends CommonTree {
+    	private final static Logger log = LoggerFactory.getLogger(TypedNode.class);
+    	
 	protected ExampleType type;
 	private boolean constantExpression = false;
 	private boolean resultUsed = false;
@@ -96,10 +100,12 @@ public class TypedNode extends CommonTree {
 	}
 	
 	public boolean isResultUsed() {
+	    log.debug("Result of {} used? {}", new Object[]{this, resultUsed});
 	    return resultUsed;
 	}
 	
-	public void setResultUsed(boolean resultUsed) {
-	    this.resultUsed = resultUsed;
+	public void setResultUsed() {
+	    log.debug("Usage of {}", new Object[]{this});
+	    this.resultUsed = true;
 	}
 }

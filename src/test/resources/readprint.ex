@@ -4,8 +4,8 @@
 # readfunction for every type
 
 int     a
-string  b
+char	b
 
 def main():
 	char c
-    read(a,b, c)
+    read(a,b,c)

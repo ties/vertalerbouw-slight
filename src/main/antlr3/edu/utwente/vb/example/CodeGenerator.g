@@ -172,24 +172,24 @@ compoundExpression
   
 expression
   //Assignment
-  : ^(BECOMES { aa.loadVars(false); } base=expression { aa.loadVars(true); } expression { aa.visitBecomes($base.tree); })
+  : ^(BECOMES { aa.loadVars(false); } base=expression { aa.loadVars(true); } expression { aa.visitBecomes($BECOMES, $base.tree); })
   //Comparisons
-  | ^(LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLE, $base.tree,$sec.tree); })
-  | ^(GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGE, $base.tree,$sec.tree); })
-  | ^(GT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGT, $base.tree,$sec.tree); })
-  | ^(LT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLT, $base.tree,$sec.tree); })
-  | ^(EQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPEQ, $base.tree,$sec.tree); })
-  | ^(NOTEQ base=expression sec=expression { aa.visitCompareOperator(Opcodes.IF_ICMPNE, $base.tree,$sec.tree); })
+  | ^(LTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLE, $LTEQ, $base.tree,$sec.tree); })
+  | ^(GTEQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGE, $GTEQ, $base.tree,$sec.tree); })
+  | ^(GT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPGT, $GT, $base.tree,$sec.tree); })
+  | ^(LT base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPLT, $LT, $base.tree,$sec.tree); })
+  | ^(EQ base=expression sec=expression {aa.visitCompareOperator(Opcodes.IF_ICMPEQ, $EQ, $base.tree,$sec.tree); })
+  | ^(NOTEQ base=expression sec=expression { aa.visitCompareOperator(Opcodes.IF_ICMPNE, $NOTEQ, $base.tree,$sec.tree); })
   //Binary operators
-  | ^(OR base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IOR, $base.tree, $sec.tree); }) 
-  | ^(AND base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IAND, $base.tree, $sec.tree); }) 
-  | ^(PLUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IADD, $base.tree,$sec.tree); })
-  | ^(MINUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.ISUB, $base.tree,$sec.tree); })
-  | ^(MULT base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMUL, $base.tree,$sec.tree); }) 
-  | ^(DIV base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IDIV, $base.tree,$sec.tree); })
-  | ^(MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IREM, $base.tree,$sec.tree); }) 
+  | ^(OR base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IOR, $OR, $base.tree, $sec.tree); }) 
+  | ^(AND base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IAND, $AND, $base.tree, $sec.tree); }) 
+  | ^(PLUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IADD, $PLUS, $base.tree,$sec.tree); })
+  | ^(MINUS base=expression sec=expression { aa.visitBinaryOperator(Opcodes.ISUB, $MINUS, $base.tree,$sec.tree); })
+  | ^(MULT base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IMUL, $MULT, $base.tree,$sec.tree); }) 
+  | ^(DIV base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IDIV, $DIV, $base.tree,$sec.tree); })
+  | ^(MOD base=expression sec=expression { aa.visitBinaryOperator(Opcodes.IREM, $MOD, $base.tree,$sec.tree); }) 
   //Unary operators
-  | ^(NOT base=expression { aa.visitNot(); })
+  | ^(NOT base=expression { aa.visitNot($NOT); })
   | ^(RETURN expr=expression {aa.visitReturn($expr.tree); })
   | simpleExpression
   ;
@@ -258,7 +258,7 @@ functionCall
     }
       (ex=expression {params.add($ex.tree);})*
     { 
-      aa.visitFuncCallEnd($id, params);
+      aa.visitFuncCallEnd($CALL, $id, params);
     }
     )
   ; 

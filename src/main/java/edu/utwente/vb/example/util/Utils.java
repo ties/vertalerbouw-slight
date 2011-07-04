@@ -81,6 +81,8 @@ public class Utils {
 		binding = (BindingOccurrenceNode)node;
 	    }
 	    
+	    log.debug("{}", binding);
+	    
 	    switch(usage){
 	    	case READ:
 	    	    binding.incReadCount();
