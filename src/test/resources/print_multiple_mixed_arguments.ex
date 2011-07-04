@@ -4,5 +4,5 @@
 #
 #
 def main():
-	print("aap" + "noot" + "mies")
+	print("aap" + (True or False))
 

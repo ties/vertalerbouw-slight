@@ -442,6 +442,7 @@ public class ASMAdapter implements Opcodes {
 	    if (!ExampleType.STRING.equals(lhs.getNodeType())) {
 		mg.visitInsn(lhs.getNodeType().toASM().getOpcode(opcode));
 	    } else {
+		log.debug("String append {} of {} and {}", new Object[]{node, lhs, rhs});
 		checkArgument(opcode == Opcodes.IADD, "Invalid binary operator on a string");
 		// Stack protocol
 		mg.swap();

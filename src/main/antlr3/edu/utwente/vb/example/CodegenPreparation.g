@@ -138,7 +138,7 @@ atom
   ;
   
 paren
-  : ^(PAREN expression)
+  : ^(PAREN expression { $expression.tree.setResultUsed(); })
   ;
   
 variable
