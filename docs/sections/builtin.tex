@@ -1,9 +1,10 @@
-\chapter{Ingebouwde functies en type coercion}
+\chapter{Ingebouwde functies en operatoren}
+\section{Operatoren}
 Om de programmeur in staat te stellen veelvoorkomende unaire en binaire operaties te uitvoeren moet Example een aanstal wiskundige operaties standaard ondersteunen. Enkele operatoren zijn toepasbaar op verschillende (combinaties van) datatypen en waarbij haar gedrag per datatype kan verschillen. 
 
 Hieronder is een overzicht van de standaard ondersteunde binaire operaties uit de Example programmeertaal. Tevens geven we de omzettingen aan tussen typen die Example automatisch uitvoerd.
 
-\begin{tabular*}{0.75\textwidth}{@{\extracolsep{\fill}} |l | l | l | l |}
+\begin{tabular*}{0.6\textwidth}{@{\extracolsep{\fill}} |l | l | l | l |}
 	\hline
 		Operator	    &   Left hand side	&	Right hand side	&	Result	\\
 	\hline
@@ -29,7 +30,6 @@ Hieronder is een overzicht van de standaard ondersteunde binaire operaties uit d
         +               &   string          &   char            &   string\\
         +               &   string          &   int             &   string\\
         +               &   string          &   bool            &   string\\
-        +               &   char            &   char            &   string\\
 
 		+			    &	int	            &	int		        & 	int\\
         -			    &	int	            &	int		        & 	int\\
@@ -51,7 +51,41 @@ Hieronder is een overzicht van de standaard ondersteunde binaire operaties uit d
 
 	\hline
 \end{tabular*}
+\newpage
+Naast de genoemde binaire operaties ondersteund Example het volgende tweetal unaire operatoren.
 
-Naast de bine
+\begin{tabular*}{0.6\textwidth}{@{\extracolsep{\fill}} |l | l | l |}
+	\hline
+		Operator	    &   Right hand side	&	Result	\\
+	\hline
+        !               &   bool            &   bool\\
+        -               &   int             &   int\\
+	\hline
+\end{tabular*}
+\section{Functies}
+Naast operatoren heeft Example een aantal ingebouwde voorgedefinieerde functies waarvan de programmeur gebruik kan maken. De functies die zijn ingebouwd zijn de volgende:
 
-Naast operatoren
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} |l | l | l | l |}
+	\hline
+		functies	    &   Parameter(s)	&	Result	    & Semantiek\\
+	\hline
+        print           &   bool a          &   bool        & print de int op scherm en returnt de int\\
+        print           &   char a          &   char        & print de string op scherm en returnt de int\\
+        print           &   int a           &   int         & print de string op scherm en returnt de int\\
+        print           &   string a        &   string      & print de string op scherm en returnt de string\\
+
+        newList         &   intlist a       &   intlist     & maakt nieuwe intlist a aan\\
+        getInt          &   intlist a, int b&   int         & geeft int op positie a van intlist b terug\\
+        putInt          &   intlist a, int b&   void        & voegt a toe aan het eind van intlist b\\
+        length          &   intlist a       &   int         & geeft het aantal elementen van a\\
+
+        random          &   int a           &   int         & geeft willekeurige int tussen 0 en a\\
+
+        read            &   int a           &   int         & slaat invoer op in a en returnt a\\
+        read            &   char a          &   char        & slaat invoer op in a en returnt a\\
+        read            &   string a        &   string      & slaat invoer op in a en returnt a\\
+        read            &   (int,char,string)*  & void      & slaat de ingevoerde waarden op in de meegegeven variabelen\\
+
+        ensure          &   bool a          &   void        & gooit exceptie wanneer a==true\\
+	\hline
+\end{tabular*}        
