@@ -148,7 +148,6 @@ public class Compiler {
 				if (opt_debug)
 					checker.setDebug();
 
-				/* TODO: Patch de symbol table met default functies */
 				SymbolTable<TypedNode> symtab = new SymbolTable<TypedNode>();
 				Prelude pre = new Prelude();
 				pre.inject(symtab);
