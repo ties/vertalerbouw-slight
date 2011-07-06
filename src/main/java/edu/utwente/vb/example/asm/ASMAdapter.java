@@ -452,22 +452,33 @@ public class ASMAdapter implements Opcodes {
 	    } else {
 		log.debug("String append {} of {} and {}", new Object[]{node, lhs, rhs});
 		checkArgument(opcode == Opcodes.IADD, "Invalid binary operator on a string");
-		// Stack protocol
-		mg.swap();
-		// [rhs] [lhs]
-		mg.loadThis();
-		// [rhs] [lhs]] [this]
-		mg.swap();
-		// [rhs] [this] [lhs]
-		mg.dup2X1();
-		// [this] [lhs] [rhs] [this] [lhs]
-		mg.pop2();
-		// [this] [lhs] [rhs]
+		prependThisToLhsRhs();
 		// invokeVirtual
 		mg.invokeVirtual(superClassName, new Method("stringAppend", Type.getType(String.class), new Type[] {
 			lhs.getNodeType().toASM(), rhs.getNodeType().toASM() }));
 	    }
 	}
+    }
+    
+    /**
+     * A utility function that applies the following transformation to the stack;
+     * ... [lhs] [rhs] => ... [this] [lhs] [rhs]
+     * 
+     * You usually want to use this when using string functions.
+     */
+    private void prependThisToLhsRhs(){
+	// Stack protocol
+	// [lhs] [rhs]
+	mg.swap();
+	// [rhs] [lhs]
+	mg.loadThis();
+	// [rhs] [lhs]] [this]
+	mg.swap();
+	// [rhs] [this] [lhs]
+	mg.dup2X1();
+	// [this] [lhs] [rhs] [this] [lhs]
+	mg.pop2();
+	// [this] [lhs] [rhs]
     }
 
     public void visitCompareOperator(int opcode, TypedNode node, TypedNode lhs, TypedNode rhs) {
@@ -485,10 +496,12 @@ public class ASMAdapter implements Opcodes {
 		checkArgument(opcode == Opcodes.IF_ICMPNE || opcode == Opcodes.IF_ICMPEQ);
 		switch (opcode) {
 		case Opcodes.IF_ICMPNE:
+		    prependThisToLhsRhs();
 		    mg.invokeVirtual(superClassName, new Method("stringNE", Type.BOOLEAN_TYPE, new Type[] { lhs.getNodeType().toASM(),
 			    rhs.getNodeType().toASM() }));
 		    break;
 		case Opcodes.IF_ICMPEQ:
+		    prependThisToLhsRhs();
 		    mg.invokeVirtual(superClassName, new Method("stringEQ", Type.BOOLEAN_TYPE, new Type[] { lhs.getNodeType().toASM(),
 			    rhs.getNodeType().toASM() }));
 		    break;
