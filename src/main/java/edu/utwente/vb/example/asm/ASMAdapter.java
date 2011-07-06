@@ -155,7 +155,7 @@ public class ASMAdapter implements Opcodes {
 	/* Sluit nu de klasse af */
 	cv.visitEnd();
 	//
-	log.debug(buffer.toString());
+	log.info(buffer.toString());
     }
 
     public void visitEnd(File file) {

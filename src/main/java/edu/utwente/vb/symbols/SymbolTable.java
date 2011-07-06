@@ -21,13 +21,13 @@ public class SymbolTable<T extends BaseTree> implements EnvApi<T>{
 	}
 	
 	public void openScope(){
-		log.info("openScope() " + level + " -> " + (level + 1));
+		log.debug("openScope() " + level + " -> " + (level + 1));
 		inner = new Env(inner);		
 		level++;
 	}
 	
 	public void closeScope() throws SymbolTableException{
-		log.info("closeScope() " + level + " -> " + (level - 1));
+		log.debug("closeScope() " + level + " -> " + (level - 1));
 		if(level <= 0)
 			throw new SymbolTableException("Can not close level 0 - unbalanced indents");
 		inner = inner.prev;
