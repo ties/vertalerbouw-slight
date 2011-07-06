@@ -1,34 +1,57 @@
 \chapter{Ingebouwde functies en type coercion}
-Om de verplichte operaties te kunnen uitvoeren moet Example een aanstal wiskundige operaties en standaardfuncties hebben. Daarnaast zijn er een paar operatoren die wanneer ze op verschillende typen worden uitgevoerd worden nog gedefinieerd gedrag hebben.
+Om de programmeur in staat te stellen veelvoorkomende unaire en binaire operaties te uitvoeren moet Example een aanstal wiskundige operaties standaard ondersteunen. Enkele operatoren zijn toepasbaar op verschillende (combinaties van) datatypen en waarbij haar gedrag per datatype kan verschillen. 
 
-Hieronder werken wij eerst de standaard operaties uit die in de taal ingebouwd zitten. Daarnaast geven we de omzettingen aan tussen typen die onze taal automatisch uitvoerd.
+Hieronder is een overzicht van de standaard ondersteunde binaire operaties uit de Example programmeertaal. Tevens geven we de omzettingen aan tussen typen die Example automatisch uitvoerd.
 
 \begin{tabular*}{0.75\textwidth}{@{\extracolsep{\fill}} |l | l | l | l |}
 	\hline
 		Operator	    &   Left hand side	&	Right hand side	&	Result	\\
 	\hline
-		==			    &   primitive	    &	primitive	    &   boolean \\
-		!=			    &   primitive	    &	primitive	    &   boolean	\\
+        =               &   bool            &   bool            &   bool\\
+        =               &   char            &   char            &   char\\
+		=               &   int             &   int             &   int\\
+        =               &   string          &   string          &   string\\
+
+        ==              &   bool            &   bool            &   bool\\
+        ==              &   int             &   int             &   bool\\
+        ==              &   char            &   char            &   bool\\
+        ==              &   string          &   string          &   bool\\
+       
+        !=              &   bool            &   bool            &   bool\\
+        !=              &   int             &   int             &   bool\\
+        !=              &   char            &   char            &   bool\\
+        !=              &   string          &   string          &   bool\\
+
+		or			    &	bool	        &	bool	        &	bool\\
+		and			    &	bool	        &	bool	        &	bool\\
 		
-		or			    &	boolean	        &	boolean	        &	boolean	\\
-		and			    &	boolean	        &	boolean	        &	boolean	\\
+        +               &   string          &   string          &   string\\
+        +               &   string          &   char            &   string\\
+        +               &   string          &   int             &   string\\
+        +               &   string          &   bool            &   string\\
+        +               &   char            &   char            &   string\\
+
+		+			    &	int	            &	int		        & 	int\\
+        -			    &	int	            &	int		        & 	int\\
+		$\ast$		    &	int	            &	int	            &	int\\
+		/			    &	int	            &	int	            &	int\\
+		\% (modulo)	    &	int	            &	int	            &	int\\
+
+        
 		
-		+			    &	int	            &	int		        & 	int	\\
-		$\ast$		    &	int	            &	int	            &	int \\
-		/			    &	int	            &	int	            &	int \\
-		\% (modulo)	    &	int	            &	int	            &	int	\\
+		$<$	            &	int	            &	int	            &	bool\\
+		$<$=            &	int	            &	int	            &	bool\\
+		$>$	            &	int         	&	int	            &	bool\\
+		$>$=            &	int	            &	int	            &	bool\\
 		
-		+			    &	int	            &	char            &	int	\\
-		-			    &	int	            &	char            &	int	\\
-		
-		$<$	            &	int	            &	int	            &	boolean	\\
-		$>$	            &	int         	&	int	            &	boolean	\\
-		
-		+			    &	char            &	char            &	string	\\
-		$<$             &	char            &	char            &	boolean	\\
-		$>$         	&	char            &	char            &	boolean	\\
-		
-		+			    &	char            &	int	            &	char	\\
-		-			    &	char            &	int	            &	char	\\
+		$<$	            &	char            &	char            &	bool\\
+		$<$=            &	char	        &	char	        &	bool\\
+		$>$	            &	char         	&	char	        &	bool\\
+		$>$=            &	char	        &	char	        &	bool\\
+
 	\hline
 \end{tabular*}
+
+Naast de bine
+
+Naast operatoren
