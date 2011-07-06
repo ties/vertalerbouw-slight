@@ -41,31 +41,18 @@
 			<version>r09</version>
 		</dependency>
 		<!-- ASM (bytecode library) -->
-		<!-- 
-		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>3.3.1</version>
-		</dependency>
-		 -->
+		<!-- <dependency> <groupId>asm</groupId> <artifactId>asm</artifactId> <version>3.3.1</version> 
+			</dependency> -->
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-all</artifactId>
 			<version>3.3.1</version>
 		</dependency>
-		<!-- en utilities voor bij ASM - beetje brakke POM, java.lang.NoClassDefFoundError: org/objectweb/asm/tree/analysis/Interpreter-->
-		<!-- 
-		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm-commons</artifactId>
-			<version>3.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm-util</artifactId>
-			<version>3.3.1</version>
-		</dependency>
-		 -->
+		<!-- en utilities voor bij ASM - beetje brakke POM, java.lang.NoClassDefFoundError: 
+			org/objectweb/asm/tree/analysis/Interpreter -->
+		<!-- <dependency> <groupId>asm</groupId> <artifactId>asm-commons</artifactId> 
+			<version>3.3.1</version> </dependency> <dependency> <groupId>asm</groupId> 
+			<artifactId>asm-util</artifactId> <version>3.3.1</version> </dependency> -->
 	</dependencies>
 
 	<build>
@@ -125,6 +112,30 @@
 						<phase>package</phase><!-- append to the packaging phase. -->
 						<goals>
 							<goal>attached</goal><!-- goals == mojos -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
