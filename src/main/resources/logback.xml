@@ -9,8 +9,8 @@
 		</encoder>
 	</appender>
 
-	<logger name="edu.utwente.vb" level="DEBUG" />
-	<root level="debug">
+	<logger name="edu.utwente.vb" level="INFO" />
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

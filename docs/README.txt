@@ -10,7 +10,7 @@ De volgende commando's zijn relevant:
 
 mvn clean - verwijder alle build artifacts
 mvn compile - compileer en test de code
-mvn assembly:assembly - compileer en unit test de code
+mvn package - compileer en unit test de code
 
 Na het assembly commando staat de jar van de compiler in de target map.
 De dependencies zitten ook in de example-compiler-...-jar-with-dependencies.jar 
