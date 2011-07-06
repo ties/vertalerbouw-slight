@@ -38,7 +38,7 @@ options {
 @rulecatch { 
     catch (RecognitionException e) {
       nrErr += 1;
-      emitErrorMessage("[Example] compilation error [" + nrErr + "] - " + e.getMessage());
+      emitErrorMessage("[Example] checker error [" + nrErr + "] - " + e.getMessage());
       if(debug_mode==true) 
         throw e;
     }

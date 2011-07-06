@@ -138,7 +138,7 @@ public void displayRecognitionError(String[] tokenNames,
 		} else {
 			msg = super.getErrorMessage(e, tokenNames);
 		}
-		errors.add("[Example] compilation error [" + nrErr + "] - char "
+		errors.add("[Example] syntax error [" + nrErr + "] - char "
 				+ e.charPositionInLine + " on line " + e.line + " | " + msg);
 		}
 }
