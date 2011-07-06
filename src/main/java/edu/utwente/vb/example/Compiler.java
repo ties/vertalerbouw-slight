@@ -125,6 +125,12 @@ public class Compiler {
 			Parser.program_return result = parser.program();
 			TypedNode tree = (TypedNode) result.getTree();
 
+			if(parser.nrErrors()>0){
+			    for(String error: parser.getErrors())
+				System.out.println(error);
+			    System.exit(0);
+			}
+			
 			Checker checker;
 
 			Checker.program_return checker_result = null;
@@ -154,6 +160,9 @@ public class Compiler {
 				checker.setTreeAdaptor(new TypedNodeAdaptor());
 				checker_result = checker.program();
 				symtab.closeScope();
+				
+				if(checker.nrErrors()>0)
+				    System.exit(0);
 			}
 
 			if (!opt_no_codegen) { // run codegenerator

@@ -26,5 +26,10 @@ public class SymbolTableException extends RecognitionException{
 	public String toString() {
 		return Objects.toStringHelper(this).add("reason", reason).toString();
 	}
+	
+	@Override
+	public String getMessage(){
+	    return reason;
+	}
 }
 

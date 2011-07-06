@@ -15,26 +15,37 @@ options {
 
 @header {
 package edu.utwente.vb.example;
+
   import edu.utwente.vb.tree.*;
   import edu.utwente.vb.example.util.Utils;
+    /** Logger */
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
+  
+  import java.util.LinkedList;
 }
 
 @rulecatch {
 	catch (RecognitionException e) {
-	  if(debug_mode==true) 
-	  throw e;
+	  reportError(e);
+	  if(debug_mode==true){ 
+	    throw e;
+	  }
 	}
 	  
 	catch (RuntimeException e){
-	  nrErr += 1;
-	  emitErrorMessage("[Example] error [" + nrErr + "] - " + e.getMessage());
-	  if(debug_mode==true) 
+	  if(debug_mode==true){ 
 	    throw e;
+	  }
 	}
 	  
 }
 
 @members {
+/** Lijst die errors bijhoud om aan het einde van executie te printen */
+private List<String> errors = new LinkedList<String>();
+
+private Logger log = LoggerFactory.getLogger(Parser.class);
 /**
  * debug_mode==true impliceert debug_mode==true in checker. 
  * Zorgt voor doorgooien excepties, zodat testsuite deze kan waarnemen. 
@@ -63,10 +74,11 @@ public int nrErrors() {
 	return nrErr;
 }
 
-
-public void displayRuntimeError(RuntimeException e){
-  nrErr += 1;
-  emitErrorMessage("[Example] error [" + nrErr + "] - char " + e.getMessage());
+/**
+ * getMethode om errors vanuit compiler op te kunnen vragen
+ */
+public List<String> getErrors() {
+  return errors;
 }
 
 /**
@@ -76,22 +88,34 @@ public void displayRuntimeError(RuntimeException e){
  * Bij elke veelvoorkomende subklasse van RecognitionException wordt een zo nuttig mogelijke foutmelding geprint.
  * @ ensure nrErrors() == \old(nrErrors()) + 1 
  */
-public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
+public void displayRecognitionError(String[] tokenNames,
+                                        RecognitionException e) {
+	log.debug("ERROR FOUND");
 	nrErr += 1;
 	if (e instanceof RecognitionException) {
+	  log.debug("RecognitionException");
 		String msg = null;
 		if (e instanceof NoViableAltException) {
+			log.debug("NoViableAltException");
 			NoViableAltException nvae = (NoViableAltException) e;
 			msg = tokenNames[nvae.getUnexpectedType()] + " was unexpected";
 		} else if (e instanceof MismatchedTokenException) {
+		  log.debug("MismatchedTokenException");
 			MismatchedTokenException mte = (MismatchedTokenException) e;
 			String expectedToken = (mte.expecting > 0 && mte.expecting < tokenNames.length) ? tokenNames[mte.expecting]
 					: "unknown";
-			String foundToken = (mte.getUnexpectedType() > 0 && mte
-					.getUnexpectedType() < tokenNames.length) ? tokenNames[mte
-					.getUnexpectedType()] : "unknown";
+			String foundToken;
+			if (mte.getUnexpectedType() > 0 && mte.getUnexpectedType() < tokenNames.length){
+			  foundToken = tokenNames[mte.getUnexpectedType()];
+			}else if(mte.getUnexpectedType()==-1){
+			 foundToken = "EOF";
+			}else{
+			 foundToken = "unknown";
+			}
+			
 			msg = " Expected:" + expectedToken + ", but found: " + foundToken;
 		} else if (e instanceof FailedPredicateException) {
+		  log.debug("FailedPredicateException");
 			FailedPredicateException fpe = (FailedPredicateException) e;
 			String foundToken = (fpe.getUnexpectedType() > 0 && fpe
 					.getUnexpectedType() < tokenNames.length) ? tokenNames[fpe
@@ -102,10 +126,9 @@ public void displayRecognitionError(String[] tokenNames, RecognitionException e)
 		} else {
 			msg = super.getErrorMessage(e, tokenNames);
 		}
-		emitErrorMessage("[Example] error [" + nrErr + "] - char "
+		errors.add("[Example] compilation error [" + nrErr + "] - char "
 				+ e.charPositionInLine + " on line " + e.line + " | " + msg);
-	} else
-		super.displayRecognitionError(tokenNames, e);
+		}
 }
   
   /**

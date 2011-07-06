@@ -38,17 +38,10 @@ options {
 @rulecatch { 
     catch (RecognitionException e) {
       nrErr += 1;
-      emitErrorMessage("[Example] error [" + nrErr + "] - " + e.getMessage()); 
+      emitErrorMessage("[Example] compilation error [" + nrErr + "] - " + e.getMessage());
       if(debug_mode==true) 
         throw e;
     }
-    catch (RuntimeException e){
-      nrErr += 1;
-      emitErrorMessage("[Example] error [" + nrErr + "] - " + e.getMessage());
-      if(debug_mode==true) 
-        throw e;
-    }
-
 }
 
 @members{
