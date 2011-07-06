@@ -11,6 +11,8 @@ import static edu.utwente.vb.symbols.ExampleType.STRING;
 
 import java.util.Set;
 
+import org.objectweb.asm.Type;
+
 import com.google.common.collect.ImmutableSet;
 
 import edu.utwente.vb.exceptions.IllegalFunctionDefinitionException;
@@ -69,6 +71,9 @@ public class Prelude {
 		builder.add(createFunctionId("print", ExampleType.INT, 	createVariableId("str", ExampleType.INT)));
 		builder.add(createFunctionId("print", ExampleType.CHAR, 	createVariableId("str", ExampleType.CHAR)));
 		
+		// RandomInt
+		builder.add(createFunctionId("random", ExampleType.INT, createVariableId("max", ExampleType.INT)));
+		
 		for(ExampleType type : new ExampleType[]{INT, CHAR, STRING}){
 		    FunctionId<TypedNode> r = createFunctionId("read", type, 	createVariableId("str", type));
 		    r.setIdType(IdType.VARARGS);
@@ -80,7 +85,7 @@ public class Prelude {
 		readNode.setBoundMethod(varArgs);
 		builder.add(varArgs);
 		
-		builder.add(createFunctionId("ensure", ExampleType.VOID,	createVariableId("expr", ExampleType.BOOL)));
+		builder.add(createFunctionId("ensure", ExampleType.VOID, createVariableId("expr", ExampleType.BOOL)));
 		//Sla op
 		builtins = builder.build();
 	}

@@ -3,6 +3,7 @@ package edu.utwente.vb.example;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Random;
 
 public class Builtins {
 	BufferedReader reader;
@@ -12,11 +13,7 @@ public class Builtins {
 	}
 	
 	protected int read(int i){
-		try{
-			return reader.read();
-		} catch (IOException e) {
-			throw new RuntimeException("Internal error while reading a int", e);
-		}
+		return Integer.valueOf(read(""));
 	}
 	
 	protected char read(char c){
@@ -78,5 +75,10 @@ public class Builtins {
 	protected void ensure(boolean expr){
 		if(!expr)
 			throw new Error("[Example] runtime error - ensure failed");
+	}
+	
+	protected int random(int max){
+	    Random rand = new Random();
+	    return rand.nextInt(max + 1);
 	}
 }

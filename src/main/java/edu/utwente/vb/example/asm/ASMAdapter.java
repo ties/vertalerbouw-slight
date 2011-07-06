@@ -339,7 +339,14 @@ public class ASMAdapter implements Opcodes {
 	// Load this onto the stack
 	// stack protocol of InvokeVirtual: ..., objectref, [arg1, [arg2 ...]]
 	// => ...
-	mg.loadThis();
+	switch(func.getBoundMethod().getIdType()){
+		case VARARGS:
+		    // Doet zijn eigen stack management
+		    // Deze ALOAD0 wordt anders niet gepopped
+		    break;
+		default:
+		    mg.loadThis();
+	}
 	log.debug("visitFuncCallBegin");
     }
 
@@ -383,18 +390,19 @@ public class ASMAdapter implements Opcodes {
 	    for (int i = 0; i < params.size(); i++) {
 		boolean last = i == params.size() - 1;
 		TypedNode arg = params.get(i);
+		
 		mg.loadThis();
 		target = new Method(name, arg.getNodeType().toASM(), new Type[] { arg.getNodeType().toASM() });
 		mg.swap();
 		mg.invokeVirtual(superClassName, target);
-		if (params.size() == 1 && call.isResultUsed()) {
+		
+		if(last){
 		    mg.dup();// Leave result on stack
 		}
 		visitBecomes(arg, arg);
 	    }
 	    break;
 	}
-
 	if (node.getBoundMethod().getType() != ExampleType.VOID && !call.isResultUsed())
 	    mg.pop();
     }
