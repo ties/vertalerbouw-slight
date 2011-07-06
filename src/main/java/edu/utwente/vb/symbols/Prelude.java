@@ -71,6 +71,11 @@ public class Prelude {
 		builder.add(createFunctionId("print", ExampleType.INT, 	createVariableId("str", ExampleType.INT)));
 		builder.add(createFunctionId("print", ExampleType.CHAR, 	createVariableId("str", ExampleType.CHAR)));
 		
+		builder.add(createFunctionId("getInt", ExampleType.INT, 	createVariableId("list", ExampleType.INTLIST), createVariableId("i", ExampleType.INT)));
+		builder.add(createFunctionId("putInt", ExampleType.VOID, createVariableId("list", ExampleType.INTLIST), createVariableId("i", ExampleType.INT)));
+		builder.add(createFunctionId("length", ExampleType.INT, createVariableId("list", ExampleType.INTLIST)));
+		builder.add(createFunctionId("newList", ExampleType.INTLIST));
+		
 		// RandomInt
 		builder.add(createFunctionId("random", ExampleType.INT, createVariableId("max", ExampleType.INT)));
 		

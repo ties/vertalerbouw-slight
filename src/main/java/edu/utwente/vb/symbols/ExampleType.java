@@ -2,6 +2,7 @@ package edu.utwente.vb.symbols;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.Type;
@@ -17,7 +18,7 @@ import edu.utwente.vb.tree.TypedNode;
  *
  */
 public enum ExampleType{
-	VOID(Type.VOID_TYPE), INT(Type.INT_TYPE), CHAR(Type.CHAR_TYPE), STRING(Type.getType(String.class)), BOOL(Type.BOOLEAN_TYPE), UNKNOWN;
+	VOID(Type.VOID_TYPE), INT(Type.INT_TYPE), CHAR(Type.CHAR_TYPE), STRING(Type.getType(String.class)), BOOL(Type.BOOLEAN_TYPE), UNKNOWN, INTLIST(Type.getType(ArrayList.class));
 	
 	private final Type asmType;
 	

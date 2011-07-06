@@ -93,6 +93,7 @@ VOID    : 'void';
 BOOLEAN : 'bool';
 CHAR    : 'char';
 INT     : 'int';
+INTLIST	: 'intlist';
 STRING  : 'string';
 
 WS  

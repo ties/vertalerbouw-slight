@@ -1,9 +1,15 @@
 package edu.utwente.vb.example;
 
+import static edu.utwente.vb.example.util.CheckerHelper.createFunctionId;
+import static edu.utwente.vb.example.util.CheckerHelper.createVariableId;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
+
+import edu.utwente.vb.symbols.ExampleType;
 
 public class Builtins {
 	BufferedReader reader;
@@ -80,5 +86,22 @@ public class Builtins {
 	protected int random(int max){
 	    Random rand = new Random();
 	    return rand.nextInt(max + 1);
+	}
+	
+	// builder.add(createFunctionId("getInt", ExampleType.VOID, 	createVariableId("list", ExampleType.INTLIST), createVariableId("i", ExampleType.INT)));
+	protected int getInt(ArrayList list, int index){
+	    return (Integer)list.get(index);
+	}
+	// builder.add(createFunctionId("putInt", ExampleType.VOID, createVariableId("list", ExampleType.INTLIST), createVariableId("i", ExampleType.INT));
+	protected void putInt(ArrayList list, int val){
+	    list.add(val);
+	}
+	// builder.add(createFunctionId("length", ExampleType.INT, createVariableId("list", ExampleType.INTLIST));
+	protected int length(ArrayList list){
+	    return list.size();
+	}
+	// builder.add(createFunctionId("newList", ExampleType.INTLIST);
+	protected ArrayList newList(){
+	    return new ArrayList();
 	}
 }

@@ -294,6 +294,7 @@ primitive
   | CHAR
   | INT
   | STRING
+  | INTLIST
   ;
 
 atom
