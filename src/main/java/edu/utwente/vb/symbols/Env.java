@@ -119,7 +119,7 @@ public class Env<T extends BaseTree> implements EnvApi<T>{
 			}
 		}
 		log.debug("Function not found for {} ({})", n, applied);
-		throw new SymbolTableException("No matching entry for " + n + " ("  + Arrays.toString(applied) + ")");
+		throw new SymbolTableException("No matching entry for operator/function: " + n + " with parameters:"  + Arrays.toString(applied) + ")");
 	}
 	
 	@Override

@@ -42,6 +42,11 @@ options {
       if(debug_mode==true) 
         throw e;
     }
+    catch (RuntimeException e){
+      if(debug_mode==true){ 
+        throw e;
+      }
+  }
 }
 
 @members{

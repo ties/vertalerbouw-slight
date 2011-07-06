@@ -98,7 +98,15 @@ public void displayRecognitionError(String[] tokenNames,
 		if (e instanceof NoViableAltException) {
 			log.debug("NoViableAltException");
 			NoViableAltException nvae = (NoViableAltException) e;
-			msg = tokenNames[nvae.getUnexpectedType()] + " was unexpected";
+			String foundToken;
+			if (nvae.getUnexpectedType() > 0 && nvae.getUnexpectedType() < tokenNames.length){
+        foundToken = tokenNames[nvae.getUnexpectedType()];
+      }else if(nvae.getUnexpectedType()==-1){
+       foundToken = "EOF";
+      }else{
+       foundToken = "unknown";
+      }			
+			msg = foundToken + " was unexpected";
 		} else if (e instanceof MismatchedTokenException) {
 		  log.debug("MismatchedTokenException");
 			MismatchedTokenException mte = (MismatchedTokenException) e;
@@ -111,15 +119,19 @@ public void displayRecognitionError(String[] tokenNames,
 			 foundToken = "EOF";
 			}else{
 			 foundToken = "unknown";
-			}
-			
+			}			
 			msg = " Expected:" + expectedToken + ", but found: " + foundToken;
 		} else if (e instanceof FailedPredicateException) {
 		  log.debug("FailedPredicateException");
 			FailedPredicateException fpe = (FailedPredicateException) e;
-			String foundToken = (fpe.getUnexpectedType() > 0 && fpe
-					.getUnexpectedType() < tokenNames.length) ? tokenNames[fpe
-					.getUnexpectedType()] : "unknown";
+			String foundToken;
+      if (fpe.getUnexpectedType() > 0 && fpe.getUnexpectedType() < tokenNames.length){
+        foundToken = tokenNames[fpe.getUnexpectedType()];
+      }else if(fpe.getUnexpectedType()==-1){
+       foundToken = "EOF";
+      }else{
+       foundToken = "unknown";
+      }     
 			String predicate = fpe.predicateText;
 			msg = " Did not match predicate: " + predicate + ", token found: "
 					+ foundToken;
@@ -317,7 +329,6 @@ primitive
   | CHAR
   | INT
   | STRING
-  | INTLIST
   ;
 
 atom
