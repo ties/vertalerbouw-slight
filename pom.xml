@@ -4,7 +4,7 @@
 	<groupId>edu.utwente.vb.example</groupId>
 	<artifactId>example-compiler</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0</version>
+	<version>1.1</version>
 	<name>example</name>
 	<url>http://maven.apache.org</url>
 

@@ -21,3 +21,37 @@ Wij hebben onze Code Templates gemaakt met deze tool; In de directory met PrintT
 	IRETURN		&	-			& Return \verb+int+ from method. \\
 	\hline
 \end{tabular*}
+
+\section{Stack protocol}
+Tijdens het compileren van een programma kom je sommige operaties op de stack meerdere keren tegen. Deze operaties leggen wij hieronder uit
+
+\subsection{Push this before arguments}
+\paragraph{Operation}
+Push ALOAD0 onto the stack before the two highest values. This is needed when a binary operator is implemented using a Java function instead of a binary operator. The other solution to this problem is the usage of two local variables, but in our opinion this is cleaner.
+
+\paragraph{Used at}
+\begin{itemize}
+	\item{String != and ==}
+	\item{String append}
+\end{itemize}
+
+\paragraph{Operand stack}
+\verb+[lhs] [rhs] => [this] [lhs] [rhs]+
+
+\paragraph{Implementation}
+\begin{verbatim}
+// Stack protocol
+// [lhs] [rhs]
+SWAP
+// [rhs] [lhs]
+ALOAD 0
+// [rhs] [lhs]] [this]
+SWAP
+// [rhs] [this] [lhs]
+DUP2_X1
+// [this] [lhs] [rhs] [this] [lhs]
+POP2
+// [this] [lhs] [rhs]
+\end{verbatim}
+
+\subsection{}
