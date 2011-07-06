@@ -1,4 +1,4 @@
-package edu.utwente.vb.example;
+package edu.utwente.vb.tree;
 
 import edu.utwente.vb.symbols.ExampleType;
 
