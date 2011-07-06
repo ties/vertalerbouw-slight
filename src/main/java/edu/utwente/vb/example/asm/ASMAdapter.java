@@ -387,8 +387,8 @@ public class ASMAdapter implements Opcodes {
 	    // For each argument: dispatch a [functionname] call for the given
 	    // argument
 	    // then save it into the variable
-	    for (int i = 0; i < params.size(); i++) {
-		boolean last = i == params.size() - 1;
+	    for (int i = params.size() - 1; i >= 0; i--) {
+		boolean last = i == 0;
 		TypedNode arg = params.get(i);
 		
 		mg.loadThis();

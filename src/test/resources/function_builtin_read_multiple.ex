@@ -1,5 +1,6 @@
 string a
-string b
+int b
+char c
 
 def main():
-	read(a,b)
+	read(a,b, c)
