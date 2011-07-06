@@ -4,11 +4,69 @@ Dit hoofdstuk zal per constuctie van de Example taal de bijbehorende JVM-code pr
 \section{Program}
 De program rule bestaat uit een aaneenschakeling van declarations en functionDef's. De functionDef Main() is de functie die standaard wordt uitgevoerd. Program zelf heeft geen vertaalregels, behalve het aanroepen van de vertaalregels van zijn elementen. 
 
+
+% Macro's voor vertaalregels:
+\newcommand{\vrname}[2]{\textit{#1} \textbf{[[}#2\textbf{]]} =}
+
+
+
+
 \section{Declaraties}
 execute[[
 \section{Functiedefinities}
 \section{Statements}
+
+\paragraph{If statement}
+Het if statement wordt De operator (+, -, \%, /) wordt eerst vertaald naar de correcte opcode voor de operatie en het type. De afhandeling van string operaties gebeurt op een andere manier. \\
+
+Binaire expressie voor primitieve typen.\\
+{\footnotesize
+\begin{tabular}{r l l p{5cm}} % label, commando, jumplabel, toelichting
+\multicolumn{4}{l}{\vrname{evaluate}{E1 O E2}} \\
+ & \textit{evaluate E1} &  & \\
+ & \textit{evaluate E2} &  & \\
+ & \textit{IADD}	&	& Het resultaat staat bovenop de stack\\
+\end{tabular}
+}
+
+
 \section{Expressies}
+
+\paragraph{Binaire expressie voor primitieve typen}
+De operator (+, -, \%, /) wordt eerst vertaald naar de correcte opcode voor de operatie en het type. De afhandeling van string operaties gebeurt op een andere manier. \\
+
+Binaire expressie voor primitieve typen.\\
+{\footnotesize
+\begin{tabular}{r l l p{5cm}} % label, commando, jumplabel, toelichting
+\multicolumn{4}{l}{\vrname{evaluate}{E1 O E2}} \\
+ & \textit{evaluate E1} &  & \\
+ & \textit{evaluate E2} &  & \\
+ & \textit{IADD}	&	& Het resultaat staat bovenop de stack\\
+\end{tabular}
+}
+
+\paragraph{Binaire expressie voor Strings}
+Strings worden omdat zij intern in de JVM een referentie type zijn anders afgehandeld. De $+$ operator wordt als een functie call geimplementeerd. Eerst worden de operanden ge\"evalueerd en daarna  wordt het stack protocol uit \ref{sec:push_this_before} uitgevoerd. De bytecode staat hieronder erbij, meer uitleg in \ref{sec:push_this_before}.
+
+Binaire expressie voor primitieve typen.\\
+{\footnotesize
+\begin{tabular}{r l l p{5cm}} % label, commando, jumplabel, toelichting
+\multicolumn{4}{l}{\vrname{evaluate}{E1 O E2}} \\
+ & \textit{evaluate E1} &  & Laat een String resultaat op de stack achter\\
+ & \textit{evaluate E2} &  & Laat een String of primitief type op de stack achter\\
+ & \textit{execute $+$} & SWAP & \\
+ & & ALOAD 0 & \\
+ & & SWAP & \\
+ & & DUP2\_X1 & \\
+ & & POP2 & \\
+ & & INVOKEVIRTUAL .../Builtins.stringAppend & \\
+ & & (Ljava/lang/String;I)Ljava/lang/String; & \\
+\end{tabular}
+}
+
+
+
+
     \subsection{Binaire Expressies}
         \subsubsection{Plus}
         evalueer[[E1 + E2]] =
@@ -35,3 +93,5 @@ execute[[
         evalueer[[E1]]
         evalueer[[E2]]
         irem
+
+

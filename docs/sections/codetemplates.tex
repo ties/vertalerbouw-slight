@@ -26,6 +26,8 @@ Wij hebben onze Code Templates gemaakt met deze tool; In de directory met PrintT
 Tijdens het compileren van een programma kom je sommige operaties op de stack meerdere keren tegen. Deze operaties leggen wij hieronder uit
 
 \subsection{Push this voor de arguments}
+\label{sec:push_this_before}
+
 \paragraph{Operation}
 Push ALOAD0 op de stack voor de twee hoogste waardes die op dit moment op de stack staan. Dit kan je gebruiken wanneer een binaire operator in een java documenonto the stack before the two highest values. This is needed when a binary operator is implemented using a Java function instead of a binary operator. The other solution to this problem is the usage of two local variables, but in our opinion this is cleaner.
 
@@ -69,7 +71,7 @@ Wij hebben voor de tweede aanpak gekozen.
 \paragraph{Operand stack}
 \verb+[lhs] [rhs] => [true|false]+
 
-\pagragraph{Implementatie}
+\paragraph{Implementatie}
 Voorbeeld code voor \verb+1 == 1+
 
 \begin{verbatim}
@@ -85,22 +87,3 @@ L1
 L3
 \end{verbatim}
 
-\section{Vertaalregels}
-% Macro's voor vertaalregels:
-\newcommand{\vrname}[2]{\textit{#1} \textbf{[[}#2\textbf{]]} =}
-
-
-Code template voor een if-then statement\\
-{\footnotesize
-\begin{tabular}{r l l p{5cm}} % label, commando, jumplabel, toelichting
-\multicolumn{4}{l}{\vrname{execute}{if E then C1 else C2}} \\
- & \textit{evaluate E} &  & \\
- & ldc & 1 & Laad de waarde 1 voor de vergelijking \\
- & if\_icmpeq & g &  \\
- & \textit{execute C1} &  & \\
- & goto & h &  \\
-g: & & & \\
- & \textit{execute C2} &  & \\
-h: &  &  & \\
-\end{tabular}
-}
