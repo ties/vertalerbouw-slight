@@ -1,12 +1,8 @@
 package edu.utwente.vb.example;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 
-import edu.utwente.vb.*;
-import edu.utwente.vb.example.Checker.program_return;
 import edu.utwente.vb.example.CodeGenerator.OutputMode;
 import edu.utwente.vb.example.asm.ASMAdapter;
 import edu.utwente.vb.example.util.CheckerHelper;
